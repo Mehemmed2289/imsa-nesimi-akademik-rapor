@@ -1,0 +1,2145 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Məktəb Rapor Sistemi - 8 Sinif</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+        }
+        
+        .sidebar {
+            background: linear-gradient(180deg, var(--primary-color) 0%, #1a2530 100%);
+            min-height: 100vh;
+            color: white;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar .nav-link {
+            color: #ecf0f1;
+            padding: 12px 20px;
+            margin: 5px 0;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background-color: rgba(52, 152, 219, 0.3);
+            color: white;
+        }
+        
+        .sidebar .nav-link i {
+            width: 25px;
+            text-align: center;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            font-weight: bold;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 15px;
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card.blue { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .stat-card.green { background: linear-gradient(135deg, #27ae60, #219653); }
+        .stat-card.orange { background: linear-gradient(135deg, #f39c12, #e67e22); }
+        .stat-card.red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        
+        .data-table {
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        
+        .data-table th {
+            background-color: var(--primary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        
+        .filter-section {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .badge-custom {
+            font-size: 0.8em;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .excel-upload {
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            background-color: rgba(52, 152, 219, 0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .excel-upload:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+            border-color: #2980b9;
+        }
+        
+        .excel-upload i {
+            font-size: 3rem;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .student-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .progress-custom {
+            height: 10px;
+            border-radius: 5px;
+        }
+        
+        .export-btn {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color);">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-school me-2"></i> Məktəb Rapor Sistemi
+            </a>
+            <div class="navbar-text text-white">
+                <span id="current-date"></span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-2 col-md-3 sidebar">
+                <div class="d-flex flex-column p-3">
+                    <h4 class="text-center mb-4">
+                        <i class="fas fa-chart-line me-2"></i>Analiz Sistemi
+                    </h4>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#dashboard" data-section="dashboard">
+                                <i class="fas fa-tachometer-alt"></i> Ümumi Görünüş
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#students" data-section="students">
+                                <i class="fas fa-users"></i> Şagird Analizi
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#subjects" data-section="subjects">
+                                <i class="fas fa-book"></i> Fənn Analizi
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#classes" data-section="classes">
+                                <i class="fas fa-chalkboard-teacher"></i> Sinif Analizi
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#comparison" data-section="comparison">
+                                <i class="fas fa-balance-scale"></i> Müqayisə
+                            </a>
+                        </li>
+                        <li class="nav-item mt-4">
+                            <a class="nav-link" href="#upload" data-section="upload">
+                                <i class="fas fa-file-upload"></i> Excel Yüklə
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#export" data-section="export">
+                                <i class="fas fa-file-download"></i> Rapor Yüklə
+                            </a>
+                        </li>
+                    </ul>
+                    
+                    <div class="mt-5">
+                        <h6><i class="fas fa-info-circle me-2"></i>Sistem Məlumatı</h6>
+                        <small>
+                            <div id="data-info">Excel faylı yüklənməyib</div>
+                            <div id="last-update">Son yeniləmə: -</div>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-10 col-md-9 p-4">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="content-section">
+                    <h2 class="mb-4"><i class="fas fa-tachometer-alt me-2"></i>Ümumi Görünüş</h2>
+                    
+                    <!-- Stats Cards -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="stat-card blue">
+                                <i class="fas fa-users"></i>
+                                <h3 id="total-students">0</h3>
+                                <p>Ümumi Şagird</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card green">
+                                <i class="fas fa-chalkboard"></i>
+                                <h3 id="total-classes">0</h3>
+                                <p>Sinif Sayı</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card orange">
+                                <i class="fas fa-book"></i>
+                                <h3 id="total-subjects">0</h3>
+                                <p>Fənn Sayı</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="stat-card red">
+                                <i class="fas fa-chart-bar"></i>
+                                <h3 id="overall-average">0.0</h3>
+                                <p>Ümumi Orta</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Charts Row -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-bar me-2"></i>Fənn Ortalamaları
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="subjectAvgChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-pie me-2"></i>Sinifə Görə Paylanma
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="classDistributionChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Top Students & Worst Subjects -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-trophy me-2"></i>Ən Yaxşı 5 Şagird
+                                </div>
+                                <div class="card-body">
+                                    <div id="top-students-list">
+                                        <p class="text-muted">Excel faylı yükləyin</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>Ən Aşağı 3 Fənn
+                                </div>
+                                <div class="card-body">
+                                    <div id="worst-subjects-list">
+                                        <p class="text-muted">Excel faylı yükləyin</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Students Analysis Section -->
+                <section id="students-section" class="content-section" style="display: none;">
+                    <h2 class="mb-4"><i class="fas fa-users me-2"></i>Şagird Analizi</h2>
+                    
+                    <div class="filter-section">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label for="student-class-filter" class="form-label">Sinif seçin:</label>
+                                <select id="student-class-filter" class="form-select">
+                                    <option value="all">Hamısı</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="student-search" class="form-label">Şagird axtarın:</label>
+                                <input type="text" id="student-search" class="form-control" placeholder="Ad, soyad...">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="student-sort" class="form-label">Sırala:</label>
+                                <select id="student-sort" class="form-select">
+                                    <option value="name">Ada görə</option>
+                                    <option value="average_desc">Ortalamaya görə (azalan)</option>
+                                    <option value="average_asc">Ortalamaya görə (artan)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-list me-2"></i>Şagird Siyahısı</span>
+                            <span id="student-count">0 şagird</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table data-table table-hover" id="students-table">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Şagird</th>
+                                            <th>Sinif</th>
+                                            <th>Ümumi Orta</th>
+                                            <th>Ən Yaxşı Fənn</th>
+                                            <th>Ən Aşağı Fənn</th>
+                                            <th>Status</th>
+                                            <th>Əməliyyat</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="students-table-body">
+                                        <!-- Data will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Selected Student Details -->
+                    <div class="card" id="student-detail-card" style="display: none;">
+                        <div class="card-header">
+                            <i class="fas fa-user-graduate me-2"></i>Şagird Detalları
+                        </div>
+                        <div class="card-body">
+                            <div class="row" id="student-detail-content">
+                                <!-- Student details will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Subjects Analysis Section -->
+                <section id="subjects-section" class="content-section" style="display: none;">
+                    <h2 class="mb-4"><i class="fas fa-book me-2"></i>Fənn Analizi</h2>
+                    
+                    <div class="filter-section">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="subject-class-filter" class="form-label">Sinif seçin:</label>
+                                <select id="subject-class-filter" class="form-select">
+                                    <option value="all">Hamısı</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="subject-sort" class="form-label">Sırala:</label>
+                                <select id="subject-sort" class="form-select">
+                                    <option value="name">Ada görə</option>
+                                    <option value="average_desc">Ortalamaya görə (azalan)</option>
+                                    <option value="average_asc">Ortalamaya görə (artan)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-chart-line me-2"></i>Fənn Ortalamaları
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table data-table table-hover" id="subjects-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Fənn</th>
+                                            <th>Ümumi Orta</th>
+                                            <th>5A Ortalaması</th>
+                                            <th>5B Ortalaması</th>
+                                            <th>Ən Yüksək</th>
+                                            <th>Ən Aşağı</th>
+                                            <th>Uğur Nisbəti</th>
+                                            <th>Qrafik</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="subjects-table-body">
+                                        <!-- Data will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Subject Detail Chart -->
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-2"></i>Fənn Müqayisəsi
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="subjectComparisonChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Classes Analysis Section -->
+                <section id="classes-section" class="content-section" style="display: none;">
+                    <h2 class="mb-4"><i class="fas fa-chalkboard-teacher me-2"></i>Sinif Analizi</h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-bar me-2"></i>Sinif Ortalamaları
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="classAvgChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-users me-2"></i>Sinif Statistikası
+                                </div>
+                                <div class="card-body" id="class-stats">
+                                    <!-- Class stats will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-table me-2"></i>Sinif Müqayisəsi
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table data-table table-hover" id="classes-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Sinif</th>
+                                            <th>Şagird Sayı</th>
+                                            <th>Ümumi Orta</th>
+                                            <th>Ən Yaxşı Fənn</th>
+                                            <th>Ən Aşağı Fənn</th>
+                                            <th>Uğurlu Şagird</th>
+                                            <th>Uğur Nisbəti</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="classes-table-body">
+                                        <!-- Data will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Comparison Section -->
+                <section id="comparison-section" class="content-section" style="display: none;">
+                    <h2 class="mb-4"><i class="fas fa-balance-scale me-2"></i>Müqayisə Analizi</h2>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-bar me-2"></i>Sinif Müqayisəsi
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="classCompareChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-chart-line me-2"></i>Fənn İnkişafı
+                                </div>
+                                <div class="card-body">
+                                    <div class="chart-container">
+                                        <canvas id="subjectProgressChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-table me-2"></i>Detallı Müqayisə
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table data-table table-hover" id="comparison-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Göstərici</th>
+                                            <th>5A</th>
+                                            <th>5B</th>
+                                            <th>Fərq</th>
+                                            <th>Qalib</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="comparison-table-body">
+                                        <!-- Data will be inserted here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Upload Section -->
+                <section id="upload-section" class="content-section" style="display: none;">
+                    <h2 class="mb-4"><i class="fas fa-file-upload me-2"></i>Excel Fayl Yüklə</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-8 offset-md-2">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-database me-2"></i>Veri Yükləmə
+                                </div>
+                                <div class="card-body">
+                                    <div class="excel-upload" id="excel-drop-area">
+                                        <i class="fas fa-file-excel"></i>
+                                        <h4>Excel Faylını Buraya Sürüşdürün</h4>
+                                        <p class="text-muted">və ya klik edib seçin</p>
+                                        <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" style="display: none;">
+                                        <button class="btn btn-primary btn-lg mt-3" onclick="document.getElementById('excel-file-input').click()">
+                                            <i class="fas fa-folder-open me-2"></i>Fayl Seçin
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        <h5><i class="fas fa-info-circle me-2"></i>Excel Formatı Tələbləri:</h5>
+                                        <ul>
+                                            <li>Sütunlar: <code>Şagird;Sinif;Fənn1;Fənn2;...</code></li>
+                                            <li>Birinci sətir başlıq olmalıdır</li>
+                                            <li>Fayl formatı: .xlsx, .xls və ya .csv</li>
+                                            <li>Məlumatlar nöqtəli vergüllə ayrılmalıdır</li>
+                                        </ul>
+                                        
+                                        <div class="alert alert-info mt-3">
+                                            <i class="fas fa-lightbulb me-2"></i>
+                                            <strong>Nümunə format:</strong> CSV faylınızda sütunlar nöqtəli vergüllə ayrılmalıdır. Məsələn: <code>Şagird;Sinif;Riyaziyyat;Ana dili;...</code>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="loader mt-4" id="upload-loader">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Yüklənir...</span>
+                                        </div>
+                                        <p class="mt-2">Excel faylı analiz edilir...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Export Section -->
+                <section id="export-section" class="content-section" style="display: none;">
+                    <h2 class="mb-4"><i class="fas fa-file-download me-2"></i>Rapor Yüklə</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card text-center h-100">
+                                <div class="card-body">
+                                    <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
+                                    <h4>PDF Rapor</h4>
+                                    <p class="text-muted">Ümumi statistikalar ilə PDF formatında</p>
+                                    <button class="btn btn-danger mt-3" onclick="exportPDF()">
+                                        <i class="fas fa-download me-2"></i>PDF Yüklə
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card text-center h-100">
+                                <div class="card-body">
+                                    <i class="fas fa-file-excel fa-3x text-success mb-3"></i>
+                                    <h4>Excel Rapor</h4>
+                                    <p class="text-muted">Analiz məlumatları ilə Excel formatında</p>
+                                    <button class="btn btn-success mt-3" onclick="exportExcel()">
+                                        <i class="fas fa-download me-2"></i>Excel Yüklə
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="card text-center h-100">
+                                <div class="card-body">
+                                    <i class="fas fa-chart-bar fa-3x text-primary mb-3"></i>
+                                    <h4>Grafiklər</h4>
+                                    <p class="text-muted">Bütün qrafikləri PNG formatında</p>
+                                    <button class="btn btn-primary mt-3" onclick="exportCharts()">
+                                        <i class="fas fa-download me-2"></i>Qrafikləri Yüklə
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <i class="fas fa-cogs me-2"></i>Rapor Konfiqurasiyası
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="include-charts" checked>
+                                        <label class="form-check-label" for="include-charts">
+                                            Qrafikləri daxil et
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="include-tables" checked>
+                                        <label class="form-check-label" for="include-tables">
+                                            Cədvəlləri daxil et
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="include-recommendations" checked>
+                                        <label class="form-check-label" for="include-recommendations">
+                                            Tövsiyələri daxil et
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="checkbox" id="include-details" checked>
+                                        <label class="form-check-label" for="include-details">
+                                            Detalları daxil et
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Student Details -->
+    <div class="modal fade" id="studentModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="studentModalTitle">Şagird Detalları</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="studentModalBody">
+                    <!-- Student details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bağla</button>
+                    <button type="button" class="btn btn-primary" onclick="printStudentReport()">
+                        <i class="fas fa-print me-2"></i>Çap et
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let schoolData = {
+            students: [],
+            subjects: [],
+            classes: [],
+            overallStats: {}
+        };
+        
+        let charts = {};
+        let currentData = null;
+
+        // Initialize date
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('az-AZ', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
+        // Navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active link
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show selected section
+                const section = this.getAttribute('data-section');
+                document.querySelectorAll('.content-section').forEach(sec => {
+                    sec.style.display = 'none';
+                });
+                
+                document.getElementById(`${section}-section`).style.display = 'block';
+            });
+        });
+
+        // Excel file handling
+        const excelInput = document.getElementById('excel-file-input');
+        const dropArea = document.getElementById('excel-drop-area');
+
+        // Drag and drop events
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() {
+            dropArea.style.borderColor = '#27ae60';
+            dropArea.style.backgroundColor = 'rgba(39, 174, 96, 0.1)';
+        }
+
+        function unhighlight() {
+            dropArea.style.borderColor = '#3498db';
+            dropArea.style.backgroundColor = 'rgba(52, 152, 219, 0.05)';
+        }
+
+        dropArea.addEventListener('drop', handleDrop, false);
+        excelInput.addEventListener('change', handleFileSelect, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        function handleFileSelect(e) {
+            const files = e.target.files;
+            handleFiles(files);
+        }
+
+        function handleFiles(files) {
+            if (files.length === 0) return;
+            
+            const file = files[0];
+            if (!file.name.match(/\.(xlsx|xls|csv)$/i)) {
+                alert('Zəhmət olmasa Excel və ya CSV faylı seçin!');
+                return;
+            }
+            
+            document.getElementById('upload-loader').style.display = 'block';
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = e.target.result;
+                    processExcelData(data, file.name);
+                } catch (error) {
+                    alert('Fayl oxunarkən xəta baş verdi: ' + error.message);
+                    document.getElementById('upload-loader').style.display = 'none';
+                }
+            };
+            
+            reader.readAsBinaryString(file);
+        }
+
+        function processExcelData(data, fileName) {
+            try {
+                // Parse Excel/CSV data
+                const workbook = XLSX.read(data, { type: 'binary' });
+                const firstSheet = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheet];
+                
+                // Convert to JSON
+                const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                
+                // Process the data
+                currentData = jsonData;
+                parseData(jsonData);
+                
+                // Update UI
+                document.getElementById('upload-loader').style.display = 'none';
+                document.getElementById('data-info').textContent = `Fayl: ${fileName}`;
+                document.getElementById('last-update').textContent = `Son yeniləmə: ${new Date().toLocaleTimeString('az-AZ')}`;
+                
+                // Show dashboard
+                document.querySelector('[data-section="dashboard"]').click();
+                
+                alert('Excel faylı uğurla yükləndi! Məlumatlar analiz edilir...');
+                
+            } catch (error) {
+                alert('Fayl oxunarkən xəta baş verdi. Formatı yoxlayın: ' + error.message);
+                document.getElementById('upload-loader').style.display = 'none';
+            }
+        }
+
+        function parseData(data) {
+            if (!data || data.length < 2) return;
+            
+            const headers = data[0];
+            const rows = data.slice(1);
+            
+            // Clear previous data
+            schoolData = {
+                students: [],
+                subjects: [],
+                classes: [],
+                overallStats: {}
+            };
+            
+            // Parse students
+            rows.forEach((row, index) => {
+                if (row.length < 3) return;
+                
+                const student = {
+                    id: index + 1,
+                    name: row[0] || '',
+                    className: row[1] || '',
+                    subjects: {}
+                };
+                
+                // Parse subject grades
+                for (let i = 2; i < headers.length; i++) {
+                    if (i < row.length) {
+                        const subject = headers[i];
+                        const grade = parseFloat(row[i]) || 0;
+                        student.subjects[subject] = grade;
+                    }
+                }
+                
+                // Calculate student average
+                const grades = Object.values(student.subjects).filter(g => !isNaN(g));
+                student.average = grades.length > 0 ? 
+                    grades.reduce((a, b) => a + b, 0) / grades.length : 0;
+                
+                // Find best and worst subjects
+                const subjectEntries = Object.entries(student.subjects);
+                if (subjectEntries.length > 0) {
+                    subjectEntries.sort((a, b) => b[1] - a[1]);
+                    student.bestSubject = subjectEntries[0][0];
+                    student.bestGrade = subjectEntries[0][1];
+                    student.worstSubject = subjectEntries[subjectEntries.length - 1][0];
+                    student.worstGrade = subjectEntries[subjectEntries.length - 1][1];
+                }
+                
+                // Determine status
+                if (student.average >= 85) student.status = 'Əla';
+                else if (student.average >= 70) student.status = 'Yaxşı';
+                else if (student.average >= 50) student.status = 'Kafi';
+                else student.status = 'Zəif';
+                
+                schoolData.students.push(student);
+            });
+            
+            // Extract unique classes
+            const classSet = new Set();
+            schoolData.students.forEach(s => classSet.add(s.className));
+            schoolData.classes = Array.from(classSet).sort();
+            
+            // Extract subjects from first student
+            if (schoolData.students.length > 0) {
+                schoolData.subjects = Object.keys(schoolData.students[0].subjects);
+            }
+            
+            // Calculate overall statistics
+            calculateOverallStats();
+            
+            // Update all views
+            updateDashboard();
+            updateStudentsView();
+            updateSubjectsView();
+            updateClassesView();
+            updateComparisonView();
+            updateFilters();
+        }
+
+        function calculateOverallStats() {
+            const stats = {
+                totalStudents: schoolData.students.length,
+                totalClasses: schoolData.classes.length,
+                totalSubjects: schoolData.subjects.length,
+                overallAverage: 0,
+                classAverages: {},
+                subjectAverages: {}
+            };
+            
+            // Calculate overall average
+            const allAverages = schoolData.students.map(s => s.average).filter(a => !isNaN(a));
+            stats.overallAverage = allAverages.length > 0 ? 
+                allAverages.reduce((a, b) => a + b, 0) / allAverages.length : 0;
+            
+            // Calculate class averages
+            schoolData.classes.forEach(className => {
+                const classStudents = schoolData.students.filter(s => s.className === className);
+                const classAverages = classStudents.map(s => s.average).filter(a => !isNaN(a));
+                stats.classAverages[className] = classAverages.length > 0 ?
+                    classAverages.reduce((a, b) => a + b, 0) / classAverages.length : 0;
+            });
+            
+            // Calculate subject averages
+            schoolData.subjects.forEach(subject => {
+                const allGrades = schoolData.students.map(s => s.subjects[subject]).filter(g => !isNaN(g));
+                stats.subjectAverages[subject] = allGrades.length > 0 ?
+                    allGrades.reduce((a, b) => a + b, 0) / allGrades.length : 0;
+            });
+            
+            schoolData.overallStats = stats;
+        }
+
+        function updateDashboard() {
+            const stats = schoolData.overallStats;
+            
+            // Update stats cards
+            document.getElementById('total-students').textContent = stats.totalStudents;
+            document.getElementById('total-classes').textContent = stats.totalClasses;
+            document.getElementById('total-subjects').textContent = stats.totalSubjects;
+            document.getElementById('overall-average').textContent = stats.overallAverage.toFixed(1);
+            
+            // Update subject averages chart
+            updateSubjectAvgChart();
+            
+            // Update class distribution chart
+            updateClassDistributionChart();
+            
+            // Update top students
+            updateTopStudentsList();
+            
+            // Update worst subjects
+            updateWorstSubjectsList();
+        }
+
+        function updateSubjectAvgChart() {
+            const ctx = document.getElementById('subjectAvgChart').getContext('2d');
+            const stats = schoolData.overallStats;
+            
+            const subjects = schoolData.subjects;
+            const averages = subjects.map(subject => stats.subjectAverages[subject]);
+            
+            // Sort by average
+            const sortedIndices = averages.map((_, i) => i)
+                .sort((a, b) => averages[b] - averages[a])
+                .slice(0, 10); // Show top 10
+            
+            const sortedSubjects = sortedIndices.map(i => subjects[i]);
+            const sortedAverages = sortedIndices.map(i => averages[i]);
+            
+            if (charts.subjectAvgChart) {
+                charts.subjectAvgChart.destroy();
+            }
+            
+            charts.subjectAvgChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedSubjects,
+                    datasets: [{
+                        label: 'Ortalama',
+                        data: sortedAverages,
+                        backgroundColor: sortedAverages.map(avg => {
+                            if (avg >= 80) return 'rgba(46, 204, 113, 0.7)';
+                            if (avg >= 60) return 'rgba(52, 152, 219, 0.7)';
+                            return 'rgba(231, 76, 60, 0.7)';
+                        }),
+                        borderColor: sortedAverages.map(avg => {
+                            if (avg >= 80) return 'rgb(46, 204, 113)';
+                            if (avg >= 60) return 'rgb(52, 152, 219)';
+                            return 'rgb(231, 76, 60)';
+                        }),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Ortalama: ${context.raw.toFixed(1)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Ortalama'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Fənnlər'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateClassDistributionChart() {
+            const ctx = document.getElementById('classDistributionChart').getContext('2d');
+            
+            const classCounts = {};
+            schoolData.classes.forEach(className => {
+                classCounts[className] = schoolData.students.filter(s => s.className === className).length;
+            });
+            
+            if (charts.classDistributionChart) {
+                charts.classDistributionChart.destroy();
+            }
+            
+            charts.classDistributionChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(classCounts),
+                    datasets: [{
+                        data: Object.values(classCounts),
+                        backgroundColor: [
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(46, 204, 113, 0.7)',
+                            'rgba(155, 89, 182, 0.7)',
+                            'rgba(241, 196, 15, 0.7)',
+                            'rgba(230, 126, 34, 0.7)',
+                            'rgba(231, 76, 60, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(52, 152, 219)',
+                            'rgb(46, 204, 113)',
+                            'rgb(155, 89, 182)',
+                            'rgb(241, 196, 15)',
+                            'rgb(230, 126, 34)',
+                            'rgb(231, 76, 60)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} şagird (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateTopStudentsList() {
+            const topStudents = [...schoolData.students]
+                .sort((a, b) => b.average - a.average)
+                .slice(0, 5);
+            
+            const container = document.getElementById('top-students-list');
+            container.innerHTML = '';
+            
+            topStudents.forEach((student, index) => {
+                const medal = ['🥇', '🥈', '🥉', '4.', '5.'][index];
+                const studentEl = document.createElement('div');
+                studentEl.className = 'd-flex justify-content-between align-items-center mb-2 p-2 border rounded';
+                studentEl.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <span class="fs-5 me-2">${medal}</span>
+                        <div>
+                            <strong>${student.name}</strong><br>
+                            <small class="text-muted">${student.className} | Ortalama: ${student.average.toFixed(1)}</small>
+                        </div>
+                    </div>
+                    <span class="badge ${getStatusBadgeClass(student.status)}">${student.status}</span>
+                `;
+                container.appendChild(studentEl);
+            });
+        }
+
+        function updateWorstSubjectsList() {
+            const stats = schoolData.overallStats;
+            const subjectAverages = Object.entries(stats.subjectAverages)
+                .sort((a, b) => a[1] - b[1])
+                .slice(0, 3);
+            
+            const container = document.getElementById('worst-subjects-list');
+            container.innerHTML = '';
+            
+            subjectAverages.forEach(([subject, average], index) => {
+                const subjectEl = document.createElement('div');
+                subjectEl.className = 'd-flex justify-content-between align-items-center mb-2 p-2 border rounded';
+                subjectEl.innerHTML = `
+                    <div>
+                        <strong>${subject}</strong><br>
+                        <small class="text-muted">Ümumi ortalama: ${average.toFixed(1)}</small>
+                    </div>
+                    <div class="progress progress-custom" style="width: 100px;">
+                        <div class="progress-bar bg-danger" role="progressbar" 
+                             style="width: ${average}%" 
+                             aria-valuenow="${average}" aria-valuemin="0" aria-valuemax="100">
+                            ${average.toFixed(0)}%
+                        </div>
+                    </div>
+                `;
+                container.appendChild(subjectEl);
+            });
+        }
+
+        function updateFilters() {
+            // Update class filters
+            const classFilters = [
+                'student-class-filter',
+                'subject-class-filter'
+            ];
+            
+            classFilters.forEach(filterId => {
+                const select = document.getElementById(filterId);
+                select.innerHTML = '<option value="all">Hamısı</option>';
+                schoolData.classes.forEach(className => {
+                    const option = document.createElement('option');
+                    option.value = className;
+                    option.textContent = className;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        function updateStudentsView() {
+            const tableBody = document.getElementById('students-table-body');
+            tableBody.innerHTML = '';
+            
+            const classFilter = document.getElementById('student-class-filter').value;
+            const searchTerm = document.getElementById('student-search').value.toLowerCase();
+            const sortBy = document.getElementById('student-sort').value;
+            
+            let filteredStudents = schoolData.students;
+            
+            // Apply filters
+            if (classFilter !== 'all') {
+                filteredStudents = filteredStudents.filter(s => s.className === classFilter);
+            }
+            
+            if (searchTerm) {
+                filteredStudents = filteredStudents.filter(s => 
+                    s.name.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Apply sorting
+            if (sortBy === 'name') {
+                filteredStudents.sort((a, b) => a.name.localeCompare(b.name));
+            } else if (sortBy === 'average_desc') {
+                filteredStudents.sort((a, b) => b.average - a.average);
+            } else if (sortBy === 'average_asc') {
+                filteredStudents.sort((a, b) => a.average - b.average);
+            }
+            
+            // Update count
+            document.getElementById('student-count').textContent = `${filteredStudents.length} şagird`;
+            
+            // Populate table
+            filteredStudents.forEach((student, index) => {
+                const row = document.createElement('tr');
+                const initials = student.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="student-photo">${initials}</div>
+                            <div>${student.name}</div>
+                        </div>
+                    </td>
+                    <td><span class="badge bg-primary">${student.className}</span></td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <strong>${student.average.toFixed(1)}</strong>
+                            <div class="progress progress-custom ms-2" style="width: 60px;">
+                                <div class="progress-bar ${getProgressBarClass(student.average)}" 
+                                     style="width: ${student.average}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <small>${student.bestSubject || '-'}</small><br>
+                        <span class="badge bg-success">${student.bestGrade || 0}</span>
+                    </td>
+                    <td>
+                        <small>${student.worstSubject || '-'}</small><br>
+                        <span class="badge bg-danger">${student.worstGrade || 0}</span>
+                    </td>
+                    <td>
+                        <span class="badge ${getStatusBadgeClass(student.status)}">
+                            ${student.status}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary" 
+                                onclick="viewStudentDetails(${student.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Add event listeners for filters
+            ['student-class-filter', 'student-search', 'student-sort'].forEach(id => {
+                document.getElementById(id).addEventListener('change', updateStudentsView);
+            });
+            document.getElementById('student-search').addEventListener('input', updateStudentsView);
+        }
+
+        function viewStudentDetails(studentId) {
+            const student = schoolData.students.find(s => s.id === studentId);
+            if (!student) return;
+            
+            const modal = new bootstrap.Modal(document.getElementById('studentModal'));
+            document.getElementById('studentModalTitle').textContent = student.name;
+            
+            // Create student details HTML
+            let detailsHTML = `
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div class="student-photo mx-auto" style="width: 80px; height: 80px; font-size: 24px;">
+                            ${student.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        </div>
+                        <h4 class="mt-3">${student.name}</h4>
+                        <span class="badge bg-primary fs-6">${student.className}</span>
+                    </div>
+                    
+                    <div class="col-md-8">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5>Ümumi Orta</h5>
+                                        <h2 class="${getTextColorClass(student.average)}">${student.average.toFixed(1)}</h2>
+                                        <span class="badge ${getStatusBadgeClass(student.status)} fs-6">
+                                            ${student.status}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body text-center">
+                                        <h5>Fənn Sayı</h5>
+                                        <h2>${Object.keys(student.subjects).length}</h2>
+                                        <small>Qiymət verilən</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h5><i class="fas fa-book me-2"></i>Fənn Qiymətləri</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Fənn</th>
+                                <th>Qiymət</th>
+                                <th>Status</th>
+                                <th>Qrafik</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            // Add subject rows
+            Object.entries(student.subjects).forEach(([subject, grade]) => {
+                detailsHTML += `
+                    <tr>
+                        <td>${subject}</td>
+                        <td>
+                            <span class="badge ${getGradeBadgeClass(grade)} fs-6">
+                                ${grade}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge ${grade >= 50 ? 'bg-success' : 'bg-danger'}">
+                                ${grade >= 50 ? 'Uğurlu' : 'Uğursuz'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="progress progress-custom">
+                                <div class="progress-bar ${getProgressBarClass(grade)}" 
+                                     style="width: ${grade}%"></div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            detailsHTML += `
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6><i class="fas fa-trophy text-success me-2"></i>Ən Yaxşı Fənn</h6>
+                                <h4>${student.bestSubject}</h4>
+                                <span class="badge bg-success fs-5">${student.bestGrade}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6><i class="fas fa-exclamation-triangle text-danger me-2"></i>Ən Aşağı Fənn</h6>
+                                <h4>${student.worstSubject}</h4>
+                                <span class="badge bg-danger fs-5">${student.worstGrade}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('studentModalBody').innerHTML = detailsHTML;
+            modal.show();
+        }
+
+        function updateSubjectsView() {
+            const tableBody = document.getElementById('subjects-table-body');
+            tableBody.innerHTML = '';
+            
+            const classFilter = document.getElementById('subject-class-filter').value;
+            const sortBy = document.getElementById('subject-sort').value;
+            
+            let studentsForAnalysis = schoolData.students;
+            if (classFilter !== 'all') {
+                studentsForAnalysis = studentsForAnalysis.filter(s => s.className === classFilter);
+            }
+            
+            // Calculate subject statistics
+            const subjectStats = {};
+            schoolData.subjects.forEach(subject => {
+                const grades = studentsForAnalysis
+                    .map(s => s.subjects[subject])
+                    .filter(g => !isNaN(g));
+                
+                if (grades.length === 0) return;
+                
+                const average = grades.reduce((a, b) => a + b, 0) / grades.length;
+                const max = Math.max(...grades);
+                const min = Math.min(...grades);
+                const successRate = (grades.filter(g => g >= 50).length / grades.length) * 100;
+                
+                // Calculate class-specific averages
+                const classAAvg = schoolData.students
+                    .filter(s => s.className === '5A')
+                    .map(s => s.subjects[subject])
+                    .filter(g => !isNaN(g));
+                const classBAvg = schoolData.students
+                    .filter(s => s.className === '5B')
+                    .map(s => s.subjects[subject])
+                    .filter(g => !isNaN(g));
+                
+                subjectStats[subject] = {
+                    average,
+                    max,
+                    min,
+                    successRate,
+                    classAAvg: classAAvg.length > 0 ? 
+                        classAAvg.reduce((a, b) => a + b, 0) / classAAvg.length : 0,
+                    classBAvg: classBAvg.length > 0 ? 
+                        classBAvg.reduce((a, b) => a + b, 0) / classBAvg.length : 0
+                };
+            });
+            
+            // Convert to array and sort
+            let subjectsArray = Object.entries(subjectStats);
+            
+            if (sortBy === 'name') {
+                subjectsArray.sort((a, b) => a[0].localeCompare(b[0]));
+            } else if (sortBy === 'average_desc') {
+                subjectsArray.sort((a, b) => b[1].average - a[1].average);
+            } else if (sortBy === 'average_asc') {
+                subjectsArray.sort((a, b) => a[1].average - b[1].average);
+            }
+            
+            // Populate table
+            subjectsArray.forEach(([subject, stats], index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${subject}</strong></td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <strong>${stats.average.toFixed(1)}</strong>
+                            <div class="progress progress-custom ms-2" style="width: 60px;">
+                                <div class="progress-bar ${getProgressBarClass(stats.average)}" 
+                                     style="width: ${stats.average}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge bg-primary">${stats.classAAvg.toFixed(1)}</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-info">${stats.classBAvg.toFixed(1)}</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-success">${stats.max.toFixed(1)}</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-danger">${stats.min.toFixed(1)}</span>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="progress progress-custom me-2" style="width: 80px;">
+                                <div class="progress-bar ${stats.successRate >= 70 ? 'bg-success' : stats.successRate >= 50 ? 'bg-warning' : 'bg-danger'}" 
+                                     style="width: ${stats.successRate}%"></div>
+                            </div>
+                            <span>${stats.successRate.toFixed(1)}%</span>
+                        </div>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-secondary" 
+                                onclick="viewSubjectChart('${subject}')">
+                            <i class="fas fa-chart-bar"></i>
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Update subject comparison chart
+            updateSubjectComparisonChart(subjectsArray);
+            
+            // Add event listeners
+            ['subject-class-filter', 'subject-sort'].forEach(id => {
+                document.getElementById(id).addEventListener('change', updateSubjectsView);
+            });
+        }
+
+        function updateSubjectComparisonChart(subjectsArray) {
+            const ctx = document.getElementById('subjectComparisonChart').getContext('2d');
+            
+            const labels = subjectsArray.slice(0, 8).map(([subject]) => subject);
+            const averages = subjectsArray.slice(0, 8).map(([, stats]) => stats.average);
+            const classAAverages = subjectsArray.slice(0, 8).map(([, stats]) => stats.classAAvg);
+            const classBAverages = subjectsArray.slice(0, 8).map(([, stats]) => stats.classBAvg);
+            
+            if (charts.subjectComparisonChart) {
+                charts.subjectComparisonChart.destroy();
+            }
+            
+            charts.subjectComparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Ümumi Orta',
+                            data: averages,
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                            borderColor: 'rgb(52, 152, 219)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '5A Ortalaması',
+                            data: classAAverages,
+                            backgroundColor: 'rgba(46, 204, 113, 0.7)',
+                            borderColor: 'rgb(46, 204, 113)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '5B Ortalaması',
+                            data: classBAverages,
+                            backgroundColor: 'rgba(155, 89, 182, 0.7)',
+                            borderColor: 'rgb(155, 89, 182)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Ortalama'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function viewSubjectChart(subjectName) {
+            alert(`"${subjectName}" fənni üçün ətraflı qrafik göstəriləcək. (Bu hissə inkişaf etdirilir)`);
+        }
+
+        function updateClassesView() {
+            const tableBody = document.getElementById('classes-table-body');
+            tableBody.innerHTML = '';
+            
+            // Calculate class statistics
+            const classStats = {};
+            schoolData.classes.forEach(className => {
+                const classStudents = schoolData.students.filter(s => s.className === className);
+                const averages = classStudents.map(s => s.average).filter(a => !isNaN(a));
+                const average = averages.length > 0 ? 
+                    averages.reduce((a, b) => a + b, 0) / averages.length : 0;
+                
+                // Calculate subject averages for this class
+                const subjectAverages = {};
+                schoolData.subjects.forEach(subject => {
+                    const grades = classStudents.map(s => s.subjects[subject]).filter(g => !isNaN(g));
+                    subjectAverages[subject] = grades.length > 0 ?
+                        grades.reduce((a, b) => a + b, 0) / grades.length : 0;
+                });
+                
+                // Find best and worst subjects
+                const subjectEntries = Object.entries(subjectAverages);
+                subjectEntries.sort((a, b) => b[1] - a[1]);
+                
+                const bestSubject = subjectEntries[0];
+                const worstSubject = subjectEntries[subjectEntries.length - 1];
+                
+                // Find top student
+                const topStudent = [...classStudents].sort((a, b) => b.average - a.average)[0];
+                
+                // Calculate success rate
+                const successRate = (classStudents.filter(s => s.average >= 50).length / classStudents.length) * 100;
+                
+                classStats[className] = {
+                    studentCount: classStudents.length,
+                    average,
+                    bestSubject: bestSubject ? {name: bestSubject[0], average: bestSubject[1]} : null,
+                    worstSubject: worstSubject ? {name: worstSubject[0], average: worstSubject[1]} : null,
+                    topStudent: topStudent ? {name: topStudent.name, average: topStudent.average} : null,
+                    successRate
+                };
+            });
+            
+            // Populate table
+            Object.entries(classStats).forEach(([className, stats]) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <strong>${className}</strong>
+                    </td>
+                    <td>
+                        <span class="badge bg-primary fs-6">${stats.studentCount}</span>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <strong>${stats.average.toFixed(1)}</strong>
+                            <div class="progress progress-custom ms-2" style="width: 60px;">
+                                <div class="progress-bar ${getProgressBarClass(stats.average)}" 
+                                     style="width: ${stats.average}%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <small>${stats.bestSubject?.name || '-'}</small><br>
+                        <span class="badge bg-success">${stats.bestSubject?.average?.toFixed(1) || 0}</span>
+                    </td>
+                    <td>
+                        <small>${stats.worstSubject?.name || '-'}</small><br>
+                        <span class="badge bg-danger">${stats.worstSubject?.average?.toFixed(1) || 0}</span>
+                    </td>
+                    <td>
+                        <small>${stats.topStudent?.name || '-'}</small><br>
+                        <span class="badge bg-info">${stats.topStudent?.average?.toFixed(1) || 0}</span>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="progress progress-custom me-2" style="width: 80px;">
+                                <div class="progress-bar ${stats.successRate >= 70 ? 'bg-success' : stats.successRate >= 50 ? 'bg-warning' : 'bg-danger'}" 
+                                     style="width: ${stats.successRate}%"></div>
+                            </div>
+                            <span>${stats.successRate.toFixed(1)}%</span>
+                        </div>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Update class stats display
+            updateClassStatsDisplay(classStats);
+            
+            // Update class average chart
+            updateClassAvgChart(classStats);
+        }
+
+        function updateClassStatsDisplay(classStats) {
+            const container = document.getElementById('class-stats');
+            container.innerHTML = '';
+            
+            Object.entries(classStats).forEach(([className, stats]) => {
+                const statCard = document.createElement('div');
+                statCard.className = 'mb-3 p-3 border rounded';
+                statCard.innerHTML = `
+                    <h5>${className} Sinifi</h5>
+                    <div class="row">
+                        <div class="col-6">
+                            <small>Şagird sayı:</small><br>
+                            <strong>${stats.studentCount}</strong>
+                        </div>
+                        <div class="col-6">
+                            <small>Ortalama:</small><br>
+                            <strong class="${getTextColorClass(stats.average)}">${stats.average.toFixed(1)}</strong>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-12">
+                            <small>Uğur nisbəti:</small>
+                            <div class="progress progress-custom mt-1">
+                                <div class="progress-bar ${stats.successRate >= 70 ? 'bg-success' : stats.successRate >= 50 ? 'bg-warning' : 'bg-danger'}" 
+                                     style="width: ${stats.successRate}%">
+                                    ${stats.successRate.toFixed(1)}%
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(statCard);
+            });
+        }
+
+        function updateClassAvgChart(classStats) {
+            const ctx = document.getElementById('classAvgChart').getContext('2d');
+            
+            const classNames = Object.keys(classStats);
+            const averages = classNames.map(className => classStats[className].average);
+            
+            if (charts.classAvgChart) {
+                charts.classAvgChart.destroy();
+            }
+            
+            charts.classAvgChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: classNames,
+                    datasets: [{
+                        label: 'Sinif Ortalaması',
+                        data: averages,
+                        backgroundColor: averages.map(avg => {
+                            if (avg >= 80) return 'rgba(46, 204, 113, 0.7)';
+                            if (avg >= 60) return 'rgba(52, 152, 219, 0.7)';
+                            return 'rgba(231, 76, 60, 0.7)';
+                        }),
+                        borderColor: averages.map(avg => {
+                            if (avg >= 80) return 'rgb(46, 204, 113)';
+                            if (avg >= 60) return 'rgb(52, 152, 219)';
+                            return 'rgb(231, 76, 60)';
+                        }),
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Ortalama'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Siniflər'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateComparisonView() {
+            const tableBody = document.getElementById('comparison-table-body');
+            tableBody.innerHTML = '';
+            
+            // Get class A and B data
+            const classAStudents = schoolData.students.filter(s => s.className === '5A');
+            const classBStudents = schoolData.students.filter(s => s.className === '5B');
+            
+            if (classAStudents.length === 0 || classBStudents.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center">Müqayisə üçün kifayət qədər məlumat yoxdur</td></tr>';
+                return;
+            }
+            
+            // Calculate comparison metrics
+            const metrics = [
+                {
+                    name: 'Şagird Sayı',
+                    classA: classAStudents.length,
+                    classB: classBStudents.length,
+                    isHigherBetter: false
+                },
+                {
+                    name: 'Ümumi Orta',
+                    classA: calculateAverage(classAStudents.map(s => s.average)),
+                    classB: calculateAverage(classBStudents.map(s => s.average)),
+                    isHigherBetter: true
+                },
+                {
+                    name: 'Uğur Nisbəti (%)',
+                    classA: (classAStudents.filter(s => s.average >= 50).length / classAStudents.length * 100),
+                    classB: (classBStudents.filter(s => s.average >= 50).length / classBStudents.length * 100),
+                    isHigherBetter: true
+                },
+                {
+                    name: 'Əla Şagird (%)',
+                    classA: (classAStudents.filter(s => s.average >= 85).length / classAStudents.length * 100),
+                    classB: (classBStudents.filter(s => s.average >= 85).length / classBStudents.length * 100),
+                    isHigherBetter: true
+                },
+                {
+                    name: 'Zəif Şagird (%)',
+                    classA: (classAStudents.filter(s => s.average < 50).length / classAStudents.length * 100),
+                    classB: (classBStudents.filter(s => s.average < 50).length / classBStudents.length * 100),
+                    isHigherBetter: false
+                }
+            ];
+            
+            // Add subject comparisons (top 5 subjects by difference)
+            const subjectComparisons = [];
+            schoolData.subjects.forEach(subject => {
+                const classAAvg = calculateAverage(classAStudents.map(s => s.subjects[subject]));
+                const classBAvg = calculateAverage(classBStudents.map(s => s.subjects[subject]));
+                
+                if (!isNaN(classAAvg) && !isNaN(classBAvg)) {
+                    subjectComparisons.push({
+                        name: subject,
+                        classA: classAAvg,
+                        classB: classBAvg,
+                        isHigherBetter: true
+                    });
+                }
+            });
+            
+            // Sort by absolute difference and take top 5
+            subjectComparisons.sort((a, b) => 
+                Math.abs(b.classA - b.classB) - Math.abs(a.classA - a.classB)
+            ).slice(0, 5).forEach(subject => {
+                metrics.push(subject);
+            });
+            
+            // Populate table
+            metrics.forEach(metric => {
+                const diff = metric.classA - metric.classB;
+                const winner = diff > 0 ? '5A' : diff < 0 ? '5B' : 'Bərabər';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${metric.name}</strong></td>
+                    <td>${metric.classA.toFixed(1)}</td>
+                    <td>${metric.classB.toFixed(1)}</td>
+                    <td class="${diff > 0 ? 'text-success' : diff < 0 ? 'text-danger' : ''}">
+                        ${diff > 0 ? '+' : ''}${diff.toFixed(1)}
+                    </td>
+                    <td>
+                        <span class="badge ${winner === '5A' ? 'bg-primary' : winner === '5B' ? 'bg-info' : 'bg-secondary'}">
+                            ${winner}
+                        </span>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Update comparison charts
+            updateComparisonCharts(metrics);
+        }
+
+        function updateComparisonCharts(metrics) {
+            // Class comparison chart
+            const compareCtx = document.getElementById('classCompareChart').getContext('2d');
+            const progressCtx = document.getElementById('subjectProgressChart').getContext('2d');
+            
+            // Prepare data for class comparison chart
+            const mainMetrics = metrics.slice(0, 5);
+            const labels = mainMetrics.map(m => m.name);
+            const classAData = mainMetrics.map(m => m.classA);
+            const classBData = mainMetrics.map(m => m.classB);
+            
+            if (charts.classCompareChart) {
+                charts.classCompareChart.destroy();
+            }
+            
+            charts.classCompareChart = new Chart(compareCtx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: '5A',
+                            data: classAData,
+                            backgroundColor: 'rgba(52, 152, 219, 0.7)',
+                            borderColor: 'rgb(52, 152, 219)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: '5B',
+                            data: classBData,
+                            backgroundColor: 'rgba(155, 89, 182, 0.7)',
+                            borderColor: 'rgb(155, 89, 182)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // Subject progress chart (showing subject differences)
+            const subjectMetrics = metrics.slice(5);
+            if (subjectMetrics.length > 0) {
+                const subjectLabels = subjectMetrics.map(m => m.name);
+                const differences = subjectMetrics.map(m => m.classA - m.classB);
+                
+                if (charts.subjectProgressChart) {
+                    charts.subjectProgressChart.destroy();
+                }
+                
+                charts.subjectProgressChart = new Chart(progressCtx, {
+                    type: 'line',
+                    data: {
+                        labels: subjectLabels,
+                        datasets: [{
+                            label: '5A - 5B Fərqi',
+                            data: differences,
+                            borderColor: 'rgb(231, 76, 60)',
+                            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                title: {
+                                    display: true,
+                                    text: 'Fərq (5A - 5B)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function calculateAverage(values) {
+            const validValues = values.filter(v => !isNaN(v));
+            if (validValues.length === 0) return 0;
+            return validValues.reduce((a, b) => a + b, 0) / validValues.length;
+        }
+
+        // Helper functions
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case 'Əla': return 'bg-success';
+                case 'Yaxşı': return 'bg-primary';
+                case 'Kafi': return 'bg-warning';
+                case 'Zəif': return 'bg-danger';
+                default: return 'bg-secondary';
+            }
+        }
+
+        function getProgressBarClass(value) {
+            if (value >= 80) return 'bg-success';
+            if (value >= 60) return 'bg-primary';
+            if (value >= 50) return 'bg-warning';
+            return 'bg-danger';
+        }
+
+        function getTextColorClass(value) {
+            if (value >= 80) return 'text-success';
+            if (value >= 60) return 'text-primary';
+            if (value >= 50) return 'text-warning';
+            return 'text-danger';
+        }
+
+        function getGradeBadgeClass(grade) {
+            if (grade >= 90) return 'bg-success';
+            if (grade >= 80) return 'bg-primary';
+            if (grade >= 70) return 'bg-info';
+            if (grade >= 60) return 'bg-warning';
+            if (grade >= 50) return 'bg-secondary';
+            return 'bg-danger';
+        }
+
+        // Export functions
+        function exportPDF() {
+            alert('PDF ixracı hazırlanır... Bu funksiya tam hazır deyil. Məlumatları Excel formatında ixrac edə bilərsiniz.');
+        }
+
+        function exportExcel() {
+            if (!currentData) {
+                alert('Əvvəlcə Excel faylı yükləyin!');
+                return;
+            }
+            
+            try {
+                // Create analysis worksheet
+                const analysisData = [
+                    ['Məktəb Rapor Sistemi - Analiz Nəticələri'],
+                    ['Rapor tarixi:', new Date().toLocaleDateString('az-AZ')],
+                    ['Ümumi şagird sayı:', schoolData.students.length],
+                    ['Sinif sayı:', schoolData.classes.length],
+                    ['Fənn sayı:', schoolData.subjects.length],
+                    ['Ümumi ortalama:', schoolData.overallStats.overallAverage.toFixed(2)],
+                    [],
+                    ['Sinif Statistikası'],
+                    ['Sinif', 'Şagird sayı', 'Ortalama', 'Uğur nisbəti (%)']
+                ];
+                
+                // Add class stats
+                schoolData.classes.forEach(className => {
+                    const classStudents = schoolData.students.filter(s => s.className === className);
+                    const average = calculateAverage(classStudents.map(s => s.average));
+                    const successRate = (classStudents.filter(s => s.average >= 50).length / classStudents.length * 100);
+                    
+                    analysisData.push([
+                        className,
+                        classStudents.length,
+                        average.toFixed(2),
+                        successRate.toFixed(2)
+                    ]);
+                });
+                
+                analysisData.push([], ['Fənn Statistikası']);
+                analysisData.push(['Fənn', 'Ümumi orta', '5A orta', '5B orta', 'Ən yüksək', 'Ən aşağı', 'Uğur nisbəti (%)']);
+                
+                // Add subject stats
+                schoolData.subjects.forEach(subject => {
+                    const grades = schoolData.students.map(s => s.subjects[subject]).filter(g => !isNaN(g));
+                    const classAGrades = schoolData.students.filter(s => s.className === '5A').map(s => s.subjects[subject]).filter(g => !isNaN(g));
+                    const classBGrades = schoolData.students.filter(s => s.className === '5B').map(s => s.subjects[subject]).filter(g => !isNaN(g));
+                    
+                    if (grades.length > 0) {
+                        const average = calculateAverage(grades);
+                        const classAAvg = classAGrades.length > 0 ? calculateAverage(classAGrades) : 0;
+                        const classBAvg = classBGrades.length > 0 ? calculateAverage(classBGrades) : 0;
+                        const max = Math.max(...grades);
+                        const min = Math.min(...grades);
+                        const successRate = (grades.filter(g => g >= 50).length / grades.length * 100);
+                        
+                        analysisData.push([
+                            subject,
+                            average.toFixed(2),
+                            classAAvg.toFixed(2),
+                            classBAvg.toFixed(2),
+                            max,
+                            min,
+                            successRate.toFixed(2)
+                        ]);
+                    }
+                });
+                
+                // Create workbook
+                const wb = XLSX.utils.book_new();
+                const ws1 = XLSX.utils.aoa_to_sheet(analysisData);
+                const ws2 = XLSX.utils.json_to_sheet(schoolData.students.map(s => ({
+                    'Şagird': s.name,
+                    'Sinif': s.className,
+                    'Ümumi orta': s.average.toFixed(2),
+                    'Status': s.status,
+                    ...s.subjects
+                })));
+                
+                XLSX.utils.book_append_sheet(wb, ws1, 'Analiz');
+                XLSX.utils.book_append_sheet(wb, ws2, 'Şagirdlər');
+                
+                // Save file
+                XLSX.writeFile(wb, `Mekteb_Raporu_${new Date().toISOString().slice(0,10)}.xlsx`);
+                
+                alert('Excel faylı uğurla yükləndi!');
+                
+            } catch (error) {
+                alert('Excel ixracı zamanı xəta: ' + error.message);
+            }
+        }
+
+        function exportCharts() {
+            alert('Qrafiklərin ixracı hazırlanır... Bu funksiya tam hazır deyil.');
+        }
+
+        function printStudentReport() {
+            window.print();
+        }
+
+        // Load sample data on page load for demo
+        window.onload = function() {
+            // You can load sample data here if needed
+            console.log('Məktəb Rapor Sistemi hazırdır! Excel faylını yükləyin.');
+            
+            // Set current date
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString('az-AZ', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        };
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
