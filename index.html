@@ -970,6 +970,8 @@
 
         .ai-chat-input-area {
             padding: 15px;
+            padding-bottom: 25px;
+            /* Lift text box up */
             background: var(--card-bg);
             border-top: 1px solid var(--border-color);
             display: flex;
@@ -1795,8 +1797,8 @@
                     <div class="ai-chat-input-area">
                         <input type="text" class="ai-chat-input" id="ai-input" placeholder="Sualınızı yazın..."
                             onkeypress="if(event.key === 'Enter') handleAISend()">
-                        <button class="btn btn-primary btn-sm rounded-circle" onclick="handleAISend()"><i
-                                class="fas fa-paper-plane"></i></button>
+                        <button class="btn text-white rounded-circle" style="background-color: #00adba;"
+                            onclick="handleAISend()"><i class="fas fa-arrow-right"></i></button>
                     </div>
                 </div>
             </div>
@@ -2222,8 +2224,20 @@
 
         function toggleAIChat() {
             const window = document.getElementById('ai-chat-window');
+            const btn = document.getElementById('ai-chat-toggle');
             const isVisible = window.style.display === 'flex';
-            window.style.display = isVisible ? 'none' : 'flex';
+
+            if (isVisible) {
+                window.style.display = 'none';
+                if (btn) btn.style.display = 'flex'; // Show button when chat closed
+            } else {
+                window.style.display = 'flex';
+                // On mobile, hide the floating button so it doesn't overlap
+                if (document.documentElement.clientWidth <= 576) {
+                    if (btn) btn.style.display = 'none';
+                }
+                setTimeout(() => document.getElementById('ai-input').focus(), 100);
+            }
         }
 
         function sendAlSuggestion(text) {
