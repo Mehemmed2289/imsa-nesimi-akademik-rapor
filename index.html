@@ -1407,6 +1407,38 @@
         </div>
     </div>
 
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-compact-nav d-md-none" id="mobile-nav">
+        <button class="mobile-nav-btn active" data-section="dashboard">
+            <i class="fas fa-tachometer-alt"></i>
+            <span>Ümumi</span>
+        </button>
+        <button class="mobile-nav-btn" data-section="students">
+            <i class="fas fa-users"></i>
+            <span>Şagird</span>
+        </button>
+        <button class="mobile-nav-btn" data-section="attendance">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Davam</span>
+        </button>
+        <button class="mobile-nav-btn" data-section="subjects">
+            <i class="fas fa-book"></i>
+            <span>Fənn</span>
+        </button>
+        <button class="mobile-nav-btn" data-section="classes">
+            <i class="fas fa-chalkboard"></i>
+            <span>Sinif</span>
+        </button>
+        <button class="mobile-nav-btn" data-section="comparison">
+            <i class="fas fa-chart-bar"></i>
+            <span>Müqayisə</span>
+        </button>
+        <button class="mobile-nav-btn" data-section="export">
+            <i class="fas fa-file"></i>
+            <span>Hesabat</span>
+        </button>
+    </div>
+
     <script>
         // =============================================
         // GÖMÜLÜ EXCEL VERİLERİ
@@ -1904,10 +1936,7 @@
 
         // Mobil nav pozisyonunu ayarla
         function adjustMobileNavPosition() {
-            if (window.innerWidth <= 768) {
-                const navbarHeight = document.querySelector('.navbar').offsetHeight;
-                document.getElementById('mobile-nav').style.top = `${navbarHeight}px`;
-            }
+            // Disabled: Using CSS-only bottom navigation
         }
 
         // =============================================
