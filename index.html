@@ -1146,6 +1146,20 @@
                                     <option value="average_asc">Ortalamaya görə (artan)</option>
                                 </select>
                             </div>
+                            <div class="col-md-6 mt-3">
+                                <label for="subject-detailed-filter" class="form-label">Fənn Detalları:</label>
+                                <select id="subject-detailed-filter" class="form-select">
+                                    <option value="all">Bütün Fənlər (İcmal)</option>
+                                    <!-- Options will be populated -->
+                                </select>
+                            </div>
+                            <div class="col-md-6 mt-3 d-flex align-items-end">
+                                <div class="form-check form-switch w-100 p-3 border rounded bg-white">
+                                    <input class="form-check-input" type="checkbox" id="subject-merge-toggle">
+                                    <label class="form-check-label fw-bold" for="subject-merge-toggle">Paralel Sinifləri
+                                        Birləşdir</label>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1324,7 +1338,15 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <i class="fas fa-table me-2"></i>Detallı Müqayisə
+                            <div class="d-flex justify-content-between align-items-center w-100">
+                                <span><i class="fas fa-table me-2"></i>Detallı Müqayisə</span>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="comparison-merge-toggle"
+                                        checked>
+                                    <label class="form-check-label" for="comparison-merge-toggle">Paralel Sinifləri
+                                        Birləşdir</label>
+                                </div>
+                            </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -1781,19 +1803,9 @@
                 link.addEventListener('click', function (e) {
                     e.preventDefault();
 
-                    // Update active link
-                    document.querySelectorAll('.nav-link, .mobile-nav-btn, .modern-nav-btn').forEach(l => {
-                        l.classList.remove('active');
-                    });
-                    this.classList.add('active');
-
                     // Show selected section
-                    const section = this.getAttribute('data-section');
-                    document.querySelectorAll('.content-section').forEach(sec => {
-                        sec.style.display = 'none';
-                    });
-
-                    document.getElementById(`${section}-section`).style.display = 'block';
+                    const sectionName = this.getAttribute('data-section');
+                    showSection(`${sectionName}-section`);
 
                     // Mobil cihazlarda yumuşak kaydırma
                     if (window.innerWidth <= 768) {
@@ -1847,14 +1859,30 @@
             });
 
             // Fənn Filtreleri
-            ['subject-class-filter', 'subject-grade-filter', 'subject-sort'].forEach(id => {
+            const subjectFilters = ['subject-class-filter', 'subject-grade-filter', 'subject-sort', 'subject-detailed-filter', 'subject-merge-toggle'];
+            subjectFilters.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('change', updateSubjectsView);
             });
 
+            // Populate Subject Filter
+            const subjectSelect = document.getElementById('subject-detailed-filter');
+            if (subjectSelect && schoolData.subjects.length > 0) {
+                schoolData.subjects.sort().forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s;
+                    opt.textContent = s;
+                    subjectSelect.appendChild(opt);
+                });
+            }
+
             // Merged Class Toggle
             const mergeToggle = document.getElementById('merge-classes-toggle');
             if (mergeToggle) mergeToggle.addEventListener('change', updateClassesView);
+
+            // Comparison Merge Toggle
+            const comparisonToggle = document.getElementById('comparison-merge-toggle');
+            if (comparisonToggle) comparisonToggle.addEventListener('change', updateComparisonView);
         }
 
         // =============================================
@@ -1954,6 +1982,41 @@
                     updateSubjectsView();
                 }, 100);
             }
+        }
+
+        // =============================================
+        // NAVIGASYON MANTIĞI
+        // =============================================
+        function showSection(sectionId) {
+            // Tüm bölmeleri gizle
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Hedef bölmeyi göster
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+
+                // Bölmeye özel güncellemeleri tetikle
+                if (sectionId === 'comparison-section') updateComparisonView();
+                if (sectionId === 'subjects-section') updateSubjectsView();
+                if (sectionId === 'classes-section') updateClassesView();
+                if (sectionId === 'export-section') generateHeatmap();
+                if (sectionId === 'dashboard-section') updateDashboard();
+                if (sectionId === 'attendance-section') updateAttendanceView();
+                if (sectionId === 'students-section') updateStudentsView();
+            }
+
+            // Aktif linkleri güncelle (nav barlar için)
+            const sectionName = sectionId.replace('-section', '');
+            document.querySelectorAll('.nav-link, .mobile-nav-btn, .modern-nav-btn').forEach(btn => {
+                if (btn.getAttribute('data-section') === sectionName) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
         }
 
         // =============================================
@@ -2797,94 +2860,183 @@
         // =============================================
         // FƏNN GÖRÜNÜMÜNÜ GÜNCELLE
         // =============================================
+        // =============================================
+        // FƏNN GÖRÜNÜMÜNÜ GÜNCELLE
+        // =============================================
         function updateSubjectsView() {
             const tableBody = document.getElementById('subjects-table-body');
+            const tableHead = document.querySelector('#subjects-table thead tr');
             tableBody.innerHTML = '';
 
-            const classFilter = document.getElementById('subject-class-filter').value;
-            const gradeFilter = document.getElementById('subject-grade-filter').value;
+            const detailedFilter = document.getElementById('subject-detailed-filter').value;
+            const isMerged = document.getElementById('subject-merge-toggle').checked;
             const sortBy = document.getElementById('subject-sort').value;
 
-            let filteredSubjects = schoolData.subjects;
             const stats = schoolData.overallStats;
 
-            // En iyi ve en kötü dersleri bul
-            let bestSubject = '';
-            let bestAvg = 0;
-            let worstSubject = '';
-            let worstAvg = 100;
+            if (detailedFilter === 'all') {
+                // VIEW 1: ALL SUBJECTS OVERVIEW (Original View)
+                // Restore headers if needed
+                tableHead.innerHTML = `
+                    <th>Fənn Adı</th>
+                    <th>Ümumi Orta</th>
+                    <th>2-ci</th>
+                    <th>3-cü</th>
+                    <th>4-cü</th>
+                    <th>5-ci</th>
+                    <th>6-cı</th>
+                    <th>7-ci</th>
+                    <th>8-ci</th>
+                    <th>9-cu</th>
+                    <th>Uğur Faizi</th>
+                `;
 
-            schoolData.subjects.forEach(subject => {
-                const avg = stats.subjectAverages[subject] || 0;
-                if (avg > bestAvg) {
-                    bestAvg = avg;
-                    bestSubject = subject;
-                }
-                if (avg < worstAvg) {
-                    worstAvg = avg;
-                    worstSubject = subject;
-                }
-            });
+                schoolData.subjects.forEach(subject => {
+                    const avg = stats.subjectAverages[subject] || 0;
+                    const row = document.createElement('tr');
 
-            // Kartları güncelle
-            document.getElementById('best-subject').textContent = bestSubject;
-            document.getElementById('worst-subject').textContent = worstSubject;
-            document.getElementById('subject-total-count').textContent = filteredSubjects.length;
+                    let gradeCells = '';
+                    let successCount = 0;
+                    let totalCount = 0;
 
-            // Tabloyu doldur
-            filteredSubjects.forEach(subject => {
-                const avg = stats.subjectAverages[subject] || 0;
-                const row = document.createElement('tr');
+                    for (let grade = 2; grade <= 9; grade++) {
+                        const gradeAvg = stats.subjectAverages[subject + '_byGrade']?.[grade];
+                        const val = gradeAvg !== undefined ? gradeAvg.toFixed(1) : '-';
+                        gradeCells += `<td>${val}</td>`;
 
-                // Sınıf seviyesine göre ortalamaları hesapla
-                let grade2 = '-', grade3 = '-', grade4 = '-', grade5 = '-',
-                    grade6 = '-', grade7 = '-', grade8 = '-', grade9 = '-';
-
-                for (let grade = 2; grade <= 9; grade++) {
-                    const gradeAvg = stats.subjectAverages[subject + '_byGrade']?.[grade];
-                    if (gradeAvg !== undefined) {
-                        switch (grade) {
-                            case 2: grade2 = gradeAvg.toFixed(1); break;
-                            case 3: grade3 = gradeAvg.toFixed(1); break;
-                            case 4: grade4 = gradeAvg.toFixed(1); break;
-                            case 5: grade5 = gradeAvg.toFixed(1); break;
-                            case 6: grade6 = gradeAvg.toFixed(1); break;
-                            case 7: grade7 = gradeAvg.toFixed(1); break;
-                            case 8: grade8 = gradeAvg.toFixed(1); break;
-                            case 9: grade9 = gradeAvg.toFixed(1); break;
+                        if (gradeAvg !== undefined) {
+                            if (gradeAvg >= 50) successCount++;
+                            totalCount++;
                         }
                     }
+
+                    // Simple success rate calc based on class averages (can be improved)
+                    const successRate = totalCount > 0 ? Math.round((successCount / totalCount) * 100) : 0;
+
+                    row.innerHTML = `
+                        <td><strong>${subject}</strong></td>
+                        <td><span class="badge ${getGradeBadgeClass(avg)}">${avg.toFixed(1)}</span></td>
+                        ${gradeCells}
+                        <td>
+                            <div class="progress progress-custom" style="height: 20px;">
+                                <div class="progress-bar ${successRate >= 80 ? 'bg-success' : successRate >= 60 ? 'bg-primary' : 'bg-warning'}" 
+                                     style="width: ${successRate}%"></div>
+                            </div>
+                            <small class="d-block text-center mt-1">${successRate}%</small>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                updateSubjectComparisonChart(); // Default chart
+
+            } else {
+                // VIEW 2: SINGLE SUBJECT BREAKDOWN BY CLASS
+                const subjectName = detailedFilter;
+
+                // Update Headers
+                tableHead.innerHTML = `
+                    <th>Sinif</th>
+                    <th>Şagird Sayı</th>
+                    <th>Ortalama</th>
+                    <th>Status</th>
+                    <th>Max/Min</th>
+                `;
+
+                let classesData = [];
+
+                if (isMerged) {
+                    // Merged: Group by Grade Level (2, 3, 4...)
+                    for (let grade = 2; grade <= 9; grade++) {
+                        const gradeStudents = schoolData.students.filter(s => s.gradeLevel === grade && s.subjects[subjectName] !== undefined);
+                        if (gradeStudents.length > 0) {
+                            const avg = gradeStudents.reduce((a, s) => a + s.subjects[subjectName], 0) / gradeStudents.length;
+                            const grades = gradeStudents.map(s => s.subjects[subjectName]);
+                            classesData.push({
+                                className: `${grade}-ci siniflər`,
+                                count: gradeStudents.length,
+                                average: avg,
+                                max: Math.max(...grades),
+                                min: Math.min(...grades)
+                            });
+                        }
+                    }
+                } else {
+                    // Unmerged: Show individual classes (2A, 2B...)
+                    schoolData.classes.forEach(c => {
+                        const classStudents = schoolData.students.filter(s => s.className === c && s.subjects[subjectName] !== undefined);
+                        if (classStudents.length > 0) {
+                            const avg = classStudents.reduce((a, s) => a + s.subjects[subjectName], 0) / classStudents.length;
+                            const grades = classStudents.map(s => s.subjects[subjectName]);
+                            classesData.push({
+                                className: c,
+                                count: classStudents.length,
+                                average: avg,
+                                max: Math.max(...grades),
+                                min: Math.min(...grades)
+                            });
+                        }
+                    });
                 }
 
-                // Başarı oranını hesapla (%50 üstü)
-                const allGrades = schoolData.students.map(s => s.subjects[subject]).filter(g => !isNaN(g));
-                const successRate = allGrades.length > 0 ?
-                    (allGrades.filter(g => g >= 50).length / allGrades.length * 100).toFixed(1) : '0.0';
+                // Sort Logic
+                if (sortBy === 'average_desc') classesData.sort((a, b) => b.average - a.average);
+                else if (sortBy === 'average_asc') classesData.sort((a, b) => a.average - b.average);
+                else classesData.sort((a, b) => a.className.localeCompare(b.className)); // Name sort
 
-                row.innerHTML = `
-                    <td><strong>${subject}</strong></td>
-                    <td><span class="badge ${getGradeBadgeClass(avg)}">${avg.toFixed(1)}</span></td>
-                    <td>${grade2}</td>
-                    <td>${grade3}</td>
-                    <td>${grade4}</td>
-                    <td>${grade5}</td>
-                    <td>${grade6}</td>
-                    <td>${grade7}</td>
-                    <td>${grade8}</td>
-                    <td>${grade9}</td>
-                    <td>
-                        <div class="progress progress-custom" style="height: 20px;">
-                            <div class="progress-bar ${successRate >= 80 ? 'bg-success' : successRate >= 60 ? 'bg-primary' : 'bg-warning'}" 
-                                 style="width: ${successRate}%"></div>
-                        </div>
-                        <small class="d-block text-center mt-1">${successRate}%</small>
-                    </td>
-                `;
-                tableBody.appendChild(row);
+                // Render Rows
+                // Render Rows
+                classesData.forEach(d => {
+                    const row = document.createElement('tr');
+
+                    let statusHtml = '';
+                    if (d.average >= 81) statusHtml = '<span class="text-success fw-bold">Əla</span>';
+                    else if (d.average >= 61) statusHtml = '<span class="text-primary fw-bold">Yaxşı</span>';
+                    else if (d.average >= 31) statusHtml = '<span class="text-warning fw-bold">Kafi</span>';
+                    else statusHtml = '<span class="text-danger fw-bold">Pis</span>';
+
+                    row.innerHTML = `
+                        <td><strong>${d.className}</strong></td>
+                        <td>${d.count}</td>
+                        <td><span class="badge ${getGradeBadgeClass(d.average)}">${d.average.toFixed(1)}</span></td>
+                        <td>${statusHtml}</td>
+                        <td><small class="text-muted">Max: ${d.max} | Min: ${d.min}</small></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                // Update Chart for Detailed View
+                updateDetailedSubjectChart(subjectName, classesData);
+            }
+
+            // Stats card updates (generic)
+            document.getElementById('subject-total-count').textContent = schoolData.subjects.length;
+        }
+
+        function updateDetailedSubjectChart(subject, data) {
+            const ctx = document.getElementById('subjectComparisonChart').getContext('2d');
+            if (charts.subjectComparisonChart) charts.subjectComparisonChart.destroy();
+
+            charts.subjectComparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.className),
+                    datasets: [{
+                        label: `${subject} Ortalaması`,
+                        data: data.map(d => d.average),
+                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    }
+                }
             });
-
-            // Fənn qrafikini güncelle
-            updateSubjectComparisonChart();
         }
 
         // =============================================
@@ -3206,13 +3358,19 @@
         // =============================================
         // MÜQAYİSƏ GÖRÜNÜMÜNÜ GÜNCELLE
         // =============================================
+        // =============================================
+        // MÜQAYİSƏ GÖRÜNÜMÜNÜ GÜNCELLE
+        // =============================================
         function updateComparisonView() {
             const tableBody = document.getElementById('comparison-table-body');
+            const tableHead = document.querySelector('#comparison-table thead tr');
+
             tableBody.innerHTML = '';
 
+            const isMerged = document.getElementById('comparison-merge-toggle')?.checked ?? true;
             const stats = schoolData.overallStats;
 
-            // Karşılaştırma verilerini hazırla
+            // Karşılaştırma verilerini hazırla (Satırlar)
             const comparisonData = [
                 { label: 'Ümumi Orta', values: [] },
                 { label: 'Şagird Sayı', values: [] },
@@ -3221,36 +3379,60 @@
                 { label: 'Əla Nəticə (%)', values: [] }
             ];
 
-            // Her sınıf seviyesi için verileri topla
-            for (let grade = 2; grade <= 9; grade++) {
-                const gradeStudents = schoolData.students.filter(s => s.gradeLevel === grade);
+            let entities = [];
+            let headerHtml = '<th>Göstərici</th>';
 
-                if (gradeStudents.length > 0) {
+            if (isMerged) {
+                // MERGED: By Grade Level (2-9)
+                for (let grade = 2; grade <= 9; grade++) {
+                    entities.push({ name: `${grade}-ci Sinif`, id: grade, type: 'grade' });
+                    headerHtml += `<th>${grade}-ci Sinif</th>`;
+                }
+            } else {
+                // UNMERGED: By Individual Class (2A, 2B...)
+                schoolData.classes.forEach(cls => {
+                    entities.push({ name: cls, id: cls, type: 'class' });
+                    headerHtml += `<th>${cls}</th>`;
+                });
+            }
+            headerHtml += '<th>Qalib</th>';
+            tableHead.innerHTML = headerHtml;
+
+            // Verileri topla
+            entities.forEach(entity => {
+                let students = [];
+                if (entity.type === 'grade') {
+                    students = schoolData.students.filter(s => s.gradeLevel === entity.id);
+                } else {
+                    students = schoolData.students.filter(s => s.className === entity.id);
+                }
+
+                if (students.length > 0) {
                     // Ortalama
-                    const averages = gradeStudents.map(s => s.average).filter(a => !isNaN(a));
+                    const averages = students.map(s => s.average).filter(a => !isNaN(a));
                     const avg = averages.length > 0 ? averages.reduce((a, b) => a + b, 0) / averages.length : 0;
                     comparisonData[0].values.push(avg.toFixed(1));
 
                     // Öğrenci sayı
-                    comparisonData[1].values.push(gradeStudents.length);
+                    comparisonData[1].values.push(students.length);
 
                     // Davamsızlık
-                    const attendances = gradeStudents.map(s => s.attendance).filter(a => !isNaN(a));
+                    const attendances = students.map(s => s.attendance).filter(a => !isNaN(a));
                     const attAvg = attendances.length > 0 ? attendances.reduce((a, b) => a + b, 0) / attendances.length : 0;
                     comparisonData[2].values.push(attAvg.toFixed(1));
 
                     // Başarı oranı (%50 üstü)
-                    const successRate = (gradeStudents.filter(s => s.average >= 50).length / gradeStudents.length * 100).toFixed(1);
+                    const successRate = (students.filter(s => s.average >= 50).length / students.length * 100).toFixed(1);
                     comparisonData[3].values.push(successRate);
 
                     // Mükemmel oranı (%85 üstü)
-                    const excellentRate = (gradeStudents.filter(s => s.average >= 85).length / gradeStudents.length * 100).toFixed(1);
+                    const excellentRate = (students.filter(s => s.average >= 85).length / students.length * 100).toFixed(1);
                     comparisonData[4].values.push(excellentRate);
                 } else {
                     // Veri yoksa boş değerler
                     comparisonData.forEach(data => data.values.push('-'));
                 }
-            }
+            });
 
             // Tabloyu doldur
             comparisonData.forEach(rowData => {
@@ -3260,38 +3442,44 @@
                 // En yüksek değeri bul
                 let maxValue = -1;
                 let maxIndex = -1;
+                let minValue = 99999;
+                let minIndex = -1;
 
                 if (rowData.label !== 'Şagird Sayı') {
                     rowData.values.forEach((value, index) => {
-                        if (value !== '-' && parseFloat(value) > maxValue) {
-                            maxValue = parseFloat(value);
-                            maxIndex = index;
+                        if (value !== '-') {
+                            const val = parseFloat(value);
+                            if (val > maxValue) { maxValue = val; maxIndex = index; }
+                            if (val < minValue) { minValue = val; minIndex = index; }
                         }
                     });
                 }
 
+                // Determine winner index (Highest for grades, Lowest for attendance)
+                let winnerIndex = (rowData.label.includes('Davamsızlıq')) ? minIndex : maxIndex;
+
                 // Hücreleri oluştur
                 rowData.values.forEach((value, index) => {
                     let cellClass = '';
-                    if (index === maxIndex && maxIndex !== -1) {
-                        cellClass = 'bg-success text-white';
+                    if (index === winnerIndex && winnerIndex !== -1 && rowData.label !== 'Şagird Sayı') {
+                        cellClass = 'bg-success text-white fw-bold';
                     }
                     cells += `<td class="${cellClass}">${value}</td>`;
                 });
 
                 // Kazanan sınıfı ekle
-                let winnerClass = '-';
-                if (maxIndex !== -1) {
-                    winnerClass = `${maxIndex + 2}-ci sinif`;
+                let winnerName = '-';
+                if (winnerIndex !== -1 && rowData.label !== 'Şagird Sayı') {
+                    winnerName = entities[winnerIndex].name;
                 }
-                cells += `<td><span class="badge bg-success">${winnerClass}</span></td>`;
+                cells += `<td><span class="badge bg-success">${winnerName}</span></td>`;
 
                 row.innerHTML = cells;
                 tableBody.appendChild(row);
             });
 
-            // Grafikleri güncelle
-            updateGradeComparisonChart();
+            // Grafikleri güncelle (Sadece merged state için varsayılan grafikleri tutuyoruz, isterseniz burayı da dinamikleştirebiliriz ama tablo öncelikliydi)
+            updateGradeComparisonChart(); // Keep grade chart for now or update if needed
             updateAttendanceCorrelationChart();
         }
 
