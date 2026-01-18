@@ -150,8 +150,10 @@
         }
 
         .logo-circle {
-            width: 45px;
-            height: 45px;
+            width: 55px;
+            /* Enlarged logo */
+            height: 55px;
+            /* Enlarged logo */
             border-radius: 50%;
             border: 2px solid white;
             display: flex;
@@ -161,6 +163,7 @@
             background: white;
             padding: 2px;
             flex-shrink: 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
 
@@ -507,21 +510,25 @@
         .sticky-col {
             position: sticky;
             left: 0;
-            z-index: 20;
+            z-index: 99 !important;
+            /* Higher Z-index to stay on top */
             background: var(--light-gray);
             border-right: 2px solid var(--border-color);
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            /* Drop shadow to separate */
         }
 
         .sticky-header {
             position: sticky;
             top: 0;
-            z-index: 10;
+            z-index: 90;
             background: var(--light-gray);
             border-bottom: 2px solid var(--border-color);
         }
 
         .sticky-col.sticky-header {
-            z-index: 30;
+            z-index: 100 !important;
+            /* Highest Z-index for top-left intersection */
         }
 
         .heatmap-cell:hover {
@@ -741,22 +748,26 @@
                     <div class="school-name-sub">2025-2026 Tədris ili I yarımil analizi</div>
                 </div>
             </a>
-            <div class="d-flex align-items-center gap-2 gap-md-3">
-                <button class="btn btn-outline-light rounded-pill px-3 py-1 d-none d-md-flex align-items-center gap-2"
+            <div class="d-flex align-items-center gap-1 gap-md-3">
+                <!-- Search Button (Mobile & Desktop) -->
+                <button class="btn btn-outline-light rounded-pill px-2 px-md-3 py-1 d-flex align-items-center gap-2"
                     onclick="openSearch()" title="Axtar (Ctrl+K)"
                     style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
                     <i class="fas fa-search small"></i>
-                    <span style="font-size: 0.85rem;">Sürətli Axtarış</span>
-                    <span class="badge bg-light text-primary rounded-pill ms-1"
+                    <span class="d-none d-md-block" style="font-size: 0.85rem;">Sürətli Axtarış</span>
+                    <span class="d-none d-md-block badge bg-light text-primary rounded-pill ms-1"
                         style="font-size: 0.65rem; opacity: 0.8;">Ctrl+K</span>
                 </button>
-                <button class="btn btn-link text-white p-0 border-0 shadow-none d-md-none" onclick="openSearch()">
-                    <i class="fas fa-search"></i>
+
+                <!-- Theme Toggle -->
+                <button id="theme-toggle"
+                    class="btn btn-outline-light rounded-circle p-0 d-flex align-items-center justify-content-center"
+                    style="width: 32px; height: 32px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                    <i class="fas fa-moon" style="font-size: 0.9rem;"></i>
                 </button>
-                <button id="theme-toggle" class="btn btn-link text-white p-0 border-0 shadow-none">
-                    <i class="fas fa-moon"></i>
-                </button>
-                <button class="btn btn-link text-white p-0 border-0 shadow-none d-lg-none" type="button"
+
+                <!-- Hamburger removed as we use top grid now, but keeping button just in case user wants offcanvas back later, hidden for now -->
+                <button class="btn btn-link text-white p-0 border-0 shadow-none d-none" type="button"
                     data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
                     <i class="fas fa-bars"></i>
                 </button>
