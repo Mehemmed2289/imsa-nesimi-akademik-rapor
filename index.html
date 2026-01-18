@@ -1761,15 +1761,15 @@
 
                 // Siniflərdə axtar
                 schoolData.classes.forEach(c => {
-                    if (c.name.toLowerCase().includes(query)) {
-                        results.push({ type: 'class', title: c.name, sub: 'Sinif', id: c.name, icon: 'fa-chalkboard' });
+                    if (c.toLowerCase().includes(query)) {
+                        results.push({ type: 'class', title: c, sub: 'Sinif', id: c, icon: 'fa-chalkboard' });
                     }
                 });
 
                 // Fənlərdə axtar
                 schoolData.subjects.forEach(s => {
-                    if (s.name.toLowerCase().includes(query)) {
-                        results.push({ type: 'subject', title: s.name, sub: 'Fənn', id: s.name, icon: 'fa-book' });
+                    if (s.toLowerCase().includes(query)) {
+                        results.push({ type: 'subject', title: s, sub: 'Fənn', id: s, icon: 'fa-book' });
                     }
                 });
 
