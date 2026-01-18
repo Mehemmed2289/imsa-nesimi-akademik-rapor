@@ -201,23 +201,28 @@
         /* Mobil Optimizasiya */
         @media (max-width: 768px) {
             body {
-                padding-top: 110px !important;
+                padding-top: 80px !important;
+                padding-bottom: 80px !important;
+                /* Bottom nav space */
             }
 
             .mobile-compact-nav {
                 position: fixed;
-                top: 70px;
+                bottom: 0px;
+                /* Move to bottom */
+                top: auto;
                 left: 0;
                 right: 0;
-                background: white;
+                background: var(--card-bg);
+                /* Use theme bg */
                 z-index: 1000;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                padding: 0.75rem;
+                box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+                padding: 10px 5px;
                 display: flex;
+                justify-content: space-around;
+                /* Distribute evenly */
                 flex-wrap: nowrap;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
+                border-top: 1px solid var(--border-color);
             }
 
             .mobile-compact-nav::-webkit-scrollbar {
@@ -225,28 +230,37 @@
             }
 
             .mobile-nav-btn {
-                flex: 0 0 auto;
-                padding: 0.5rem 1rem;
-                margin: 0 0.25rem;
-                background: var(--light-blue);
-                border: 2px solid transparent;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                /* Icon top, text bottom */
+                align-items: center;
+                justify-content: center;
+                padding: 0.5rem 0.2rem;
+                margin: 0;
+                background: transparent;
+                border: none;
                 border-radius: 8px;
-                color: var(--primary-blue);
+                color: var(--text-color);
                 font-weight: 500;
-                font-size: 0.85rem;
+                font-size: 0.7rem;
+                /* Smaller text */
                 white-space: nowrap;
-                transition: all 0.3s ease;
+                transition: all 0.2s ease;
+                opacity: 0.7;
             }
 
             .mobile-nav-btn.active {
-                background: var(--primary-blue);
-                color: white;
-                border-color: var(--accent-blue);
+                background: transparent;
+                color: var(--primary-blue);
+                opacity: 1;
             }
 
             .mobile-nav-btn i {
-                margin-right: 0.5rem;
-                font-size: 0.9rem;
+                margin-right: 0;
+                margin-bottom: 4px;
+                /* Space between icon and text */
+                font-size: 1.2rem;
             }
 
             .content-section {
@@ -655,10 +669,13 @@
                 </div>
             </a>
             <div class="d-flex align-items-center gap-2 gap-md-3">
-                <button class="btn btn-link text-white p-0 border-0 shadow-none d-none d-md-block"
-                    onclick="openSearch()" title="Axtar (Ctrl+K)">
-                    <i class="fas fa-search me-1"></i><kbd class="text-white bg-transparent border-white"
-                        style="font-size: 0.7rem;">Ctrl+K</kbd>
+                <button class="btn btn-outline-light rounded-pill px-3 py-1 d-none d-md-flex align-items-center gap-2"
+                    onclick="openSearch()" title="Axtar (Ctrl+K)"
+                    style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">
+                    <i class="fas fa-search small"></i>
+                    <span style="font-size: 0.85rem;">Sürətli Axtarış</span>
+                    <span class="badge bg-light text-primary rounded-pill ms-1"
+                        style="font-size: 0.65rem; opacity: 0.8;">Ctrl+K</span>
                 </button>
                 <button class="btn btn-link text-white p-0 border-0 shadow-none d-md-none" onclick="openSearch()">
                     <i class="fas fa-search"></i>
@@ -1153,7 +1170,14 @@
 
                 <!-- Classes Analysis Section -->
                 <section id="classes-section" class="content-section" style="display: none;">
-                    <h2 class="mb-4"><i class="fas fa-chalkboard-teacher me-2"></i>Sinif Analizi</h2>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="mb-0"><i class="fas fa-chalkboard-teacher me-2"></i>Sinif Analizi</h2>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="merge-classes-toggle">
+                            <label class="form-check-label" for="merge-classes-toggle">Paralel Sinifləri
+                                Birləşdir</label>
+                        </div>
+                    </div>
 
                     <div class="row mb-4">
                         <div class="col-lg-8">
@@ -1281,9 +1305,15 @@
                         <!-- Heatmap Section -->
                         <div class="col-12 mb-4">
                             <div class="card shadow-sm border-0">
-                                <div class="card-header bg-primary text-white py-3">
+                                <div
+                                    class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
                                     <h5 class="mb-0"><i class="fas fa-th me-2"></i>Məktəb Performans İstilik Xəritəsi
                                         (Heatmap)</h5>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="heatmap-merge-toggle">
+                                        <label class="form-check-label text-white"
+                                            for="heatmap-merge-toggle">Paralelları Birləşdir</label>
+                                    </div>
                                 </div>
                                 <div class="card-body">
                                     <p class="text-muted small mb-3">Rənglər fənn və sinif üzrə ortalama uğuru göstərir
@@ -1701,6 +1731,12 @@
 
             // Filtre Event Listener'larını ayarla
             setupFilterEventListeners();
+
+            // Heatmap Merge Toggle Listener
+            const heatmapMergeToggle = document.getElementById('heatmap-merge-toggle');
+            if (heatmapMergeToggle) {
+                heatmapMergeToggle.addEventListener('change', generateHeatmap);
+            }
         });
 
         function setupFilterEventListeners() {
@@ -1723,6 +1759,10 @@
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('change', updateSubjectsView);
             });
+
+            // Merged Class Toggle
+            const mergeToggle = document.getElementById('merge-classes-toggle');
+            if (mergeToggle) mergeToggle.addEventListener('change', updateClassesView);
         }
 
         // =============================================
@@ -2830,32 +2870,64 @@
         function updateClassesView() {
             const tableBody = document.getElementById('classes-table-body');
             const topClassesList = document.getElementById('top-classes-list');
+            const isMerged = document.getElementById('merge-classes-toggle').checked;
 
             tableBody.innerHTML = '';
             topClassesList.innerHTML = '';
 
             const stats = schoolData.overallStats;
-            const classAverages = [];
+            let classDataList = [];
 
-            // Sınıf verilerini hazırla
-            schoolData.classes.forEach(className => {
-                const classData = stats.classAverages[className];
-                if (classData) {
-                    classAverages.push({
-                        className: className,
-                        average: classData.average,
-                        attendance: classData.attendance,
-                        studentCount: classData.studentCount
-                    });
-                }
-            });
+            if (isMerged) {
+                // Group by grade
+                const gradeGroups = {};
+                schoolData.classes.forEach(className => {
+                    const grade = getGradeLevel(className);
+                    if (!gradeGroups[grade]) {
+                        gradeGroups[grade] = {
+                            name: grade + "-ci siniflər",
+                            students: []
+                        };
+                    }
+                    const classStudents = schoolData.students.filter(s => s.className === className);
+                    gradeGroups[grade].students.push(...classStudents);
+                });
 
-            // Ortalamaya göre sırala
-            classAverages.sort((a, b) => b.average - a.average);
+                Object.values(gradeGroups).forEach(group => {
+                    if (group.students.length > 0) {
+                        const avg = group.students.reduce((acc, s) => acc + s.average, 0) / group.students.length;
+                        const att = group.students.reduce((acc, s) => acc + s.attendance, 0) / group.students.length;
+                        classDataList.push({
+                            className: group.name,
+                            average: avg,
+                            attendance: att,
+                            studentCount: group.students.length,
+                            students: group.students
+                        });
+                    }
+                });
+            } else {
+                // Individual classes
+                schoolData.classes.forEach(className => {
+                    const classData = stats.classAverages[className];
+                    if (classData) {
+                        const classStudents = schoolData.students.filter(s => s.className === className);
+                        classDataList.push({
+                            className: className,
+                            average: classData.average,
+                            attendance: classData.attendance,
+                            studentCount: classData.studentCount,
+                            students: classStudents
+                        });
+                    }
+                });
+            }
 
-            // En iyi 3 sınıfı göster
-            const topClasses = classAverages.slice(0, 3);
-            topClasses.forEach((cls, index) => {
+            // Sort by average desc
+            classDataList.sort((a, b) => b.average - a.average);
+
+            // Show top 3
+            classDataList.slice(0, 3).forEach((cls, index) => {
                 const medal = ['🥇', '🥈', '🥉'][index];
                 const classEl = document.createElement('div');
                 classEl.className = 'd-flex justify-content-between align-items-center mb-2 p-2 border rounded';
@@ -2874,11 +2946,11 @@
                 topClassesList.appendChild(classEl);
             });
 
-            // Tabloyu doldur
-            classAverages.forEach(cls => {
-                const classStudents = schoolData.students.filter(s => s.className === cls.className);
+            // Fill Table
+            classDataList.forEach(cls => {
+                const classStudents = cls.students;
 
-                // En iyi ve en kötü dersleri bul
+                // Find best/worst subject
                 let bestSubject = '';
                 let bestAvg = 0;
                 let worstSubject = '';
@@ -2899,11 +2971,11 @@
                     }
                 });
 
-                // Başarı oranı
+                // Success rate
                 const successRate = classStudents.length > 0 ?
                     (classStudents.filter(s => s.average >= 50).length / classStudents.length * 100).toFixed(1) : '0.0';
 
-                // Durum
+                // Status
                 let status = 'Yaxşı';
                 if (cls.average >= 91) status = 'Əla (Yüksək)';
                 else if (cls.average >= 81) status = 'Əla';
@@ -2943,20 +3015,32 @@
                 tableBody.appendChild(row);
             });
 
-            // Sınıf grafiğini güncelle
-            updateClassAvgChart();
+            // Update Chart
+            updateClassAvgChart(classDataList);
         }
 
         // =============================================
         // SINIF ORTALAMALARI GRAFİĞİ
         // =============================================
-        function updateClassAvgChart() {
+        function updateClassAvgChart(dataList) {
             const ctx = document.getElementById('classAvgChart').getContext('2d');
-            const stats = schoolData.overallStats;
 
-            const classNames = schoolData.classes;
-            const averages = classNames.map(className => stats.classAverages[className]?.average || 0);
-            const attendances = classNames.map(className => stats.classAverages[className]?.attendance || 0);
+            // If called without data (initial load), create default data
+            if (!dataList) {
+                const stats = schoolData.overallStats;
+                dataList = schoolData.classes.map(className => {
+                    const cData = stats.classAverages[className];
+                    return {
+                        className: className,
+                        average: cData ? cData.average : 0,
+                        attendance: cData ? cData.attendance : 0
+                    };
+                });
+            }
+
+            const labels = dataList.map(d => d.className);
+            const averages = dataList.map(d => d.average);
+            const attendances = dataList.map(d => d.attendance);
 
             if (charts.classAvgChart) {
                 charts.classAvgChart.destroy();
@@ -2965,7 +3049,7 @@
             charts.classAvgChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: classNames,
+                    labels: labels,
                     datasets: [
                         {
                             label: 'Sinif Ortalaması',
@@ -3697,7 +3781,18 @@
                 return a.localeCompare(b, 'az');
             });
 
-            const classes = [...new Set(schoolData.students.map(s => s.className))].sort();
+            // Get Toggle State
+            const isMerged = document.getElementById('heatmap-merge-toggle')?.checked || false;
+
+            let classes = [];
+            if (isMerged) {
+                // Get unique grade levels
+                classes = [...new Set(schoolData.students.map(s => getGradeLevel(s.className) + "-ci siniflər"))].sort((a, b) => {
+                    return parseInt(a) - parseInt(b);
+                });
+            } else {
+                classes = [...new Set(schoolData.students.map(s => s.className))].sort();
+            }
 
             // Structure
             let html = `<div class="table-responsive">
@@ -3711,12 +3806,24 @@
 
             // Data Rows
             classes.forEach(c => {
-                html += `<div class="heatmap-header fw-bold sticky-col">${c}</div>`;
+                html += `<div class="heatmap-header fw-bold sticky-col" style="background: white;">${c}</div>`;
                 subjects.forEach(s => {
-                    const classStudents = schoolData.students.filter(st => st.className === c && st.subjects[s] !== undefined);
-                    const avg = classStudents.length > 0
-                        ? classStudents.reduce((acc, st) => acc + st.subjects[s], 0) / classStudents.length
-                        : null;
+                    let avg = null;
+
+                    if (isMerged) {
+                        // Extract grade number from "X-ci siniflər"
+                        const grade = parseInt(c);
+                        const gradeStudents = schoolData.students.filter(st => getGradeLevel(st.className) === grade && st.subjects[s] !== undefined);
+
+                        if (gradeStudents.length > 0) {
+                            avg = gradeStudents.reduce((acc, st) => acc + st.subjects[s], 0) / gradeStudents.length;
+                        }
+                    } else {
+                        const classStudents = schoolData.students.filter(st => st.className === c && st.subjects[s] !== undefined);
+                        if (classStudents.length > 0) {
+                            avg = classStudents.reduce((acc, st) => acc + st.subjects[s], 0) / classStudents.length;
+                        }
+                    }
 
                     let bgColor = 'var(--light-gray)';
                     let textColor = 'var(--text-color)';
