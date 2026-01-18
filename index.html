@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="az">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary-blue: #00525d;
@@ -20,13 +22,101 @@
             --danger-red: #ef4444;
             --dark-gray: #374151;
             --light-gray: #f9fafb;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e5e7eb;
+            --text-color: #374151;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --text-color: #f1f5f9;
+            --light-blue: #0f3443;
+            --dark-gray: #f1f5f9;
+            --light-gray: #334155;
+            --primary-blue: #00adba;
+            --secondary-blue: #00adba;
+        }
+
+        [data-theme="dark"] * {
+            color: inherit;
+        }
+
+        [data-theme="dark"] body,
+        [data-theme="dark"] .card-body,
+        [data-theme="dark"] .table,
+        [data-theme="dark"] .form-label,
+        [data-theme="dark"] .navbar-text,
+        [data-theme="dark"] .sidebar-nav .nav-link,
+        [data-theme="dark"] .quick-stat-label,
+        [data-theme="dark"] .text-muted,
+        [data-theme="dark"] p,
+        [data-theme="dark"] span:not(.badge),
+        [data-theme="dark"] div:not(.badge):not(.card-header):not(.navbar-imsa):not(.navbar-brand-imsa) {
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .text-muted {
+            color: #94a3b8 !important;
+            opacity: 0.8;
+        }
+
+        [data-theme="dark"] .card-header,
+        [data-theme="dark"] .navbar-imsa,
+        [data-theme="dark"] .navbar-brand-imsa,
+        [data-theme="dark"] .school-name-main,
+        [data-theme="dark"] .school-name-sub {
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge {
+            color: white !important;
+        }
+
+        /* Print styles for PDF export */
+        @media print {
+
+            .navbar,
+            .desktop-sidebar,
+            .mobile-compact-nav,
+            .filter-section,
+            .btn,
+            #theme-toggle,
+            .navbar-imsa {
+                display: none !important;
+            }
+
+            .content-section {
+                display: block !important;
+                margin-top: 0 !important;
+                padding: 0 !important;
+            }
+
+            body {
+                padding-top: 0 !important;
+                background: white !important;
+                color: black !important;
+            }
+
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+                break-inside: avoid;
+            }
+
+            canvas {
+                max-width: 100% !important;
+            }
         }
 
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f8fafc;
-            color: var(--dark-gray);
+            background-color: var(--bg-color);
+            color: var(--text-color);
             padding-top: 60px !important;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         /* IMSA Stili Header */
@@ -45,6 +135,7 @@
             color: white !important;
             text-decoration: none;
             gap: 12px;
+            text-align: center;
         }
 
         .logo-circle {
@@ -98,7 +189,7 @@
             body {
                 padding-top: 110px !important;
             }
-            
+
             .mobile-compact-nav {
                 position: fixed;
                 top: 70px;
@@ -114,11 +205,11 @@
                 -webkit-overflow-scrolling: touch;
                 scrollbar-width: none;
             }
-            
+
             .mobile-compact-nav::-webkit-scrollbar {
                 display: none;
             }
-            
+
             .mobile-nav-btn {
                 flex: 0 0 auto;
                 padding: 0.5rem 1rem;
@@ -132,36 +223,36 @@
                 white-space: nowrap;
                 transition: all 0.3s ease;
             }
-            
+
             .mobile-nav-btn.active {
                 background: var(--primary-blue);
                 color: white;
                 border-color: var(--accent-blue);
             }
-            
+
             .mobile-nav-btn i {
                 margin-right: 0.5rem;
                 font-size: 0.9rem;
             }
-            
+
             .content-section {
                 margin-top: 120px !important;
                 padding: 1rem !important;
             }
-            
+
             .stat-card {
                 padding: 1rem !important;
                 margin-bottom: 0.75rem !important;
             }
-            
+
             .stat-card h3 {
                 font-size: 1.5rem !important;
             }
-            
+
             .chart-container {
                 height: 250px !important;
             }
-            
+
             .table-responsive {
                 font-size: 0.85rem;
             }
@@ -185,11 +276,11 @@
                 top: 60px;
                 box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
             }
-            
+
             .sidebar-nav {
                 padding: 1.5rem 0;
             }
-            
+
             .sidebar-nav .nav-link {
                 color: rgba(255, 255, 255, 0.9);
                 padding: 0.75rem 1.5rem;
@@ -198,14 +289,14 @@
                 transition: all 0.3s ease;
                 font-weight: 500;
             }
-            
+
             .sidebar-nav .nav-link:hover,
             .sidebar-nav .nav-link.active {
                 background: rgba(255, 255, 255, 0.15);
                 color: white;
                 transform: translateX(5px);
             }
-            
+
             .sidebar-nav .nav-link i {
                 width: 24px;
                 text-align: center;
@@ -215,13 +306,13 @@
 
         /* İstatistik Kartları */
         .stat-card {
-            background: white;
+            background: var(--card-bg);
             border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 1rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
         }
 
         .stat-card:hover {
@@ -257,7 +348,9 @@
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             margin-bottom: 1.5rem;
-            background: white;
+            background: var(--card-bg);
+            color: var(--text-color);
+            transition: background-color 0.3s ease;
         }
 
         .card-header {
@@ -281,17 +374,34 @@
         .data-table td {
             padding: 0.75rem 1rem;
             vertical-align: middle;
+            color: var(--text-color);
         }
 
         .data-table tr:hover {
             background-color: var(--light-gray);
+            opacity: 0.9;
         }
 
         /* Davamsızlq İndikatorları */
-        .attendance-low { background-color: rgba(239, 68, 68, 0.1); color: var(--danger-red); }
-        .attendance-medium { background-color: rgba(245, 158, 11, 0.1); color: var(--warning-orange); }
-        .attendance-good { background-color: rgba(16, 185, 129, 0.1); color: var(--success-green); }
-        .attendance-excellent { background-color: rgba(79, 209, 197, 0.1); color: var(--accent-blue); }
+        .attendance-low {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: var(--danger-red);
+        }
+
+        .attendance-medium {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--warning-orange);
+        }
+
+        .attendance-good {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--success-green);
+        }
+
+        .attendance-excellent {
+            background-color: rgba(79, 209, 197, 0.1);
+            color: var(--accent-blue);
+        }
 
         .attendance-badge {
             padding: 0.25rem 0.75rem;
@@ -313,12 +423,13 @@
 
         /* Filtre Bölməsi */
         .filter-section {
-            background: white;
+            background: var(--card-bg);
             padding: 1.5rem;
             border-radius: 12px;
             margin-bottom: 1.5rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
         }
 
         /* Analiz Qrafikləri */
@@ -349,18 +460,28 @@
         }
 
         /* Mobil Üçün Xüsusi */
-        .mobile-only { display: none; }
-        .desktop-only { display: block; }
+        .mobile-only {
+            display: none;
+        }
+
+        .desktop-only {
+            display: block;
+        }
 
         @media (max-width: 768px) {
-            .mobile-only { display: block; }
-            .desktop-only { display: none; }
+            .mobile-only {
+                display: block;
+            }
+
+            .desktop-only {
+                display: none;
+            }
         }
 
         /* Yeni: Info Kartları */
         .info-card {
-            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-            border: 1px solid #e5e7eb;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1.5rem;
             margin-bottom: 1rem;
@@ -381,41 +502,96 @@
         }
 
         .quick-stat-item {
-            background: white;
+            background: var(--card-bg);
             padding: 0.75rem;
             border-radius: 8px;
             text-align: center;
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
         }
 
         .quick-stat-value {
             font-size: 1.25rem;
             font-weight: 700;
-            color: var(--primary-blue);
+            color: var(--secondary-blue);
         }
 
         .quick-stat-label {
             font-size: 0.75rem;
             color: #6b7280;
         }
+
+        /* Theme Toggle Button */
+        #theme-toggle {
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        #theme-toggle:hover {
+            transform: rotate(30deg);
+        }
+
+        .modal-content {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .modal-header {
+            border-bottom-color: var(--border-color);
+        }
+
+        .modal-footer {
+            border-top-color: var(--border-color);
+        }
+
+        .form-select,
+        .form-control {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+
+        .form-select:focus,
+        .form-control:focus {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+
+        .bg-light-custom {
+            background-color: var(--light-gray) !important;
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
+        }
     </style>
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-imsa navbar-expand-lg fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand-imsa" href="#">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <div class="d-none d-lg-block" style="width: 100px;"></div>
+            <a class="navbar-brand-imsa mx-auto" href="#">
                 <div class="logo-circle">
-                    <img src="https://i.imgur.com/a3FuVV8.png" alt="IMSA Logo" 
-                         onerror="this.onerror=null; this.src='https://placehold.co/40x40/00525d/ffffff?text=IMSA';">
+                    <img src="https://i.imgur.com/a3FuVV8.png" alt="IMSA Logo"
+                        onerror="this.onerror=null; this.src='https://placehold.co/40x40/00525d/ffffff?text=IMSA';">
                 </div>
                 <div class="school-name">
-                    <div class="school-name-main">Azərbaycan Beynəlxalq Maarif Məktəbləri - Nəsimi kampusu</div>
+                    <div class="school-name-main">
+                        <span class="me-1">🇦🇿</span>
+                        Azərbaycan Beynəlxalq Maarif Məktəbləri - Nəsimi kampusu
+                        <span class="ms-1">🇹🇷</span>
+                    </div>
                     <div class="school-name-sub">2025-2026 Tədris ili I yarımil analizi</div>
                 </div>
             </a>
-            <div class="navbar-text text-white ms-auto">
-                <span id="current-date" style="font-size: 0.9rem;"></span>
+            <div class="d-flex align-items-center gap-3">
+                <button id="theme-toggle" class="btn btn-link text-white p-0 border-0 shadow-none">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="navbar-text text-white d-none d-md-block">
+                    <span id="current-date" style="font-size: 0.9rem;"></span>
+                </div>
             </div>
         </div>
     </nav>
@@ -850,7 +1026,9 @@
                                         </tr>
                                     </thead>
                                     <tbody id="subjects-table-body">
-                                        <tr><td colspan="11" class="text-center text-muted">Yüklənir...</td></tr>
+                                        <tr>
+                                            <td colspan="11" class="text-center text-muted">Yüklənir...</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -919,7 +1097,9 @@
                                         </tr>
                                     </thead>
                                     <tbody id="classes-table-body">
-                                        <tr><td colspan="8" class="text-center text-muted">Yüklənir...</td></tr>
+                                        <tr>
+                                            <td colspan="8" class="text-center text-muted">Yüklənir...</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -980,7 +1160,9 @@
                                         </tr>
                                     </thead>
                                     <tbody id="comparison-table-body">
-                                        <tr><td colspan="10" class="text-center text-muted">Yüklənir...</td></tr>
+                                        <tr>
+                                            <td colspan="10" class="text-center text-muted">Yüklənir...</td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -1056,7 +1238,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-check mb-3">
-                                        <input class="form-check-input" type="checkbox" id="include-recommendations" checked>
+                                        <input class="form-check-input" type="checkbox" id="include-recommendations"
+                                            checked>
                                         <label class="form-check-label" for="include-recommendations">
                                             <i class="fas fa-lightbulb me-2"></i>Tövsiyələri daxil et
                                         </label>
@@ -1084,8 +1267,19 @@
                     <h5 class="modal-title" id="studentModalTitle">Şagird Detalları</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body" id="studentModalBody">
-                    <!-- Student details will be loaded here -->
+                <div class="modal-body">
+                    <div id="studentModalBody">
+                        <!-- Student basic info will be loaded here -->
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5 class="mb-3 text-center"><i class="fas fa-chart-pie me-2"></i>Fənn Analizi (Radar
+                                Qrafiki)</h5>
+                            <div style="height: 350px; position: relative;">
+                                <canvas id="studentRadarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bağla</button>
@@ -1362,6 +1556,10 @@
         // SAYFA YÜKLENDİĞİNDE ÇALIŞACAK KOD
         // =============================================
         document.addEventListener('DOMContentLoaded', function () {
+            // Theme initialization
+            initTheme();
+            document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
             // Tarihi göster
             document.getElementById('current-date').textContent = new Date().toLocaleDateString('az-AZ', {
                 weekday: 'long',
@@ -1412,6 +1610,43 @@
             adjustMobileNavPosition();
             window.addEventListener('resize', adjustMobileNavPosition);
         });
+
+        // =============================================
+        // THEME LOGIC
+        // =============================================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                setTheme(savedTheme);
+            } else {
+                const hour = new Date().getHours();
+                const isNight = hour < 7 || hour > 19;
+                setTheme(isNight ? 'dark' : 'light');
+            }
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            const icon = document.querySelector('#theme-toggle i');
+            if (icon) {
+                icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            }
+
+            // Re-render all charts to apply new theme colors
+            if (schoolData.overallStats.totalStudents > 0) {
+                updateDashboard();
+                updateAttendanceView();
+                updateSubjectsView();
+                updateClassesView();
+                updateComparisonView();
+            }
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        }
 
         // Mobil nav pozisyonunu ayarla
         function adjustMobileNavPosition() {
@@ -1590,7 +1825,7 @@
             });
 
             // Diqqət lazım olan şagirdlər
-            stats.warningStudents = schoolData.students.filter(s => 
+            stats.warningStudents = schoolData.students.filter(s =>
                 s.average < 50 || s.attendance >= 10
             ).length;
 
@@ -1599,7 +1834,7 @@
                 const classStudents = schoolData.students.filter(s => s.className === className);
                 const classAverages = classStudents.map(s => s.average).filter(a => !isNaN(a));
                 const classAttendance = classStudents.map(s => s.attendance).filter(a => !isNaN(a));
-                
+
                 stats.classAverages[className] = {
                     average: classAverages.length > 0 ?
                         classAverages.reduce((a, b) => a + b, 0) / classAverages.length : 0,
@@ -1614,14 +1849,14 @@
                 const allGrades = schoolData.students.map(s => s.subjects[subject]).filter(g => !isNaN(g));
                 stats.subjectAverages[subject] = allGrades.length > 0 ?
                     allGrades.reduce((a, b) => a + b, 0) / allGrades.length : 0;
-                
+
                 // Sınıf seviyesine göre ders ortalamaları
                 stats.subjectAverages[subject + '_byGrade'] = {};
                 for (let grade = 2; grade <= 9; grade++) {
                     const gradeStudents = schoolData.students.filter(s => s.gradeLevel === grade);
                     const gradeGrades = gradeStudents.map(s => s.subjects[subject]).filter(g => !isNaN(g));
                     if (gradeGrades.length > 0) {
-                        stats.subjectAverages[subject + '_byGrade'][grade] = 
+                        stats.subjectAverages[subject + '_byGrade'][grade] =
                             gradeGrades.reduce((a, b) => a + b, 0) / gradeGrades.length;
                     }
                 }
@@ -1637,7 +1872,7 @@
             }
 
             schoolData.overallStats = stats;
-            
+
             // Quick stats'i güncelle
             document.getElementById('quick-total-students').textContent = stats.totalStudents;
             document.getElementById('quick-total-classes').textContent = stats.totalClasses;
@@ -1916,7 +2151,7 @@
             classFilters.forEach(filterId => {
                 const select = document.getElementById(filterId);
                 select.innerHTML = '<option value="all">Hamısı</option>';
-                
+
                 // Sınıfları grupla
                 const classGroups = {};
                 schoolData.classes.forEach(className => {
@@ -1931,14 +2166,14 @@
                 Object.keys(classGroups).sort().forEach(gradeLevel => {
                     const optgroup = document.createElement('optgroup');
                     optgroup.label = `${gradeLevel}-ci sinif`;
-                    
+
                     classGroups[gradeLevel].sort().forEach(className => {
                         const option = document.createElement('option');
                         option.value = className;
                         option.textContent = className;
                         optgroup.appendChild(option);
                     });
-                    
+
                     select.appendChild(optgroup);
                 });
             });
@@ -2040,7 +2275,7 @@
                     element.addEventListener('change', updateStudentsView);
                 }
             });
-            
+
             const searchInput = document.getElementById('student-search');
             if (searchInput) {
                 searchInput.addEventListener('input', updateStudentsView);
@@ -2076,7 +2311,7 @@
             // Tabloyu doldur
             filteredStudents.forEach((student, index) => {
                 const row = document.createElement('tr');
-                
+
                 let impact = 'Aşağı';
                 if (student.attendance >= 15) impact = 'Çox yüksək';
                 else if (student.attendance >= 10) impact = 'Yüksək';
@@ -2258,15 +2493,15 @@
             filteredSubjects.forEach(subject => {
                 const avg = stats.subjectAverages[subject] || 0;
                 const row = document.createElement('tr');
-                
+
                 // Sınıf seviyesine göre ortalamaları hesapla
-                let grade2 = '-', grade3 = '-', grade4 = '-', grade5 = '-', 
+                let grade2 = '-', grade3 = '-', grade4 = '-', grade5 = '-',
                     grade6 = '-', grade7 = '-', grade8 = '-', grade9 = '-';
-                
+
                 for (let grade = 2; grade <= 9; grade++) {
                     const gradeAvg = stats.subjectAverages[subject + '_byGrade']?.[grade];
                     if (gradeAvg !== undefined) {
-                        switch(grade) {
+                        switch (grade) {
                             case 2: grade2 = gradeAvg.toFixed(1); break;
                             case 3: grade3 = gradeAvg.toFixed(1); break;
                             case 4: grade4 = gradeAvg.toFixed(1); break;
@@ -2281,7 +2516,7 @@
 
                 // Başarı oranını hesapla (%50 üstü)
                 const allGrades = schoolData.students.map(s => s.subjects[subject]).filter(g => !isNaN(g));
-                const successRate = allGrades.length > 0 ? 
+                const successRate = allGrades.length > 0 ?
                     (allGrades.filter(g => g >= 50).length / allGrades.length * 100).toFixed(1) : '0.0';
 
                 row.innerHTML = `
@@ -2388,7 +2623,7 @@
         function updateClassesView() {
             const tableBody = document.getElementById('classes-table-body');
             const topClassesList = document.getElementById('top-classes-list');
-            
+
             tableBody.innerHTML = '';
             topClassesList.innerHTML = '';
 
@@ -2435,13 +2670,13 @@
             // Tabloyu doldur
             classAverages.forEach(cls => {
                 const classStudents = schoolData.students.filter(s => s.className === cls.className);
-                
+
                 // En iyi ve en kötü dersleri bul
                 let bestSubject = '';
                 let bestAvg = 0;
                 let worstSubject = '';
                 let worstAvg = 100;
-                
+
                 schoolData.subjects.forEach(subject => {
                     const subjectGrades = classStudents.map(s => s.subjects[subject]).filter(g => !isNaN(g));
                     if (subjectGrades.length > 0) {
@@ -2458,7 +2693,7 @@
                 });
 
                 // Başarı oranı
-                const successRate = classStudents.length > 0 ? 
+                const successRate = classStudents.length > 0 ?
                     (classStudents.filter(s => s.average >= 50).length / classStudents.length * 100).toFixed(1) : '0.0';
 
                 // Durum
@@ -2602,25 +2837,25 @@
             // Her sınıf seviyesi için verileri topla
             for (let grade = 2; grade <= 9; grade++) {
                 const gradeStudents = schoolData.students.filter(s => s.gradeLevel === grade);
-                
+
                 if (gradeStudents.length > 0) {
                     // Ortalama
                     const averages = gradeStudents.map(s => s.average).filter(a => !isNaN(a));
                     const avg = averages.length > 0 ? averages.reduce((a, b) => a + b, 0) / averages.length : 0;
                     comparisonData[0].values.push(avg.toFixed(1));
-                    
+
                     // Öğrenci sayı
                     comparisonData[1].values.push(gradeStudents.length);
-                    
+
                     // Davamsızlık
                     const attendances = gradeStudents.map(s => s.attendance).filter(a => !isNaN(a));
                     const attAvg = attendances.length > 0 ? attendances.reduce((a, b) => a + b, 0) / attendances.length : 0;
                     comparisonData[2].values.push(attAvg.toFixed(1));
-                    
+
                     // Başarı oranı (%50 üstü)
                     const successRate = (gradeStudents.filter(s => s.average >= 50).length / gradeStudents.length * 100).toFixed(1);
                     comparisonData[3].values.push(successRate);
-                    
+
                     // Mükemmel oranı (%85 üstü)
                     const excellentRate = (gradeStudents.filter(s => s.average >= 85).length / gradeStudents.length * 100).toFixed(1);
                     comparisonData[4].values.push(excellentRate);
@@ -2634,11 +2869,11 @@
             comparisonData.forEach(rowData => {
                 const row = document.createElement('tr');
                 let cells = `<td><strong>${rowData.label}</strong></td>`;
-                
+
                 // En yüksek değeri bul
                 let maxValue = -1;
                 let maxIndex = -1;
-                
+
                 if (rowData.label !== 'Şagird Sayı') {
                     rowData.values.forEach((value, index) => {
                         if (value !== '-' && parseFloat(value) > maxValue) {
@@ -2775,12 +3010,12 @@
                         },
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
-                                    const student = schoolData.students.find(s => 
-                                        s.attendance === context.parsed.x && 
+                                label: function (context) {
+                                    const student = schoolData.students.find(s =>
+                                        s.attendance === context.parsed.x &&
                                         Math.abs(s.average - context.parsed.y) < 0.1
                                     );
-                                    return student ? 
+                                    return student ?
                                         `${student.name}: ${context.parsed.y.toFixed(1)} orta, ${context.parsed.x} gün` :
                                         `${context.parsed.y.toFixed(1)} orta, ${context.parsed.x} gün`;
                                 }
@@ -2862,7 +3097,8 @@
             const student = schoolData.students.find(s => s.id === studentId);
             if (!student) return;
 
-            const modal = new bootstrap.Modal(document.getElementById('studentModal'));
+            const modalElement = document.getElementById('studentModal');
+            const modal = new bootstrap.Modal(modalElement);
             document.getElementById('studentModalTitle').textContent = student.name;
 
             // Öğrenci detaylarını oluştur
@@ -2881,33 +3117,33 @@
                     <div class="col-md-8">
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <div class="card bg-light">
-                                    <div class="card-body text-center">
-                                        <h5>Ümumi Orta</h5>
-                                        <h2 class="${getTextColorClass(student.average)}">${student.average.toFixed(1)}</h2>
-                                        <span class="badge ${getStatusBadgeClass(student.status)} fs-6">
+                                <div class="card bg-light-custom">
+                                    <div class="card-body text-center p-2">
+                                        <h6 class="text-muted">Ümumi Orta</h6>
+                                        <h3 class="${getTextColorClass(student.average)} mb-1">${student.average.toFixed(1)}</h3>
+                                        <span class="badge ${getStatusBadgeClass(student.status)}">
                                             ${student.status}
                                         </span>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="card bg-light">
-                                    <div class="card-body text-center">
-                                        <h5>Davamsızlıq</h5>
-                                        <h2 class="${student.attendance <= 4 ? 'text-success' : student.attendance <= 9 ? 'text-warning' : 'text-danger'}">${student.attendance}</h2>
-                                        <span class="badge ${getAttendanceStatusBadgeClass(student.attendanceStatus)} fs-6">
+                                <div class="card bg-light-custom">
+                                    <div class="card-body text-center p-2">
+                                        <h6 class="text-muted">Davamsızlıq</h6>
+                                        <h3 class="${student.attendance <= 4 ? 'text-success' : student.attendance <= 9 ? 'text-warning' : 'text-danger'} mb-1">${student.attendance}</h3>
+                                        <span class="badge ${getAttendanceStatusBadgeClass(student.attendanceStatus)}">
                                             ${student.attendanceStatus}
                                         </span>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="card bg-light">
-                                    <div class="card-body text-center">
-                                        <h5>Fənn Sayı</h5>
-                                        <h2>${Object.keys(student.subjects).length}</h2>
-                                        <small>Qiymət verilən</small>
+                                <div class="card bg-light-custom">
+                                    <div class="card-body text-center p-2">
+                                        <h6 class="text-muted">Fənn Sayı</h6>
+                                        <h3 class="mb-1">${Object.keys(student.subjects).length}</h3>
+                                        <small class="text-muted">Qiymət verilən</small>
                                     </div>
                                 </div>
                             </div>
@@ -2917,74 +3153,34 @@
                 
                 <hr>
                 
-                <h5><i class="fas fa-book me-2"></i>Fənn Qiymətləri</h5>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Fənn</th>
-                                <th>Qiymət</th>
-                                <th>Status</th>
-                                <th>Qrafik</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-
-            // Ders satırlarını ekle
-            Object.entries(student.subjects).forEach(([subject, grade]) => {
-                detailsHTML += `
-                    <tr>
-                        <td>${subject}</td>
-                        <td>
-                            <span class="badge ${getGradeBadgeClass(grade)} fs-6">
-                                ${grade}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="badge ${grade >= 50 ? 'bg-success' : 'bg-danger'}">
-                                ${grade >= 50 ? 'Uğurlu' : 'Uğursuz'}
-                            </span>
-                        </td>
-                        <td>
-                            <div class="progress progress-custom">
-                                <div class="progress-bar ${getProgressBarClass(grade)}" 
-                                     style="width: ${grade}%"></div>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            detailsHTML += `
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6><i class="fas fa-trophy text-success me-2"></i>Ən Yaxşı Ortalamalı Fənn</h6>
-                                <h4>${student.bestSubject}</h4>
-                                <span class="badge bg-success fs-5">${student.bestGrade}</span>
+                <div class="row mt-3">
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-success h-100">
+                            <div class="card-body py-2">
+                                <h6 class="text-success"><i class="fas fa-trophy me-2"></i>Ən Yaxşı Fənn</h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>${student.bestSubject}</span>
+                                    <span class="badge bg-success fs-6">${student.bestGrade}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <h6><i class="fas fa-exclamation-triangle text-danger me-2"></i>Ən Aşağı Ortalamalı Fənn</h6>
-                                <h4>${student.worstSubject}</h4>
-                                <span class="badge bg-danger fs-5">${student.worstGrade}</span>
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-danger h-100">
+                            <div class="card-body py-2">
+                                <h6 class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Ən Aşağı Fənn</h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>${student.worstSubject}</span>
+                                    <span class="badge bg-danger fs-6">${student.worstGrade}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="alert ${student.attendance >= 10 ? 'alert-warning' : 'alert-info'} mt-4">
-                    <h6><i class="fas fa-lightbulb me-2"></i>Tövsiyələr</h6>
-                    <p class="mb-0">
+                <div class="alert ${student.attendance >= 10 ? 'alert-warning' : 'alert-info'} mt-2 py-2">
+                    <h6 class="mb-1"><i class="fas fa-lightbulb me-2"></i>Tövsiyə</h6>
+                    <p class="mb-0 small">
                         ${getStudentRecommendations(student)}
                     </p>
                 </div>
@@ -2992,27 +3188,108 @@
 
             document.getElementById('studentModalBody').innerHTML = detailsHTML;
             modal.show();
+
+            // Render Radar Chart after modal is shown
+            setTimeout(() => {
+                drawStudentRadarChart(student);
+            }, 500);
+        }
+
+        // =============================================
+        // RADAR QRAFİKİ ÇƏK
+        // =============================================
+        function drawStudentRadarChart(student) {
+            const ctx = document.getElementById('studentRadarChart').getContext('2d');
+
+            const labels = Object.keys(student.subjects);
+            const data = Object.values(student.subjects);
+
+            if (charts.studentRadarChart) {
+                charts.studentRadarChart.destroy();
+            }
+
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const color = isDark ? 'rgba(79, 209, 197, 0.6)' : 'rgba(0, 82, 93, 0.6)';
+            const borderColor = isDark ? 'rgb(79, 209, 197)' : 'rgb(0, 82, 93)';
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDark ? '#f1f5f9' : '#374151';
+
+            charts.studentRadarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Qiymətlər',
+                        data: data,
+                        fill: true,
+                        backgroundColor: color,
+                        borderColor: borderColor,
+                        pointBackgroundColor: borderColor,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: borderColor
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    elements: {
+                        line: {
+                            borderWidth: 3
+                        }
+                    },
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: gridColor
+                            },
+                            grid: {
+                                color: gridColor
+                            },
+                            pointLabels: {
+                                color: textColor,
+                                font: {
+                                    size: 11,
+                                    family: "'Poppins', sans-serif"
+                                }
+                            },
+                            ticks: {
+                                backdropColor: 'transparent',
+                                color: textColor,
+                                beginAtZero: true,
+                                max: 100,
+                                stepSize: 20
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
         }
 
         function getStudentRecommendations(student) {
             let recommendations = [];
-            
+
             if (student.average < 50) {
                 recommendations.push(`${student.worstSubject} fənnində xüsusi diqqət yetirin.`);
             }
-            
+
             if (student.attendance >= 5) {
                 recommendations.push(`Davamsızlığınız (${student.attendance} gün) nəzərə alınmalıdır.`);
             }
-            
+
             if (student.average >= 85 && student.attendance <= 4) {
                 recommendations.push(`Əla nəticə! Davam edin.`);
             }
-            
+
             if (recommendations.length === 0) {
                 return "Şagirdin performansı qənaətbəxşdir. Davam etsin.";
             }
-            
+
             return recommendations.join(' ');
         }
 
@@ -3027,7 +3304,31 @@
         // İHRAC FONKSİYONLAR
         // =============================================
         function exportPDF() {
-            alert('PDF ixracı hazırlanır...');
+            // PDF ixraci üçün bütün gizli bölmələri müvəqqəti aktivləşdirək ki, hamısı çap olunsun
+            const allSections = document.querySelectorAll('.content-section');
+            const originalDisplays = [];
+
+            allSections.forEach(section => {
+                originalDisplays.push(section.style.display);
+                section.style.display = 'block';
+            });
+
+            // Gecə rejimindədirsə işıqlı rejimə keçək (çap üçün daha yaxşıdır)
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                setTheme('light');
+            }
+
+            window.print();
+
+            // Geri qaytaraq
+            allSections.forEach((section, i) => {
+                section.style.display = originalDisplays[i];
+            });
+
+            if (currentTheme === 'dark') {
+                setTheme('dark');
+            }
         }
 
         function exportExcel() {
@@ -3049,12 +3350,12 @@
                 // Davamsızlık istatistiklerini ekle
                 const attendanceStats = schoolData.overallStats.attendanceStats;
                 const total = schoolData.students.length;
-                
-                analysisData.push(['Mükəmməl (0 gün)', attendanceStats.excellent, ((attendanceStats.excellent/total)*100).toFixed(2) + '%']);
-                analysisData.push(['Yaxşı (1-4 gün)', attendanceStats.good, ((attendanceStats.good/total)*100).toFixed(2) + '%']);
-                analysisData.push(['Orta (5-9 gün)', attendanceStats.medium, ((attendanceStats.medium/total)*100).toFixed(2) + '%']);
-                analysisData.push(['Yüksək (10-14 gün)', attendanceStats.high, ((attendanceStats.high/total)*100).toFixed(2) + '%']);
-                analysisData.push(['Təhlükəli (15+ gün)', attendanceStats.dangerous, ((attendanceStats.dangerous/total)*100).toFixed(2) + '%']);
+
+                analysisData.push(['Mükəmməl (0 gün)', attendanceStats.excellent, ((attendanceStats.excellent / total) * 100).toFixed(2) + '%']);
+                analysisData.push(['Yaxşı (1-4 gün)', attendanceStats.good, ((attendanceStats.good / total) * 100).toFixed(2) + '%']);
+                analysisData.push(['Orta (5-9 gün)', attendanceStats.medium, ((attendanceStats.medium / total) * 100).toFixed(2) + '%']);
+                analysisData.push(['Yüksək (10-14 gün)', attendanceStats.high, ((attendanceStats.high / total) * 100).toFixed(2) + '%']);
+                analysisData.push(['Təhlükəli (15+ gün)', attendanceStats.dangerous, ((attendanceStats.dangerous / total) * 100).toFixed(2) + '%']);
 
                 analysisData.push([], ['Sinif Statistikası']);
                 analysisData.push(['Sinif', 'Şagird sayı', 'Ortalama', 'Davamsızlıq (orta)', 'Uğur nisbəti (%)']);
@@ -3081,7 +3382,7 @@
                 // Ders istatistiklerini ekle
                 schoolData.subjects.forEach(subject => {
                     const grades = schoolData.students.map(s => s.subjects[subject]).filter(g => !isNaN(g));
-                    
+
                     if (grades.length > 0) {
                         const average = calculateAverage(grades);
                         const max = Math.max(...grades);
@@ -3141,4 +3442,5 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
