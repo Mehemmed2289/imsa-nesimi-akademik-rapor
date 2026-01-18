@@ -18,6 +18,7 @@
             --accent-blue: #4fd1c5;
             --light-blue: #e6f7ff;
             --success-green: #10b981;
+            --dark-green: #047857;
             --warning-orange: #f59e0b;
             --danger-red: #ef4444;
             --dark-gray: #374151;
@@ -73,6 +74,16 @@
 
         [data-theme="dark"] .badge {
             color: white !important;
+        }
+
+        /* Custom Background Colors for New Grading System */
+        .bg-dark-green {
+            background-color: var(--dark-green) !important;
+            color: white;
+        }
+
+        .text-dark-green {
+            color: var(--dark-green) !important;
         }
 
         /* Print styles for PDF export */
@@ -149,7 +160,10 @@
             overflow: hidden;
             background: white;
             padding: 2px;
+            flex-shrink: 0;
         }
+
+
 
         .logo-circle img {
             width: 100%;
@@ -474,6 +488,26 @@
             border-radius: 4px;
             min-width: 60px;
             transition: transform 0.2s ease;
+        }
+
+        .sticky-col {
+            position: sticky;
+            left: 0;
+            z-index: 20;
+            background: var(--light-gray);
+            border-right: 2px solid var(--border-color);
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: var(--light-gray);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .sticky-col.sticky-header {
+            z-index: 30;
         }
 
         .heatmap-cell:hover {
@@ -1253,7 +1287,8 @@
                                 </div>
                                 <div class="card-body">
                                     <p class="text-muted small mb-3">Rənglər fənn və sinif üzrə ortalama uğuru göstərir
-                                        (Qırmızı: <50, Sarı: 50-70, Yaşıl:>70)</p>
+                                        (Qırmızı: &lt;31, Sarı: 31-60, Mavi: 61-80, Yaşıl: 81-90, Tünd Yaşıl: &gt;90)
+                                    </p>
                                     <div id="heatmap-container" class="table-responsive">
                                         <!-- Heatmap will be generated here -->
                                     </div>
@@ -1902,9 +1937,10 @@
                 }
 
                 // Durumu belirle
-                if (student.average >= 85) student.status = 'Əla';
-                else if (student.average >= 70) student.status = 'Yaxşı';
-                else if (student.average >= 50) student.status = 'Kafi';
+                if (student.average >= 91) student.status = 'Əla (Yüksək)';
+                else if (student.average >= 81) student.status = 'Əla';
+                else if (student.average >= 61) student.status = 'Yaxşı';
+                else if (student.average >= 31) student.status = 'Kafi';
                 else student.status = 'Zəif';
 
                 // Davamsızlık durumunu belirle
@@ -2124,15 +2160,17 @@
                         label: 'Ortalama',
                         data: sortedAverages,
                         backgroundColor: sortedAverages.map(avg => {
-                            if (avg >= 80) return 'rgba(16, 185, 129, 0.7)';
-                            if (avg >= 60) return 'rgba(0, 173, 186, 0.7)';
-                            if (avg >= 50) return 'rgba(245, 158, 11, 0.7)';
-                            return 'rgba(239, 68, 68, 0.7)';
+                            if (avg >= 91) return 'rgba(4, 120, 87, 0.8)'; // Tünd Yaşıl
+                            if (avg >= 81) return 'rgba(16, 185, 129, 0.8)'; // Yaşıl
+                            if (avg >= 61) return 'rgba(0, 173, 186, 0.8)'; // Mavi
+                            if (avg >= 31) return 'rgba(245, 158, 11, 0.8)'; // Sarı
+                            return 'rgba(239, 68, 68, 0.8)'; // Qırmızı
                         }),
                         borderColor: sortedAverages.map(avg => {
-                            if (avg >= 80) return 'rgb(16, 185, 129)';
-                            if (avg >= 60) return 'rgb(0, 173, 186)';
-                            if (avg >= 50) return 'rgb(245, 158, 11)';
+                            if (avg >= 91) return 'rgb(4, 120, 87)';
+                            if (avg >= 81) return 'rgb(16, 185, 129)';
+                            if (avg >= 61) return 'rgb(0, 173, 186)';
+                            if (avg >= 31) return 'rgb(245, 158, 11)';
                             return 'rgb(239, 68, 68)';
                         }),
                         borderWidth: 1
@@ -2739,15 +2777,17 @@
                         label: 'Ortalama',
                         data: averages,
                         backgroundColor: averages.map(avg => {
-                            if (avg >= 80) return 'rgba(79, 209, 197, 0.7)';
-                            if (avg >= 60) return 'rgba(0, 173, 186, 0.7)';
-                            if (avg >= 50) return 'rgba(245, 158, 11, 0.7)';
-                            return 'rgba(239, 68, 68, 0.7)';
+                            if (avg >= 91) return 'rgba(4, 120, 87, 0.8)';
+                            if (avg >= 81) return 'rgba(16, 185, 129, 0.8)';
+                            if (avg >= 61) return 'rgba(0, 173, 186, 0.8)';
+                            if (avg >= 31) return 'rgba(245, 158, 11, 0.8)';
+                            return 'rgba(239, 68, 68, 0.8)';
                         }),
                         borderColor: averages.map(avg => {
-                            if (avg >= 80) return 'rgb(79, 209, 197)';
-                            if (avg >= 60) return 'rgb(0, 173, 186)';
-                            if (avg >= 50) return 'rgb(245, 158, 11)';
+                            if (avg >= 91) return 'rgb(4, 120, 87)';
+                            if (avg >= 81) return 'rgb(16, 185, 129)';
+                            if (avg >= 61) return 'rgb(0, 173, 186)';
+                            if (avg >= 31) return 'rgb(245, 158, 11)';
                             return 'rgb(239, 68, 68)';
                         }),
                         borderWidth: 1
@@ -2865,9 +2905,10 @@
 
                 // Durum
                 let status = 'Yaxşı';
-                if (cls.average >= 80) status = 'Əla';
-                else if (cls.average >= 70) status = 'Yaxşı';
-                else if (cls.average >= 50) status = 'Kafi';
+                if (cls.average >= 91) status = 'Əla (Yüksək)';
+                else if (cls.average >= 81) status = 'Əla';
+                else if (cls.average >= 61) status = 'Yaxşı';
+                else if (cls.average >= 31) status = 'Kafi';
                 else status = 'Zəif';
 
                 const row = document.createElement('tr');
@@ -3100,15 +3141,17 @@
                         label: 'Ortalama',
                         data: averages,
                         backgroundColor: averages.map(avg => {
-                            if (avg >= 80) return 'rgba(79, 209, 197, 0.7)';
-                            if (avg >= 70) return 'rgba(0, 173, 186, 0.7)';
-                            if (avg >= 60) return 'rgba(245, 158, 11, 0.7)';
-                            return 'rgba(239, 68, 68, 0.7)';
+                            if (avg >= 91) return 'rgba(4, 120, 87, 0.8)';
+                            if (avg >= 81) return 'rgba(16, 185, 129, 0.8)';
+                            if (avg >= 61) return 'rgba(0, 173, 186, 0.8)';
+                            if (avg >= 31) return 'rgba(245, 158, 11, 0.8)';
+                            return 'rgba(239, 68, 68, 0.8)';
                         }),
                         borderColor: averages.map(avg => {
-                            if (avg >= 80) return 'rgb(79, 209, 197)';
-                            if (avg >= 70) return 'rgb(0, 173, 186)';
-                            if (avg >= 60) return 'rgb(245, 158, 11)';
+                            if (avg >= 91) return 'rgb(4, 120, 87)';
+                            if (avg >= 81) return 'rgb(16, 185, 129)';
+                            if (avg >= 61) return 'rgb(0, 173, 186)';
+                            if (avg >= 31) return 'rgb(245, 158, 11)';
                             return 'rgb(239, 68, 68)';
                         }),
                         borderWidth: 1
@@ -3224,10 +3267,11 @@
         // =============================================
         function getStatusBadgeClass(status) {
             switch (status) {
+                case 'Əla (Yüksək)': return 'bg-dark-green';
                 case 'Əla': return 'bg-success';
-                case 'Yaxşı': return 'bg-primary';
-                case 'Kafi': return 'bg-warning';
-                case 'Zəif': return 'bg-danger';
+                case 'Yaxşı': return 'bg-primary'; // Mavi
+                case 'Kafi': return 'bg-warning'; // Sarı
+                case 'Zəif': return 'bg-danger';  // Qırmızı
                 default: return 'bg-secondary';
             }
         }
@@ -3251,18 +3295,18 @@
         }
 
         function getProgressBarClass(value) {
-            if (value >= 80) return 'bg-success';
-            if (value >= 60) return 'bg-primary';
-            if (value >= 50) return 'bg-warning';
+            if (value >= 91) return 'bg-dark-green';
+            if (value >= 81) return 'bg-success';
+            if (value >= 61) return 'bg-primary';
+            if (value >= 31) return 'bg-warning';
             return 'bg-danger';
         }
 
         function getGradeBadgeClass(grade) {
-            if (grade >= 90) return 'bg-success';
-            if (grade >= 80) return 'bg-primary';
-            if (grade >= 70) return 'bg-info';
-            if (grade >= 60) return 'bg-warning';
-            if (grade >= 50) return 'bg-secondary';
+            if (grade >= 91) return 'bg-dark-green';
+            if (grade >= 81) return 'bg-success';
+            if (grade >= 61) return 'bg-primary';
+            if (grade >= 31) return 'bg-warning';
             return 'bg-danger';
         }
 
@@ -3473,9 +3517,10 @@
         }
 
         function getTextColorClass(value) {
-            if (value >= 80) return 'text-success';
-            if (value >= 60) return 'text-primary';
-            if (value >= 50) return 'text-warning';
+            if (value >= 91) return 'text-dark-green';
+            if (value >= 81) return 'text-success';
+            if (value >= 61) return 'text-primary';
+            if (value >= 31) return 'text-warning';
             return 'text-danger';
         }
 
@@ -3623,20 +3668,50 @@
         function generateHeatmap() {
             const container = document.getElementById('heatmap-container');
             if (!container) return;
-            const subjects = [...new Set(schoolData.students.flatMap(s => Object.keys(s.subjects)))].sort();
+
+            // Prioritize specific subjects
+            const prioritySubjects = ["Azərbaycan dili", "Riyaziyyat", "İngilis dili"];
+
+            // Calculate subject frequencies
+            const subjectCounts = {};
+            schoolData.students.forEach(s => {
+                Object.keys(s.subjects).forEach(sub => {
+                    subjectCounts[sub] = (subjectCounts[sub] || 0) + 1;
+                });
+            });
+
+            const subjects = [...new Set(schoolData.students.flatMap(s => Object.keys(s.subjects)))].sort((a, b) => {
+                const indexA = prioritySubjects.indexOf(a);
+                const indexB = prioritySubjects.indexOf(b);
+
+                // 1. Top 3 priority subjects first
+                if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                if (indexA !== -1) return -1;
+                if (indexB !== -1) return 1;
+
+                // 2. Sort by frequency (descending) - more common subjects come first
+                const countDiff = subjectCounts[b] - subjectCounts[a];
+                if (countDiff !== 0) return countDiff;
+
+                // 3. Alphabetical fallback
+                return a.localeCompare(b, 'az');
+            });
+
             const classes = [...new Set(schoolData.students.map(s => s.className))].sort();
 
-            let html = `<div class="heatmap-grid" style="grid-template-columns: 150px repeat(${subjects.length}, 1fr);">`;
+            // Structure
+            let html = `<div class="table-responsive">
+                <div class="heatmap-grid" style="grid-template-columns: 150px repeat(${subjects.length}, 1fr); display: grid;">`;
 
             // Headers
-            html += '<div class="heatmap-header">Sinif / Fənn</div>';
+            html += '<div class="heatmap-header sticky-col">Sinif / Fənn</div>';
             subjects.forEach(s => {
-                html += `<div class="heatmap-header text-center" title="${s}">${s}</div>`;
+                html += `<div class="heatmap-header text-center" title="${s} (${subjectCounts[s]} şagird)">${s}</div>`;
             });
 
             // Data Rows
             classes.forEach(c => {
-                html += `<div class="heatmap-header fw-bold">${c}</div>`;
+                html += `<div class="heatmap-header fw-bold sticky-col">${c}</div>`;
                 subjects.forEach(s => {
                     const classStudents = schoolData.students.filter(st => st.className === c && st.subjects[s] !== undefined);
                     const avg = classStudents.length > 0
@@ -3647,10 +3722,11 @@
                     let textColor = 'var(--text-color)';
 
                     if (avg !== null) {
-                        if (avg >= 85) bgColor = '#10b981';
-                        else if (avg >= 70) bgColor = '#00adba';
-                        else if (avg >= 50) bgColor = '#f59e0b';
-                        else bgColor = '#ef4444';
+                        if (avg >= 91) bgColor = 'var(--dark-green)';
+                        else if (avg >= 81) bgColor = 'var(--success-green)';
+                        else if (avg >= 61) bgColor = 'var(--primary-blue)';
+                        else if (avg >= 31) bgColor = 'var(--warning-orange)';
+                        else bgColor = 'var(--danger-red)';
                         textColor = 'white';
                     }
 
@@ -3660,7 +3736,7 @@
                 });
             });
 
-            html += '</div>';
+            html += '</div></div>';
             container.innerHTML = html;
         }
 
