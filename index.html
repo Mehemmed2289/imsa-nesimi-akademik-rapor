@@ -11,6 +11,9 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary-blue: #00525d;
@@ -27,6 +30,43 @@
             --card-bg: #ffffff;
             --border-color: #e5e7eb;
             --text-color: #374151;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --shadow-soft: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+            --shadow-medium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(at 0% 0%, hsla(189, 100%, 56%, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, hsla(160, 100%, 40%, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-color);
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        .navbar-brand-imsa {
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: -0.02em;
+        }
+
+        .card {
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: var(--card-bg);
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
         }
 
         [data-theme="dark"] {
@@ -961,6 +1001,24 @@
             font-size: 12px;
             cursor: pointer;
             transition: all 0.2s;
+        }
+
+        /* Mobile Responsive AI Chat */
+        @media (max-width: 480px) {
+            .ai-chat-window {
+                width: 90%;
+                height: 70vh;
+                right: 5%;
+                bottom: 90px;
+            }
+
+            .ai-chat-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
         }
 
         .suggestion-chip:hover {
@@ -4110,9 +4168,8 @@
                     if (entities[index]) {
                         headerName = entities[index].name;
                     }
-                    const tooltipText = `${headerName}\n${rowData.label}: ${value}`;
 
-                    cells += `<td class="${cellClass}" title="${tooltipText}">${value}</td>`;
+                    cells += `<td class="${cellClass}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="<div class='text-center'><strong>${headerName}</strong><br>${rowData.label}: ${value}</div>">${value}</td>`;
                 });
 
                 // Kazanan sınıfı ekle
@@ -4125,6 +4182,14 @@
                 row.innerHTML = cells;
                 tableBody.appendChild(row);
             });
+
+            // Initialize Bootstrap Tooltips
+            setTimeout(() => {
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('#comparison-table [data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            }, 100);
 
             // Grafikleri güncelle (Sadece merged state için varsayılan grafikleri tutuyoruz, isterseniz burayı da dinamikleştirebiliriz ama tablo öncelikliydi)
             updateGradeComparisonChart(); // Keep grade chart for now or update if needed
@@ -4244,7 +4309,7 @@
                     interaction: {
                         mode: 'nearest',
                         axis: 'xy',
-                        intersect: true
+                        intersect: false // Allow finding nearest point without being exactly on top
                     },
                     plugins: {
                         legend: {
