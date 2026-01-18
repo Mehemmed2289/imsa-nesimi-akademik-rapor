@@ -459,109 +459,144 @@
             object-fit: contain;
         }
 
-        /* Mobil Üçün Xüsusi */
-        .mobile-only {
-            display: none;
-        }
-
-        .desktop-only {
-            display: block;
-        }
-
-        @media (max-width: 768px) {
-            .mobile-only {
-                display: block;
-            }
-
-            .desktop-only {
-                display: none;
-            }
-        }
-
-        /* Yeni: Info Kartları */
-        .info-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .info-card h6 {
-            color: var(--primary-blue);
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        /* Yeni: Quick Stats */
-        .quick-stats {
+        /* Heatmap Styles */
+        .heatmap-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.75rem;
+            gap: 2px;
             margin-top: 1rem;
         }
 
-        .quick-stat-item {
-            background: var(--card-bg);
-            padding: 0.75rem;
-            border-radius: 8px;
+        .heatmap-cell {
+            padding: 10px;
             text-align: center;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border-radius: 4px;
+            min-width: 60px;
+            transition: transform 0.2s ease;
+        }
+
+        .heatmap-cell:hover {
+            transform: scale(1.05);
+            z-index: 10;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .heatmap-header {
+            font-weight: 600;
+            background: var(--light-gray);
+            padding: 12px 5px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            word-break: break-word;
+            line-height: 1.2;
+            min-height: 50px;
+        }
+
+        /* Search Styles */
+        .search-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 10vh;
+        }
+
+        .search-container {
+            width: 90%;
+            max-width: 600px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
             border: 1px solid var(--border-color);
-            transition: background-color 0.3s ease;
         }
 
-        .quick-stat-value {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--secondary-blue);
-        }
-
-        .quick-stat-label {
-            font-size: 0.75rem;
-            color: #6b7280;
-        }
-
-        /* Theme Toggle Button */
-        #theme-toggle {
+        #global-search-input {
+            width: 100%;
+            padding: 20px;
             font-size: 1.2rem;
+            border: none;
+            border-bottom: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-color);
+            outline: none;
+        }
+
+        .search-results {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .search-item {
+            padding: 12px 15px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        #theme-toggle:hover {
-            transform: rotate(30deg);
-        }
-
-        .modal-content {
-            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: background 0.2s;
             color: var(--text-color);
         }
 
-        .modal-header {
-            border-bottom-color: var(--border-color);
+        .search-item:hover {
+            background: var(--light-blue);
         }
 
-        .modal-footer {
-            border-top-color: var(--border-color);
+        .search-item i {
+            width: 30px;
+            height: 30px;
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .form-select,
-        .form-control {
-            background-color: var(--card-bg);
-            color: var(--text-color);
-            border-color: var(--border-color);
+        /* Offcanvas Styling */
+        .offcanvas-imsa {
+            background: linear-gradient(180deg, var(--primary-blue) 0%, #003f47 100%);
+            color: white;
         }
 
-        .form-select:focus,
-        .form-control:focus {
-            background-color: var(--card-bg);
-            color: var(--text-color);
+        .offcanvas-imsa .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 5px 15px;
         }
 
-        .bg-light-custom {
-            background-color: var(--light-gray) !important;
+        .offcanvas-imsa .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        /* Kbd Shortcut */
+        kbd {
+            background-color: var(--light-gray);
             border: 1px solid var(--border-color);
-            transition: background-color 0.3s ease;
+            border-radius: 3px;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+            color: var(--text-color);
+            display: inline-block;
+            font-size: 0.85em;
+            font-weight: 700;
+            line-height: 1;
+            padding: 2px 4px;
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -585,40 +620,74 @@
                     <div class="school-name-sub">2025-2026 Tədris ili I yarımil analizi</div>
                 </div>
             </a>
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2 gap-md-3">
+                <button class="btn btn-link text-white p-0 border-0 shadow-none d-none d-md-block"
+                    onclick="openSearch()" title="Axtar (Ctrl+K)">
+                    <i class="fas fa-search me-1"></i><kbd class="text-white bg-transparent border-white"
+                        style="font-size: 0.7rem;">Ctrl+K</kbd>
+                </button>
+                <button class="btn btn-link text-white p-0 border-0 shadow-none d-md-none" onclick="openSearch()">
+                    <i class="fas fa-search"></i>
+                </button>
                 <button id="theme-toggle" class="btn btn-link text-white p-0 border-0 shadow-none">
                     <i class="fas fa-moon"></i>
                 </button>
-                <div class="navbar-text text-white d-none d-md-block">
-                    <span id="current-date" style="font-size: 0.9rem;"></span>
+                <button class="btn btn-link text-white p-0 border-0 shadow-none d-lg-none" type="button"
+                    data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="navbar-text text-white d-none d-md-block ms-2">
+                    <span id="current-date" style="font-size: 0.8rem;"></span>
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Mobil Navigasiya (Kompaqt) -->
-    <div class="mobile-only mobile-compact-nav" id="mobile-nav">
-        <button class="mobile-nav-btn active" data-section="dashboard">
-            <i class="fas fa-tachometer-alt"></i>Ümumi
-        </button>
-        <button class="mobile-nav-btn" data-section="students">
-            <i class="fas fa-users"></i>Şagirdlər
-        </button>
-        <button class="mobile-nav-btn" data-section="attendance">
-            <i class="fas fa-calendar-alt"></i>Davamsızlıq
-        </button>
-        <button class="mobile-nav-btn" data-section="subjects">
-            <i class="fas fa-book"></i>Fənlər
-        </button>
-        <button class="mobile-nav-btn" data-section="classes">
-            <i class="fas fa-chalkboard"></i>Siniflər
-        </button>
-        <button class="mobile-nav-btn" data-section="comparison">
-            <i class="fas fa-balance-scale"></i>Müqayisə
-        </button>
-        <button class="mobile-nav-btn" data-section="export">
-            <i class="fas fa-download"></i>Rapor
-        </button>
+    <!-- Mobil Offcanvas Sidebar -->
+    <div class="offcanvas offcanvas-start offcanvas-imsa" tabindex="-1" id="mobileSidebar">
+        <div class="offcanvas-header border-bottom border-light">
+            <h5 class="offcanvas-title text-white">Menyu</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#" data-section="dashboard" data-bs-dismiss="offcanvas">
+                        <i class="fas fa-tachometer-alt me-2"></i> Ümumi Görünüş
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="students" data-bs-dismiss="offcanvas">
+                        <i class="fas fa-users me-2"></i> Şagird Analizi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="attendance" data-bs-dismiss="offcanvas">
+                        <i class="fas fa-calendar-alt me-2"></i> Davamsızlıq Analizi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="subjects" data-bs-dismiss="offcanvas">
+                        <i class="fas fa-book me-2"></i> Fənn Analizi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="classes" data-bs-dismiss="offcanvas">
+                        <i class="fas fa-chalkboard me-2"></i> Sinif Analizi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="comparison" data-bs-dismiss="offcanvas">
+                        <i class="fas fa-balance-scale me-2"></i> Müqayisə Analizi
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="export" data-bs-dismiss="offcanvas">
+                        <i class="fas fa-file-invoice me-2"></i> Hesabat
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 
     <div class="container-fluid" style="margin-top: 60px;">
@@ -659,7 +728,7 @@
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#" data-section="export">
-                                <i class="fas fa-file-download"></i> Rapor Yüklə
+                                <i class="fas fa-file-invoice"></i> Hesabat
                             </a>
                         </li>
                     </ul>
@@ -1170,91 +1239,73 @@
                     </div>
                 </section>
 
-                <!-- Export Section -->
+                <!-- Hesabat Section -->
                 <section id="export-section" class="content-section" style="display: none;">
-                    <h2 class="mb-4"><i class="fas fa-file-download me-2"></i>Rapor Yüklə</h2>
+                    <h2 class="section-title mb-4"><i class="fas fa-file-invoice me-2"></i>Hesabatlar və Analiz</h2>
 
-                    <div class="row mb-4">
-                        <div class="col-md-4 mb-3">
-                            <div class="card text-center h-100">
+                    <div class="row">
+                        <!-- Heatmap Section -->
+                        <div class="col-12 mb-4">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-primary text-white py-3">
+                                    <h5 class="mb-0"><i class="fas fa-th me-2"></i>Məktəb Performans İstilik Xəritəsi
+                                        (Heatmap)</h5>
+                                </div>
                                 <div class="card-body">
-                                    <i class="fas fa-file-pdf fa-3x text-danger mb-3"></i>
-                                    <h4>PDF Rapor</h4>
-                                    <p class="text-muted">Ümumi statistikalar ilə PDF formatında</p>
-                                    <button class="btn btn-danger w-100" onclick="exportPDF()">
-                                        <i class="fas fa-download me-2"></i>PDF Yüklə
-                                    </button>
+                                    <p class="text-muted small mb-3">Rənglər fənn və sinif üzrə ortalama uğuru göstərir
+                                        (Qırmızı: <50, Sarı: 50-70, Yaşıl:>70)</p>
+                                    <div id="heatmap-container" class="table-responsive">
+                                        <!-- Heatmap will be generated here -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-md-4 mb-3">
-                            <div class="card text-center h-100">
+                        <!-- Correlation Analysis -->
+                        <div class="col-12">
+                            <div class="card shadow-sm border-0">
+                                <div class="card-header bg-info text-white py-3">
+                                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Davamsızlığın Nəticələrə
+                                        Təsiri Analizi</h5>
+                                </div>
                                 <div class="card-body">
-                                    <i class="fas fa-file-excel fa-3x text-success mb-3"></i>
-                                    <h4>Excel Rapor</h4>
-                                    <p class="text-muted">Analiz məlumatları ilə Excel formatında</p>
-                                    <button class="btn btn-success w-100" onclick="exportExcel()">
-                                        <i class="fas fa-download me-2"></i>Excel Yüklə
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-4 mb-3">
-                            <div class="card text-center h-100">
-                                <div class="card-body">
-                                    <i class="fas fa-chart-bar fa-3x text-primary mb-3"></i>
-                                    <h4>Şəkillər</h4>
-                                    <p class="text-muted">Bütün qrafikləri PNG formatında</p>
-                                    <button class="btn btn-primary w-100" onclick="exportCharts()">
-                                        <i class="fas fa-download me-2"></i>Şəkilləri Yüklə
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Rapor Seçimləri -->
-                    <div class="card">
-                        <div class="card-header">
-                            <i class="fas fa-cogs me-2"></i>Rapor Konfiqurasiyası
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input" type="checkbox" id="include-charts" checked>
-                                        <label class="form-check-label" for="include-charts">
-                                            <i class="fas fa-chart-bar me-2"></i>Qrafikləri daxil et
-                                        </label>
-                                    </div>
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input" type="checkbox" id="include-attendance" checked>
-                                        <label class="form-check-label" for="include-attendance">
-                                            <i class="fas fa-calendar-alt me-2"></i>Davamsızlıq analizini daxil et
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input" type="checkbox" id="include-recommendations"
-                                            checked>
-                                        <label class="form-check-label" for="include-recommendations">
-                                            <i class="fas fa-lightbulb me-2"></i>Tövsiyələri daxil et
-                                        </label>
-                                    </div>
-                                    <div class="form-check mb-3">
-                                        <input class="form-check-input" type="checkbox" id="include-details" checked>
-                                        <label class="form-check-label" for="include-details">
-                                            <i class="fas fa-info-circle me-2"></i>Detalları daxil et
-                                        </label>
+                                    <div class="row align-items-center">
+                                        <div class="col-lg-7">
+                                            <div class="chart-container" style="height: 380px;">
+                                                <canvas id="impactAnalysisChart"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-5">
+                                            <div id="correlation-insights" class="p-4 bg-light-custom rounded border">
+                                                <h6 class="fw-bold mb-3 text-info"><i
+                                                        class="fas fa-lightbulb me-2"></i>Ağıllı Analitik Çıxarışlar
+                                                </h6>
+                                                <div id="insight-content">
+                                                    Yüklənir...
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Search Modal -->
+    <div class="search-modal-overlay" id="searchOverlay" onclick="closeSearch(event)">
+        <div class="search-container" onclick="event.stopPropagation()">
+            <input type="text" id="global-search-input" placeholder="Şagird, sinif və ya fənn axtarın..."
+                autocomplete="off">
+            <div class="search-results" id="search-results">
+                <div class="p-4 text-center text-muted">Axtarışa başlamaq üçün bir şey yazın...</div>
+            </div>
+            <div class="p-2 border-top bg-light-custom d-flex justify-content-between align-items-center px-3">
+                <small class="text-muted">Naviqasiya: <kbd>↑↓</kbd> Seçim: <kbd>Enter</kbd></small>
+                <small class="text-muted">Bağla: <kbd>ESC</kbd></small>
             </div>
         </div>
     </div>
@@ -1609,7 +1660,134 @@
             // Mobil nav pozisyonunu ayarla
             adjustMobileNavPosition();
             window.addEventListener('resize', adjustMobileNavPosition);
+
+            // Global Arama Eventleri
+            initGlobalSearch();
+
+            // Filtre Event Listener'larını ayarla
+            setupFilterEventListeners();
         });
+
+        function setupFilterEventListeners() {
+            // Şagird Analizi Filtreleri
+            ['student-class-filter', 'student-sort'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('change', updateStudentsView);
+            });
+            const studentSearch = document.getElementById('student-search');
+            if (studentSearch) studentSearch.addEventListener('input', updateStudentsView);
+
+            // Davamsızlıq Filtreleri
+            ['attendance-class-filter', 'attendance-threshold'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('change', updateAttendanceView);
+            });
+
+            // Fənn Filtreleri
+            ['subject-class-filter', 'subject-grade-filter', 'subject-sort'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('change', updateSubjectsView);
+            });
+        }
+
+        // =============================================
+        // GLOBAL SEARCH LOGIC
+        // =============================================
+        function initGlobalSearch() {
+            const searchInput = document.getElementById('global-search-input');
+            const searchResults = document.getElementById('search-results');
+
+            // Keyboard Shortcuts
+            document.addEventListener('keydown', (e) => {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    openSearch();
+                }
+                if (e.key === 'Escape' && document.getElementById('searchOverlay').style.display === 'flex') {
+                    closeSearch();
+                }
+            });
+
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                if (query.length < 2) {
+                    searchResults.innerHTML = '<div class="p-4 text-center text-muted">Axtarışa başlamaq üçün ən azı 2 hərf yazın...</div>';
+                    return;
+                }
+
+                const results = [];
+
+                // Şagirdlərdə axtar
+                schoolData.students.forEach(s => {
+                    if (s.name.toLowerCase().includes(query)) {
+                        results.push({ type: 'student', title: s.name, sub: s.className, id: s.id, icon: 'fa-user' });
+                    }
+                });
+
+                // Siniflərdə axtar
+                schoolData.classes.forEach(c => {
+                    if (c.name.toLowerCase().includes(query)) {
+                        results.push({ type: 'class', title: c.name, sub: 'Sinif', id: c.name, icon: 'fa-chalkboard' });
+                    }
+                });
+
+                // Fənlərdə axtar
+                schoolData.subjects.forEach(s => {
+                    if (s.name.toLowerCase().includes(query)) {
+                        results.push({ type: 'subject', title: s.name, sub: 'Fənn', id: s.name, icon: 'fa-book' });
+                    }
+                });
+
+                renderSearchResults(results.slice(0, 10));
+            });
+        }
+
+        function openSearch() {
+            const overlay = document.getElementById('searchOverlay');
+            overlay.style.display = 'flex';
+            setTimeout(() => document.getElementById('global-search-input').focus(), 100);
+        }
+
+        function closeSearch() {
+            document.getElementById('searchOverlay').style.display = 'none';
+        }
+
+        function renderSearchResults(results) {
+            const container = document.getElementById('search-results');
+            if (results.length === 0) {
+                container.innerHTML = '<div class="p-4 text-center text-muted">Nəticə tapılmadı.</div>';
+                return;
+            }
+
+            container.innerHTML = results.map(r => `
+                <div class="search-item" onclick="handleSearchResultClick('${r.type}', '${r.id}')">
+                    <i class="fas ${r.icon}"></i>
+                    <div>
+                        <div class="fw-bold">${r.title}</div>
+                        <div class="small text-muted">${r.sub}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleSearchResultClick(type, id) {
+            closeSearch();
+            if (type === 'student') {
+                viewStudentDetails(parseInt(id));
+            } else if (type === 'class') {
+                document.querySelector('[data-section="classes"]').click();
+                setTimeout(() => {
+                    document.getElementById('class-filter').value = id;
+                    updateClassesView();
+                }, 100);
+            } else if (type === 'subject') {
+                document.querySelector('[data-section="subjects"]').click();
+                setTimeout(() => {
+                    document.getElementById('subject-filter').value = id;
+                    updateSubjectsView();
+                }, 100);
+            }
+        }
 
         // =============================================
         // THEME LOGIC
@@ -1636,6 +1814,7 @@
             // Re-render all charts to apply new theme colors
             if (schoolData.overallStats.totalStudents > 0) {
                 updateDashboard();
+                updateStudentsView();
                 updateAttendanceView();
                 updateSubjectsView();
                 updateClassesView();
@@ -1773,12 +1952,17 @@
             calculateOverallStats();
 
             // Tüm görünümleri güncelle
+            // Görünümleri güncelle
             updateDashboard();
             updateStudentsView();
             updateAttendanceView();
             updateSubjectsView();
             updateClassesView();
             updateComparisonView();
+
+            // Yeni Professional Görünümlər
+            generateHeatmap();
+            updateImpactAnalysis();
             updateFilters();
         }
 
@@ -1967,6 +2151,9 @@
                                     return `Ortalama: ${context.raw.toFixed(1)}`;
                                 }
                             }
+                        },
+                        colors: {
+                            forceOverride: true
                         }
                     },
                     scales: {
@@ -2052,6 +2239,9 @@
                                     return `${label}: ${value} şagird (${percentage}%)`;
                                 }
                             }
+                        },
+                        colors: {
+                            forceOverride: true
                         }
                     }
                 }
@@ -2267,19 +2457,6 @@
                 `;
                 tableBody.appendChild(row);
             });
-
-            // Filtre event listener'larını ekle
-            ['student-class-filter', 'student-sort'].forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.addEventListener('change', updateStudentsView);
-                }
-            });
-
-            const searchInput = document.getElementById('student-search');
-            if (searchInput) {
-                searchInput.addEventListener('input', updateStudentsView);
-            }
         }
 
         // =============================================
@@ -2362,14 +2539,6 @@
 
             // Sınıf bazlı davamsızlık grafiğini güncelle
             updateClassAttendanceChart();
-
-            // Event listener'ları ekle
-            ['attendance-class-filter', 'attendance-threshold'].forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.addEventListener('change', updateAttendanceView);
-                }
-            });
         }
 
         // =============================================
@@ -2431,6 +2600,9 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        colors: {
+                            forceOverride: true
                         }
                     },
                     scales: {
@@ -2543,14 +2715,6 @@
 
             // Fənn qrafikini güncelle
             updateSubjectComparisonChart();
-
-            // Event listener'ları ekle
-            ['subject-class-filter', 'subject-grade-filter', 'subject-sort'].forEach(id => {
-                const element = document.getElementById(id);
-                if (element) {
-                    element.addEventListener('change', updateSubjectsView);
-                }
-            });
         }
 
         // =============================================
@@ -2595,6 +2759,9 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        colors: {
+                            forceOverride: true
                         }
                     },
                     scales: {
@@ -2784,6 +2951,9 @@
                     plugins: {
                         legend: {
                             position: 'top',
+                        },
+                        colors: {
+                            forceOverride: true
                         }
                     },
                     scales: {
@@ -2950,6 +3120,9 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        colors: {
+                            forceOverride: true
                         }
                     },
                     scales: {
@@ -3020,6 +3193,9 @@
                                         `${context.parsed.y.toFixed(1)} orta, ${context.parsed.x} gün`;
                                 }
                             }
+                        },
+                        colors: {
+                            forceOverride: true
                         }
                     },
                     scales: {
@@ -3265,6 +3441,9 @@
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        colors: {
+                            forceOverride: true
                         }
                     }
                 }
@@ -3438,6 +3617,126 @@
             return validValues.reduce((a, b) => a + b, 0) / validValues.length;
         }
 
+        // =============================================
+        // HEATMAP GENERATION
+        // =============================================
+        function generateHeatmap() {
+            const container = document.getElementById('heatmap-container');
+            if (!container) return;
+            const subjects = [...new Set(schoolData.students.flatMap(s => Object.keys(s.subjects)))].sort();
+            const classes = [...new Set(schoolData.students.map(s => s.className))].sort();
+
+            let html = `<div class="heatmap-grid" style="grid-template-columns: 150px repeat(${subjects.length}, 1fr);">`;
+
+            // Headers
+            html += '<div class="heatmap-header">Sinif / Fənn</div>';
+            subjects.forEach(s => {
+                html += `<div class="heatmap-header text-center" title="${s}">${s}</div>`;
+            });
+
+            // Data Rows
+            classes.forEach(c => {
+                html += `<div class="heatmap-header fw-bold">${c}</div>`;
+                subjects.forEach(s => {
+                    const classStudents = schoolData.students.filter(st => st.className === c && st.subjects[s] !== undefined);
+                    const avg = classStudents.length > 0
+                        ? classStudents.reduce((acc, st) => acc + st.subjects[s], 0) / classStudents.length
+                        : null;
+
+                    let bgColor = 'var(--light-gray)';
+                    let textColor = 'var(--text-color)';
+
+                    if (avg !== null) {
+                        if (avg >= 85) bgColor = '#10b981';
+                        else if (avg >= 70) bgColor = '#00adba';
+                        else if (avg >= 50) bgColor = '#f59e0b';
+                        else bgColor = '#ef4444';
+                        textColor = 'white';
+                    }
+
+                    html += `<div class="heatmap-cell" style="background: ${bgColor}; color: ${textColor}" title="${c} - ${s}: ${avg ? avg.toFixed(1) : 'N/A'}">
+                        ${avg ? avg.toFixed(0) : '-'}
+                    </div>`;
+                });
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // =============================================
+        // IMPACT ANALYSIS (CORRELATION)
+        // =============================================
+        function updateImpactAnalysis() {
+            const chartCanvas = document.getElementById('impactAnalysisChart');
+            if (!chartCanvas) return;
+            const ctx = chartCanvas.getContext('2d');
+
+            const impactData = {
+                '0 gün': { total: 0, count: 0 },
+                '1-3 gün': { total: 0, count: 0 },
+                '4-7 gün': { total: 0, count: 0 },
+                '8-14 gün': { total: 0, count: 0 },
+                '15+ gün': { total: 0, count: 0 }
+            };
+
+            schoolData.students.forEach(s => {
+                let range = '';
+                if (s.attendance === 0) range = '0 gün';
+                else if (s.attendance <= 3) range = '1-3 gün';
+                else if (s.attendance <= 7) range = '4-7 gün';
+                else if (s.attendance <= 14) range = '8-14 gün';
+                else range = '15+ gün';
+
+                impactData[range].total += s.average;
+                impactData[range].count++;
+            });
+
+            const labels = Object.keys(impactData);
+            const data = labels.map(l => impactData[l].count > 0 ? (impactData[l].total / impactData[l].count).toFixed(1) : 0);
+
+            if (charts.impactChart) charts.impactChart.destroy();
+
+            charts.impactChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Ortalama Bal',
+                        data: data,
+                        backgroundColor: '#00adba',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100 }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        colors: { forceOverride: true }
+                    }
+                }
+            });
+
+            const zeroAvg = parseFloat(data[0]) || 0;
+            const chronicAvg = parseFloat(data[4]) || 0;
+            const diff = (zeroAvg - chronicAvg).toFixed(1);
+
+            const insightBox = document.getElementById('insight-content');
+            if (insightBox) {
+                insightBox.innerHTML = `
+                    <ul class="list-unstyled mb-0 small">
+                        <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i> Davamsızlığı 0 olan şagirdlərin ortalaması: <b>${zeroAvg}</b></li>
+                        <li class="mb-2"><i class="fas fa-exclamation-circle text-danger me-2"></i> Xroniki davamsızlığı olanların ortalaması: <b>${chronicAvg}</b></li>
+                        <li class="mb-2"><i class="fas fa-arrow-down text-warning me-2"></i> Davamsızlıq artdıqca nəticələrdə orta hesabla <b>${diff} bal</b> eniş müşahidə olunur.</li>
+                        <li><i class="fas fa-info-circle text-primary me-2"></i> Tövsiyə: 5 gündən çox dərs qaçıranlar üçün xüsusi dəstək proqramı tətbiq edilməlidir.</li>
+                    </ul>
+                `;
+            }
+        }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
