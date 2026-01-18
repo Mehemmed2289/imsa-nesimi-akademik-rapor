@@ -1004,12 +1004,16 @@
         }
 
         /* Mobile Responsive AI Chat */
-        @media (max-width: 480px) {
+        @media (max-width: 576px) {
             .ai-chat-window {
-                width: 90%;
-                height: 70vh;
-                right: 5%;
-                bottom: 90px;
+                width: 100% !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                height: 80vh;
+                border-radius: 20px 20px 0 0;
+                border-left: 0;
+                border-right: 0;
+                border-bottom: 0;
             }
 
             .ai-chat-btn {
@@ -1018,6 +1022,10 @@
                 width: 50px;
                 height: 50px;
                 font-size: 20px;
+            }
+
+            .ai-chat-input-area {
+                padding: 10px;
             }
         }
 
