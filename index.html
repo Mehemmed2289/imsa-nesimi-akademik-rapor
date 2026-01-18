@@ -971,21 +971,48 @@
         .ai-chat-input-area {
             padding: 15px;
             padding-bottom: 25px;
-            /* Lift text box up */
             background: var(--card-bg);
             border-top: 1px solid var(--border-color);
-            display: flex;
-            gap: 10px;
+            position: relative;
+            /* For absolute positioning of button */
         }
 
         .ai-chat-input {
-            flex: 1;
+            width: 100%;
+            /* Full width */
             border: 1px solid var(--border-color);
             background: var(--bg-color);
             color: var(--text-color);
-            border-radius: 10px;
-            padding: 8px 15px;
+            border-radius: 25px;
+            /* More rounded */
+            padding: 10px 15px;
+            padding-right: 50px;
+            /* Space for the button inside */
             outline: none;
+            height: 46px;
+            /* Explicit height */
+        }
+
+        .ai-chat-input-area button {
+            position: absolute;
+            right: 25px;
+            /* 15px area padding + 10px input padding roughly */
+            top: 50%;
+            transform: translateY(-50%);
+            width: 34px !important;
+            height: 34px !important;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            z-index: 10;
+            margin: 0 !important;
+            /* Reset margins */
+            padding-bottom: 25px;
+            /* Cancel generic padding if any */
+            padding-bottom: 0 !important;
+            /* Reset padding */
         }
 
         .ai-suggestion-chips {
@@ -1008,14 +1035,17 @@
         /* Mobile Responsive AI Chat */
         @media (max-width: 576px) {
             .ai-chat-window {
-                width: 100% !important;
-                right: 0 !important;
-                bottom: 0 !important;
-                height: 80vh;
-                border-radius: 20px 20px 0 0;
-                border-left: 0;
-                border-right: 0;
-                border-bottom: 0;
+                width: 92% !important;
+                /* Ideal spacing from sides */
+                left: 50% !important;
+                transform: translateX(-50%);
+                right: auto !important;
+                bottom: 20px !important;
+                /* Spacing from bottom */
+                height: 75vh;
+                border-radius: 20px;
+                /* Fully rounded corners */
+                border: 1px solid rgba(0, 0, 0, 0.1);
             }
 
             .ai-chat-btn {
@@ -1027,8 +1057,7 @@
             }
 
             .ai-chat-input-area {
-                padding: 15px 25px 35px 15px;
-                /* Top, Right (!), Bottom, Left */
+                padding: 15px;
             }
         }
 
