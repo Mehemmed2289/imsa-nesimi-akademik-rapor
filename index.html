@@ -598,16 +598,117 @@
         .search-item {
             padding: 12px 15px;
             border-radius: 8px;
-            cursor: pointer;
             display: flex;
             align-items: center;
             gap: 15px;
-            transition: background 0.2s;
+            cursor: pointer;
+            transition: all 0.2s;
             color: var(--text-color);
         }
 
         .search-item:hover {
             background: var(--light-blue);
+            transform: translateX(5px);
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .animate-slide-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .content-section {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card {
+            animation: fadeInUp 0.5s ease-out forwards;
+            animation-fill-mode: both;
+        }
+
+        /* Delay for staggered animation */
+        .stat-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .stat-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .stat-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .stat-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .stat-card:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        /* Table row animation */
+        .data-table tr {
+            transition: all 0.2s ease;
+        }
+
+        .data-table tr:hover {
+            transform: scale(1.01);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            z-index: 2;
+        }
+
+        /* AI Chat Button Pulse */
+        .ai-chat-btn {
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .ai-chat-btn:hover {
+            animation: none;
+            transform: scale(1.1);
         }
 
         .search-item i {
@@ -725,6 +826,172 @@
             .modern-nav-btn i {
                 font-size: 1rem;
             }
+        }
+
+        /* AI Assistant Styles */
+        .ai-chat-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00adba, #00525d);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0, 173, 186, 0.4);
+            z-index: 2000;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            animation: pulse-ai 2s infinite;
+        }
+
+        @keyframes pulse-ai {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 173, 186, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(0, 173, 186, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 173, 186, 0);
+            }
+        }
+
+        .ai-chat-btn:hover {
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        .ai-chat-window {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 380px;
+            height: 550px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            z-index: 1999;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .ai-chat-header {
+            background: linear-gradient(135deg, #00525d, #00adba);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .ai-message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .ai-message.assistant {
+            align-self: flex-start;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-bottom-left-radius: 2px;
+        }
+
+        .ai-message.user {
+            align-self: flex-end;
+            background: #00adba;
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .ai-chat-input-area {
+            padding: 15px;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-chat-input {
+            flex: 1;
+            border: 1px solid var(--border-color);
+            background: var(--bg-color);
+            color: var(--text-color);
+            border-radius: 10px;
+            padding: 8px 15px;
+            outline: none;
+        }
+
+        .ai-suggestion-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .suggestion-chip {
+            background: var(--light-gray);
+            border: 1px solid var(--border-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .suggestion-chip:hover {
+            background: #00adba;
+            color: white;
+        }
+
+        .ai-analysis-card {
+            background: rgba(0, 173, 186, 0.05);
+            border-left: 4px solid #00adba;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 576px) {
+            .ai-chat-window {
+                width: calc(100% - 40px);
+                height: 70vh;
+                right: 20px;
+                bottom: 80px;
+            }
+        }
+
+        /* Eksik CSS sınıfları */
+        .bg-light-custom {
+            background-color: var(--light-gray);
+        }
+
+        .border-light-custom {
+            border-color: var(--border-color);
         }
     </style>
 </head>
@@ -1118,45 +1385,26 @@
 
                     <div class="filter-section">
                         <div class="row g-3">
-                            <div class="col-md-4">
-                                <label for="subject-class-filter" class="form-label">Sinif seçin:</label>
-                                <select id="subject-class-filter" class="form-select">
-                                    <option value="all">Hamısı</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="subject-grade-filter" class="form-label">Sinif səviyyəsi:</label>
-                                <select id="subject-grade-filter" class="form-select">
-                                    <option value="all">Hamısı</option>
-                                    <option value="2">2-ci sinif</option>
-                                    <option value="3">3-cü sinif</option>
-                                    <option value="4">4-cü sinif</option>
-                                    <option value="5">5-ci sinif</option>
-                                    <option value="6">6-cı sinif</option>
-                                    <option value="7">7-ci sinif</option>
-                                    <option value="8">8-ci sinif</option>
-                                    <option value="9">9-cu sinif</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label for="subject-sort" class="form-label">Sırala:</label>
-                                <select id="subject-sort" class="form-select">
-                                    <option value="name">Ada görə</option>
-                                    <option value="average_desc">Ortalamaya görə (azalan)</option>
-                                    <option value="average_asc">Ortalamaya görə (artan)</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mt-3">
-                                <label for="subject-detailed-filter" class="form-label">Fənn Detalları:</label>
-                                <select id="subject-detailed-filter" class="form-select">
-                                    <option value="all">Bütün Fənlər (İcmal)</option>
+                            <div class="col-md-5">
+                                <label for="subject-detailed-filter" class="form-label fw-bold"><i
+                                        class="fas fa-book-open me-1"></i>Analiz üçün fənn seçin:</label>
+                                <select id="subject-detailed-filter" class="form-select border-primary shadow-sm">
+                                    <option value="all">📊 Bütün Fənlər (Ümumi İcmal)</option>
                                     <!-- Options will be populated -->
                                 </select>
                             </div>
-                            <div class="col-md-6 mt-3 d-flex align-items-end">
-                                <div class="form-check form-switch w-100 p-3 border rounded bg-white">
-                                    <input class="form-check-input" type="checkbox" id="subject-merge-toggle">
-                                    <label class="form-check-label fw-bold" for="subject-merge-toggle">Paralel Sinifləri
+                            <div class="col-md-4">
+                                <label for="subject-sort" class="form-label">Sıralama:</label>
+                                <select id="subject-sort" class="form-select">
+                                    <option value="average_desc">Ortalamaya görə (Azalan)</option>
+                                    <option value="average_asc">Ortalamaya görə (Artan)</option>
+                                    <option value="name">Ada görə</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <div class="form-check form-switch w-100 p-3 border rounded bg-white shadow-sm">
+                                    <input class="form-check-input" type="checkbox" id="subject-merge-toggle" checked>
+                                    <label class="form-check-label fw-bold" for="subject-merge-toggle">Sinifləri
                                         Birləşdir</label>
                                 </div>
                             </div>
@@ -1435,6 +1683,56 @@
                         </div>
                     </div>
                 </section>
+
+                <!-- AI Assistant UI -->
+                <div class="ai-chat-btn" id="ai-chat-toggle" title="IMSA Süni Zəka Assistenti">
+                    <i class="fas fa-robot"></i>
+                </div>
+
+                <div class="ai-chat-window" id="ai-chat-window">
+                    <div class="ai-chat-header">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-robot me-2 fs-4"></i>
+                            <div>
+                                <div class="fw-bold">IMSA AI Assistenti</div>
+                                <div class="small opacity-75">Sizin məlumat analizçiniz</div>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm text-white" onclick="toggleAIChat()"><i
+                                class="fas fa-times"></i></button>
+                    </div>
+                    <div class="ai-chat-messages" id="ai-chat-messages">
+                        <div class="ai-message assistant">
+                            Salam! Mən IMSA məktəb məlumatlarını analiz edən süni zəka asistentiyəm. Sizin üçün hansı
+                            şagirdi və ya sinfi analiz edim?
+                            <div class="ai-suggestion-chips">
+                                <div class="suggestion-chip"
+                                    onclick="sendAlSuggestion('Ümumi məktəb vəziyyəti necədir?')">📊 Ümumi Vəziyyət
+                                </div>
+                                <div class="suggestion-chip"
+                                    onclick="sendAlSuggestion('Bütün fənlər üzrə liderlər kimdir?')">📚 Fənn Liderləri
+                                </div>
+                                <div class="suggestion-chip"
+                                    onclick="sendAlSuggestion('Mükəmməl davamiyyəti (0 gün) olanlar')">🏆 Mükəmməl
+                                    Davamiyyət</div>
+                                <div class="suggestion-chip" onclick="sendAlSuggestion('Əlaçıların siyahısı')">🌟
+                                    Əlaçıların Siyahısı</div>
+                                <div class="suggestion-chip"
+                                    onclick="sendAlSuggestion('Hansı sinfin ortalaması ən yüksəkdir?')">🏫 Ən Yaxşı
+                                    Sinif</div>
+                                <div class="suggestion-chip"
+                                    onclick="sendAlSuggestion('Kritik davamsızlıqda ən çox olan uşaqlar')">🚩 Kritik
+                                    Davamsızlıq</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ai-chat-input-area">
+                        <input type="text" class="ai-chat-input" id="ai-input" placeholder="Sualınızı yazın..."
+                            onkeypress="if(event.key === 'Enter') handleAISend()">
+                        <button class="btn btn-primary btn-sm rounded-circle" onclick="handleAISend()"><i
+                                class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1486,36 +1784,38 @@
         </div>
     </div>
 
-    <!-- Mobile Bottom Navigation Removed in favor of Top Grid -->
-    <div class="d-none" id="mobile-nav"></div>
-    <button class="mobile-nav-btn active" data-section="dashboard">
-        <i class="fas fa-tachometer-alt"></i>
-        <span>Ümumi</span>
-    </button>
-    <button class="mobile-nav-btn" data-section="students">
-        <i class="fas fa-users"></i>
-        <span>Şagird</span>
-    </button>
-    <button class="mobile-nav-btn" data-section="attendance">
-        <i class="fas fa-calendar-alt"></i>
-        <span>Davam</span>
-    </button>
-    <button class="mobile-nav-btn" data-section="subjects">
-        <i class="fas fa-book"></i>
-        <span>Fənn</span>
-    </button>
-    <button class="mobile-nav-btn" data-section="classes">
-        <i class="fas fa-chalkboard"></i>
-        <span>Sinif</span>
-    </button>
-    <button class="mobile-nav-btn" data-section="comparison">
-        <i class="fas fa-chart-bar"></i>
-        <span>Müqayisə</span>
-    </button>
-    <button class="mobile-nav-btn" data-section="export">
-        <i class="fas fa-file"></i>
-        <span>Hesabat</span>
-    </button>
+    <!-- Mobile Bottom Navigation (Hidden - using top grid instead) -->
+    <div class="d-none" id="mobile-nav">
+        <div class="mobile-compact-nav">
+            <button class="mobile-nav-btn active" data-section="dashboard">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Ümumi</span>
+            </button>
+            <button class="mobile-nav-btn" data-section="students">
+                <i class="fas fa-users"></i>
+                <span>Şagird</span>
+            </button>
+            <button class="mobile-nav-btn" data-section="attendance">
+                <i class="fas fa-calendar-alt"></i>
+                <span>Davam</span>
+            </button>
+            <button class="mobile-nav-btn" data-section="subjects">
+                <i class="fas fa-book"></i>
+                <span>Fənn</span>
+            </button>
+            <button class="mobile-nav-btn" data-section="classes">
+                <i class="fas fa-chalkboard"></i>
+                <span>Sinif</span>
+            </button>
+            <button class="mobile-nav-btn" data-section="comparison">
+                <i class="fas fa-chart-bar"></i>
+                <span>Müqayisə</span>
+            </button>
+            <button class="mobile-nav-btn" data-section="export">
+                <i class="fas fa-file"></i>
+                <span>Hesabat</span>
+            </button>
+        </div>
     </div>
 
     <script>
@@ -1841,7 +2141,317 @@
             if (heatmapMergeToggle) {
                 heatmapMergeToggle.addEventListener('change', generateHeatmap);
             }
+
+            // AI Assistant initialization
+            initAIAssistant();
         });
+
+        // =============================================
+        // AI ASSISTANT LOGIC
+        // =============================================
+        function initAIAssistant() {
+            const toggle = document.getElementById('ai-chat-toggle');
+            if (toggle) toggle.addEventListener('click', toggleAIChat);
+        }
+
+        function toggleAIChat() {
+            const window = document.getElementById('ai-chat-window');
+            const isVisible = window.style.display === 'flex';
+            window.style.display = isVisible ? 'none' : 'flex';
+        }
+
+        function sendAlSuggestion(text) {
+            document.getElementById('ai-input').value = text;
+            handleAISend();
+        }
+
+        function handleAISend() {
+            const input = document.getElementById('ai-input');
+            const query = input.value.trim();
+            if (!query) return;
+
+            addAIMessage(query, 'user');
+            input.value = '';
+
+            // Simulate "thinking"
+            setTimeout(() => {
+                const response = processAIQuery(query);
+                addAIMessage(response, 'assistant');
+            }, 600);
+        }
+
+        function addAIMessage(text, sender) {
+            const container = document.getElementById('ai-chat-messages');
+            const msg = document.createElement('div');
+            msg.className = `ai-message ${sender}`;
+            msg.innerHTML = text;
+            container.appendChild(msg);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function getGradeBadgeClass(grade) {
+            if (grade >= 90) return 'bg-success';
+            if (grade >= 70) return 'bg-primary';
+            if (grade >= 50) return 'bg-warning text-dark';
+            return 'bg-danger';
+        }
+
+        // Güclü Normalizasiya: Bütün simvolları (., -, boşluq) təmizləyir
+        const cleanForMatch = (text) => {
+            if (!text) return "";
+            return text.toString().toLowerCase()
+                .replace(/ı/g, 'i').replace(/ç/g, 'c').replace(/ş/g, 's').replace(/ğ/g, 'g')
+                .replace(/[^a-z0-9]/g, ''); // Yalnız hərf və rəqəm saxla
+        };
+
+        // =============================================
+        // IMSA COGNITIVE ENGINE (V5 - SEMANTIC ANALYTICS)
+        // =============================================
+        function processAIQuery(query) {
+            const rawQ = query.toLowerCase().trim();
+            const stats = schoolData.overallStats;
+
+            // 1. ULTRA-ROBUST NORMALIZATION (A-centric)
+            const heavyClean = (text) => {
+                if (!text) return "";
+                return text.toString().toLowerCase()
+                    .replace(/ə/g, 'a').replace(/e/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ı/g, 'i').replace(/ç/g, 'c').replace(/ş/g, 's').replace(/ğ/g, 'g')
+                    .replace(/\s+/g, '') // Bütün boşluqları sil
+                    .replace(/[^a-z0-9]/g, ''); // Bütün simvolları sil
+            };
+
+            const qClean = heavyClean(rawQ);
+
+            // --- AI VOICE RESPONSES ---
+            const AI_VOICE = {
+                greet: "Salam! IMSA Ağıllı Analitika mühərriki hazırdır. 🤖 Məktəb üzrə istənilən statistikaya və ya şagird/sinif məlumatına baxa bilərik.",
+                thanks: "Buyurun! Başqa bir sualınız və ya analiz ehtiyacınız varmı? 😊",
+                notfound: (hint) => `Soruşduğunuz mövzu haqqında məlumat bazasında dəqiq uyğunluq tapmadım. 🧐<br><small class="text-muted">Bəlkə bunları yoxlayasınız: <b>${hint}</b></small>`,
+                clue: "2A sinfi, Ağazadə İbrahim, Top 5 şagird, Davamiyyət problemi"
+            };
+
+            // Conversational triggers
+            if (['salam', 'hey', 'hi', 'alo'].includes(qClean)) return AI_VOICE.greet;
+            if (['necesen', 'veziyyetnece'].some(t => qClean.includes(t))) return "Sizə xidmət edəndə özümü əla hiss edirəm! 📊 Buyurun, hansı məlumatı analiz edək?";
+            if (['sagol', 'tesekkur', 'minnetdar', 'ok', 'oldu'].some(t => qClean.includes(t))) return AI_VOICE.thanks;
+
+            // --- TEMPLATE SEARCH (ROBUST KEYWORDS) ---
+
+            // T1 & T9: Ümumi Statistika (umumivaziyyat)
+            if (qClean.includes('umumivaziyyat') || qClean.includes('umumimaktab') || qClean.includes('umumistatistik')) {
+                return `📊 <b>Məktəbin Ümumi Statistika Hesabatı:</b><br><div class='small mt-1'>
+                • Toplam Şagird Sayı: <b>${stats.totalStudents}</b><br>
+                • Orta Akademik Bal: <b>${stats.overallAverage.toFixed(1)}</b><br>
+                • Orta Davamsızlıq: <b>${stats.averageAttendance.toFixed(1)} gün</b><br>
+                • Sistemdəki Sinif Sayı: <b>${schoolData.classes.length}</b></div>`;
+            }
+
+            // T2: Top 5 Şagird (top5)
+            if (qClean.includes('top5') || qClean.includes('anyaksi5') || qClean.includes('lidarsagird')) {
+                const top = [...schoolData.students].sort((a, b) => b.average - a.average).slice(0, 5);
+                let res = "🏆 <b>Məktəbin Lider Şagirdləri (Top 5):</b><br><ul class='ps-3 mb-0 small'>";
+                top.forEach(s => res += `<li>${s.name} (${s.className}) - <b>${s.average.toFixed(1)}</b></li>`);
+                return res + "</ul>";
+            }
+
+            // T3: Ən yaxşı sinif (hansisinfin...)
+            if (qClean.includes('hansisinfin') || qClean.includes('ortalamasianyuksak') || qClean.includes('anyaxsisinif')) {
+                const sortedClasses = [...schoolData.classes].sort((a, b) => (stats.classAverages[b]?.average || 0) - (stats.classAverages[a]?.average || 0));
+                const best = sortedClasses[0];
+                let res = `🏫 <b>Akademik Lider Sinif:</b> <b>${best}</b> (Orta bal: <b>${stats.classAverages[best].average.toFixed(1)}</b>)<br><br>`;
+                res += `🚶 <b>Siniflərin Cəmi Davamsızlığı (Alt-alta):</b><br>`;
+                [...schoolData.classes].sort().forEach(c => {
+                    const cStudents = schoolData.students.filter(s => s.className === c);
+                    const totalAtt = cStudents.reduce((sum, s) => sum + s.attendance, 0);
+                    res += `• ${c}: <b>${totalAtt} gün</b><br>`;
+                });
+                return res;
+            }
+
+            // T5: Kritik Davamsızlıq (kritikdavamsizliq)
+            if (qClean.includes('kritikdavamsizliq') || qClean.includes('encoxdavamsizliq')) {
+                const critical = [...schoolData.students].sort((a, b) => b.attendance - a.attendance).slice(0, 15);
+                let res = "🚩 <b>Kritik Davamsızlıq - Ən çox dərs qaçıran şagirdlər:</b><br>";
+                if (critical.length > 0) critical.forEach((s, idx) => {
+                    if (s.attendance > 0) res += `${idx + 1}. ${s.name} (${s.className}): <b>${s.attendance} gün</b><br>`;
+                });
+                else res += "Sistemdə davamsızlığı olan şagird tapılmadı.";
+                return res;
+            }
+
+            // T6: Fənn Liderləri (fan + lidar və ya konkret fənn)
+            const isLidarQuery = qClean.includes('lidar') || qClean.includes('birinci') || qClean.includes('anyaxsi') || qClean.includes('alaci');
+            const mentionedSubject = schoolData.subjects.find(sub => qClean.includes(heavyClean(sub)));
+
+            if (isLidarQuery && (qClean.includes('fan') || mentionedSubject)) {
+                if (mentionedSubject && !qClean.includes('butun')) {
+                    // Specific subject leader
+                    let topS = null;
+                    let maxVal = -1;
+                    schoolData.students.forEach(s => {
+                        if (s.subjects[mentionedSubject] !== undefined && s.subjects[mentionedSubject] > maxVal) {
+                            maxVal = s.subjects[mentionedSubject];
+                            topS = s;
+                        }
+                    });
+                    if (topS) {
+                        return `📚 <b>${mentionedSubject}</b> üzrə məktəb lideri: <br>👤 <b>${topS.name}</b> (${topS.className}) - <span class="badge bg-success">${maxVal} bal</span>`;
+                    }
+                } else {
+                    // All subjects leaders
+                    let res = "📚 <b>Hər fənn üzrə məktəb liderləri (Top Nəticə):</b><br>";
+                    schoolData.subjects.forEach(sub => {
+                        let topS = null;
+                        let maxVal = -1;
+                        schoolData.students.forEach(s => {
+                            if (s.subjects[sub] !== undefined && s.subjects[sub] > maxVal) {
+                                maxVal = s.subjects[sub];
+                                topS = s;
+                            }
+                        });
+                        if (topS) {
+                            res += `• ${sub}: <b>${topS.name}</b> (${topS.className}) - <span class="badge bg-success">${maxVal} bal</span><br>`;
+                        }
+                    });
+                    return res;
+                }
+            }
+
+            // T7: Əlaçıların siyahısı (alacilar)
+            if (qClean.includes('alaci') || qClean.includes('anyaksisagird') || qClean.includes('lidersagird')) {
+                let res = `🌟 <b>Hər sinif üzrə akademik lider şagirdlər:</b><br>`;
+                [...schoolData.classes].sort().forEach(c => {
+                    const cStudents = schoolData.students.filter(s => s.className === c);
+                    if (cStudents.length > 0) {
+                        const top = cStudents.sort((a, b) => b.average - a.average)[0];
+                        res += `• ${c}: <b>${top.name}</b> - <b>${top.average.toFixed(1)} bal</b><br>`;
+                    }
+                });
+                return res;
+            }
+
+            // T8: Mükəmməl Davamiyyət (0 gün)
+            if (qClean.includes('0gun') || qClean.includes('mukammaldavam') || qClean.includes('qayibsiz')) {
+                const perfect = schoolData.students.filter(s => s.attendance === 0).sort((a, b) => b.average - a.average);
+                let res = "🏆 <b>Mükəmməl Davamiyyəti olan (0 qayıb) Nümunəvi Şagirdlər:</b><br>";
+                if (perfect.length > 0) {
+                    perfect.slice(0, 20).forEach((s, idx) => {
+                        res += `${idx + 1}. ${s.name} (${s.className})<br>`;
+                    });
+                    if (perfect.length > 20) res += `<small>...və daha ${perfect.length - 20} nəfər.</small>`;
+                } else res += "Təəssüf ki, tam qayıbsız şagird tapılmadı.";
+                return res;
+            }
+
+            // --- 2. DYNAMIC SEARCH (CLASS & STUDENT) ---
+            const foundClasses = schoolData.classes.filter(c => qClean.includes(heavyClean(c)));
+            const matchedStudents = schoolData.students.filter(s => {
+                const sClean = heavyClean(s.name);
+                const tokens = rawQ.split(' ').map(t => heavyClean(t)).filter(t => t.length > 2);
+                return tokens.every(t => sClean.includes(t)) || sClean.includes(qClean);
+            });
+
+            const intents = {
+                attendance: qClean.includes('davam') || qClean.includes('gelme') || qClean.includes('qacir')
+            };
+
+            let responseParts = [];
+
+            // Case: Class Search (Vertical student list)
+            if (foundClasses.length > 0) {
+                foundClasses.forEach(c => {
+                    const d = stats.classAverages[c];
+                    const cStudents = schoolData.students.filter(s => s.className === c);
+                    let part = `<div class="ai-analysis-card border-success">
+                        <h6 class="text-success mb-1"><b>${c} Sinfi Analizi</b></h6>
+                        <div class="small mb-2">📈 Orta: <b>${d.average.toFixed(1)}</b> | Davamsızlıq: <b>${d.attendance.toFixed(1)} gün</b></div>`;
+
+                    if (intents.attendance) {
+                        const badAtt = cStudents.filter(s => s.attendance > 5).sort((a, b) => b.attendance - a.attendance);
+                        part += `<div class='mt-2 border-top pt-1 small'>🚩 <b>Davamsızlıq (5+ gün):</b><br>`;
+                        badAtt.forEach(s => part += `• ${s.name} (${s.attendance} gün)<br>`);
+                        part += `</div>`;
+                    } else {
+                        const sList = [...cStudents].sort((a, b) => b.average - a.average);
+                        part += `<div class='mt-2 border-top pt-1 small'><b>Şagirdlərin Siyahısı (Alt-alta):</b><br>`;
+                        sList.forEach((s, idx) => {
+                            part += `${idx + 1}. ${s.name} - <b>${s.average.toFixed(1)}</b><br>`;
+                        });
+                        part += `</div>`;
+                    }
+                    part += `</div>`;
+                    responseParts.push(part);
+                });
+            }
+
+            // Case: Student Search
+            if (matchedStudents.length > 0 && foundClasses.length === 0) {
+                let stRes = `👤 <b>Şagird Tapıldı (${matchedStudents.length}):</b><br>`;
+                matchedStudents.slice(0, 5).forEach(s => {
+                    stRes += `<div class="ai-analysis-card">
+                        <b>${s.name}</b> <small class="text-muted">(${s.className})</small><br>
+                        <div class="small">🎯 Bal: <b>${s.average.toFixed(1)}</b> | 🚶 Davamsızlıq: <b>${s.attendance} gün</b></div>
+                    </div>`;
+                });
+                responseParts.push(stRes);
+            }
+
+            if (responseParts.length > 0) return responseParts.join('<br>');
+
+            return AI_VOICE.notfound(AI_VOICE.clue);
+        }
+
+        // Köməkçi funksiya: Sinif ortalamalarını hesablayır (Bunu processAIQuery-dən kənara çıxaraq təmizləyək)
+        function getAggregatedClassStats(classes) {
+            let totalAvg = 0;
+            let totalAtt = 0;
+            let count = 0;
+            classes.forEach(c => {
+                const d = schoolData.overallStats.classAverages[c];
+                if (d) { totalAvg += d.average; totalAtt += d.attendance; count++; }
+            });
+            return { avg: totalAvg / count, att: totalAtt / count };
+        }
+
+        function calculateBestGradeLevel() {
+            const gradeStats = schoolData.overallStats.gradeAverages;
+            let max = 0;
+            let bestGrade = "";
+            for (let g in gradeStats) {
+                if (gradeStats[g] > max) { max = gradeStats[g]; bestGrade = g; }
+            }
+            return bestGrade;
+        }
+
+        function calculateWorstAttendanceClass() {
+            let worst = '';
+            let max = 0;
+            schoolData.classes.forEach(c => {
+                const studentsInClass = schoolData.students.filter(s => s.className === c);
+                if (studentsInClass.length > 0) {
+                    const totalAttendance = studentsInClass.reduce((acc, s) => acc + s.attendance, 0);
+                    const avg = totalAttendance / studentsInClass.length;
+                    if (avg > max) { max = avg; worst = c; }
+                }
+            });
+            return worst;
+        }
+
+        function calculateBestClassForSubject(subject) {
+            let bestClass = '';
+            let maxAvg = 0;
+            schoolData.classes.forEach(c => {
+                const students = schoolData.students.filter(s => s.className === c && s.subjects[subject] !== undefined);
+                if (students.length > 0) {
+                    const avg = students.reduce((acc, s) => acc + s.subjects[subject], 0) / students.length;
+                    if (avg > maxAvg) {
+                        maxAvg = avg;
+                        bestClass = c;
+                    }
+                }
+            });
+            return bestClass || "Məlumat yoxdur";
+        }
 
         function setupFilterEventListeners() {
             // Şagird Analizi Filtreleri
@@ -1859,7 +2469,7 @@
             });
 
             // Fənn Filtreleri
-            const subjectFilters = ['subject-class-filter', 'subject-grade-filter', 'subject-sort', 'subject-detailed-filter', 'subject-merge-toggle'];
+            const subjectFilters = ['subject-sort', 'subject-detailed-filter', 'subject-merge-toggle'];
             subjectFilters.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('change', updateSubjectsView);
@@ -1943,8 +2553,10 @@
             setTimeout(() => document.getElementById('global-search-input').focus(), 100);
         }
 
-        function closeSearch() {
-            document.getElementById('searchOverlay').style.display = 'none';
+        function closeSearch(event) {
+            if (!event || event.target.id === 'searchOverlay') {
+                document.getElementById('searchOverlay').style.display = 'none';
+            }
         }
 
         function renderSearchResults(results) {
@@ -1970,16 +2582,17 @@
             if (type === 'student') {
                 viewStudentDetails(parseInt(id));
             } else if (type === 'class') {
-                document.querySelector('[data-section="classes"]').click();
-                setTimeout(() => {
-                    document.getElementById('class-filter').value = id;
-                    updateClassesView();
-                }, 100);
+                showSection('classes-section');
+                // Sınıf analizi bölməsində xüsusi bir sinif filtri yoxdur, 
+                // lakin gələcəkdə əlavə edilərsə bura kod yazıla bilər.
             } else if (type === 'subject') {
-                document.querySelector('[data-section="subjects"]').click();
+                showSection('subjects-section');
                 setTimeout(() => {
-                    document.getElementById('subject-filter').value = id;
-                    updateSubjectsView();
+                    const select = document.getElementById('subject-detailed-filter');
+                    if (select) {
+                        select.value = id;
+                        updateSubjectsView();
+                    }
                 }, 100);
             }
         }
@@ -1991,12 +2604,20 @@
             // Tüm bölmeleri gizle
             document.querySelectorAll('.content-section').forEach(section => {
                 section.style.display = 'none';
+                section.classList.remove('animate-fade-in');
             });
 
             // Hedef bölmeyi göster
             const targetSection = document.getElementById(sectionId);
             if (targetSection) {
                 targetSection.style.display = 'block';
+                targetSection.classList.add('animate-fade-in');
+
+                // Trigger animations for cards inside
+                targetSection.querySelectorAll('.card, .stat-card').forEach((el, idx) => {
+                    el.classList.add('animate-slide-up');
+                    el.style.animationDelay = `${idx * 0.1}s`;
+                });
 
                 // Bölmeye özel güncellemeleri tetikle
                 if (sectionId === 'comparison-section') updateComparisonView();
@@ -2030,6 +2651,14 @@
                 const hour = new Date().getHours();
                 const isNight = hour < 7 || hour > 19;
                 setTheme(isNight ? 'dark' : 'light');
+            }
+
+            // Global Chart Animation Settings
+            if (window.Chart) {
+                Chart.defaults.animation = {
+                    duration: 1500,
+                    easing: 'easeOutQuart'
+                };
             }
         }
 
@@ -2567,12 +3196,12 @@
             // Sınıf filtrelerini güncelle
             const classFilters = [
                 'student-class-filter',
-                'attendance-class-filter',
-                'subject-class-filter'
+                'attendance-class-filter'
             ];
 
             classFilters.forEach(filterId => {
                 const select = document.getElementById(filterId);
+                if (!select) return;
                 select.innerHTML = '<option value="all">Hamısı</option>';
 
                 // Sınıfları grupla
@@ -3010,7 +3639,18 @@
             }
 
             // Stats card updates (generic)
-            document.getElementById('subject-total-count').textContent = schoolData.subjects.length;
+            const subjectTotalCountEl = document.getElementById('subject-total-count');
+            if (subjectTotalCountEl) subjectTotalCountEl.textContent = schoolData.subjects.length;
+
+            // Update best/worst subject cards
+            const subAvgs = schoolData.subjects.map(s => ({ name: s, avg: stats.subjectAverages[s] || 0 }));
+            if (subAvgs.length > 0) {
+                subAvgs.sort((a, b) => b.avg - a.avg);
+                const bestSubEl = document.getElementById('best-subject');
+                const worstSubEl = document.getElementById('worst-subject');
+                if (bestSubEl) bestSubEl.textContent = subAvgs[0].name;
+                if (worstSubEl) worstSubEl.textContent = subAvgs[subAvgs.length - 1].name;
+            }
         }
 
         function updateDetailedSubjectChart(subject, data) {
@@ -3464,7 +4104,15 @@
                     if (index === winnerIndex && winnerIndex !== -1 && rowData.label !== 'Şagird Sayı') {
                         cellClass = 'bg-success text-white fw-bold';
                     }
-                    cells += `<td class="${cellClass}">${value}</td>`;
+
+                    // Add tooltip title for easier reading
+                    let headerName = 'N/A';
+                    if (entities[index]) {
+                        headerName = entities[index].name;
+                    }
+                    const tooltipText = `${headerName}\n${rowData.label}: ${value}`;
+
+                    cells += `<td class="${cellClass}" title="${tooltipText}">${value}</td>`;
                 });
 
                 // Kazanan sınıfı ekle
@@ -3530,6 +4178,13 @@
                         },
                         colors: {
                             forceOverride: true
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `Ortalama: ${context.parsed.y}`;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -3561,7 +4216,9 @@
             // Öğrencilerin davamsızlık ve ortalama verilerini al
             const dataPoints = schoolData.students.map(student => ({
                 x: student.attendance,
-                y: student.average
+                y: student.average,
+                studentName: student.name,
+                className: student.className
             }));
 
             if (charts.attendanceCorrelationChart) {
@@ -3584,6 +4241,11 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'nearest',
+                        axis: 'xy',
+                        intersect: true
+                    },
                     plugins: {
                         legend: {
                             display: false
@@ -3591,13 +4253,8 @@
                         tooltip: {
                             callbacks: {
                                 label: function (context) {
-                                    const student = schoolData.students.find(s =>
-                                        s.attendance === context.parsed.x &&
-                                        Math.abs(s.average - context.parsed.y) < 0.1
-                                    );
-                                    return student ?
-                                        `${student.name}: ${context.parsed.y.toFixed(1)} orta, ${context.parsed.x} gün` :
-                                        `${context.parsed.y.toFixed(1)} orta, ${context.parsed.x} gün`;
+                                    const point = context.raw;
+                                    return `${point.studentName} (${point.className}): ${point.y.toFixed(1)} ortalama, ${point.x} gün`;
                                 }
                             }
                         },
@@ -4179,7 +4836,17 @@
                     },
                     plugins: {
                         legend: { display: false },
-                        colors: { forceOverride: true }
+                        colors: { forceOverride: true },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `Ortalama: ${context.parsed.y}`;
+                                },
+                                title: function (context) {
+                                    return `Davamsızlıq: ${context[0].label}`;
+                                }
+                            }
+                        }
                     }
                 }
             });
@@ -4200,6 +4867,47 @@
                 `;
             }
         }
+        // HIZLI DÜZELTME - DÜĞMELERİ ÇALIŞTIR
+        document.addEventListener('DOMContentLoaded', function () {
+            // Modern grid butonları
+            document.querySelectorAll('.modern-nav-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    // Tüm butonlardan active class'ını kaldır
+                    document.querySelectorAll('.modern-nav-btn').forEach(b => {
+                        b.classList.remove('active');
+                    });
+
+                    // Tıklanana active ekle
+                    this.classList.add('active');
+
+                    // Tüm bölmeleri gizle
+                    document.querySelectorAll('.content-section').forEach(section => {
+                        section.style.display = 'none';
+                    });
+
+                    // İlgili bölümü göster
+                    const sectionName = this.getAttribute('data-section');
+                    const targetSection = document.getElementById(sectionName + '-section');
+                    if (targetSection) {
+                        targetSection.style.display = 'block';
+
+                        // Gerekli güncellemeleri yap
+                        if (sectionName === 'dashboard') updateDashboard();
+                        if (sectionName === 'students') updateStudentsView();
+                        if (sectionName === 'attendance') updateAttendanceView();
+                        if (sectionName === 'subjects') updateSubjectsView();
+                        if (sectionName === 'classes') updateClassesView();
+                        if (sectionName === 'comparison') updateComparisonView();
+                        if (sectionName === 'export') {
+                            generateHeatmap();
+                            updateImpactAnalysis();
+                        }
+                    }
+                });
+            });
+
+            console.log('Navigasyon butonları aktif!');
+        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
