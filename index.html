@@ -780,6 +780,42 @@
             color: white;
         }
 
+        /* Teacher Card Styles */
+        .teacher-card {
+            border: none !important;
+            border-radius: 16px !important;
+            overflow: hidden;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .teacher-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .avatar-circle {
+            box-shadow: 0 4px 10px rgba(0, 173, 186, 0.3);
+            border: 3px solid white;
+        }
+
+        #teacher-detail-view .card {
+            border-radius: 20px;
+            border: none;
+        }
+
+        [data-theme="dark"] #teacher-detail-view .card-header {
+            color: white !important;
+        }
+
+        #teacher-detail-view .card-header {
+            background: transparent;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem;
+            color: var(--text-color);
+        }
+
         /* Kbd Shortcut */
         kbd {
             background-color: var(--light-gray);
@@ -1223,6 +1259,10 @@
                     <div class="modern-nav-btn" data-section="comparison">
                         <i class="fas fa-balance-scale"></i>
                         <span>Müqayisə</span>
+                    </div>
+                    <div class="modern-nav-btn" data-section="teachers">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        <span>Müəllimlər</span>
                     </div>
                     <div class="modern-nav-btn" data-section="export">
                         <i class="fas fa-file-invoice"></i>
@@ -1831,6 +1871,122 @@
                     </div>
                 </section>
 
+                <!-- Teachers Section -->
+                <section id="teachers-section" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="mb-0"><i class="fas fa-chalkboard-teacher me-2"></i>Müəllimlər</h2>
+                        <div class="d-flex gap-2">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                <input type="text" id="teacher-search" class="form-control"
+                                    placeholder="Müəllim axtar...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" id="teachers-grid">
+                        <!-- Teacher cards will be populated here -->
+                    </div>
+
+                    <!-- Teacher Detail View (Initially Hidden) -->
+                    <div id="teacher-detail-view" style="display: none;">
+                        <button class="btn btn-outline-secondary mb-3" onclick="showTeachersGrid()">
+                            <i class="fas fa-arrow-left me-2"></i>Siyahıya Qayıt
+                        </button>
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h4 id="detail-teacher-name" class="mb-0">Müəllim Adı</h4>
+                                <span class="badge bg-light text-primary" id="detail-teacher-subject">-</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-4">
+                                    <div class="col-md-3">
+                                        <div class="stat-card blue">
+                                            <i class="fas fa-users"></i>
+                                            <h3 id="teacher-student-count">0</h3>
+                                            <p>Ümumi Şagird</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-card green">
+                                            <i class="fas fa-star"></i>
+                                            <h3 id="teacher-performance-avg">0.0</h3>
+                                            <p>Performans Ortalaması</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-card orange">
+                                            <i class="fas fa-chalkboard"></i>
+                                            <h3 id="teacher-class-count">0</h3>
+                                            <p>Dərs Keçdiyi Sinif</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="stat-card red">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            <h3 id="teacher-warning-count">0</h3>
+                                            <p>Diqqət Yetirilməli</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="card">
+                                            <div class="card-header bg-secondary bg-opacity-10 text-dark">
+                                                <i class="fas fa-list me-2"></i>Siniflər üzrə Ortalama
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-container" style="height: 250px;">
+                                                    <canvas id="teacherClassChart"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="card">
+                                            <div class="card-header bg-secondary bg-opacity-10 text-dark">
+                                                <i class="fas fa-user-graduate me-2"></i>Şagird Paylanması
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="chart-container" style="height: 250px;">
+                                                    <canvas id="teacherDistributionChart"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card mt-4">
+                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-users me-2"></i>Şagird Siyahısı</span>
+                                        <div class="btn-group btn-group-sm">
+                                            <button class="btn btn-light"
+                                                onclick="exportTeacherStudents()">Excel</button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Şagird</th>
+                                                        <th>Sinif</th>
+                                                        <th>Qiymət</th>
+                                                        <th>Status</th>
+                                                        <th>Əks Təsir</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="teacher-students-table-body"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <!-- AI Assistant UI -->
                 <div class="ai-chat-btn" id="ai-chat-toggle" title="IMSA Süni Zəka Assistenti">
                     <i class="fas fa-robot"></i>
@@ -2238,6 +2394,47 @@
             '7A': 'Könül Əhmədova', '7B': 'İlahə Əkbərova',
             '8A': 'Gülsəba Aktaş', '8B': 'Məhbubə Talıblı',
             '9A': 'Günel Axundova', '9B': 'Günel Hüseynova'
+        };
+
+        // =============================================
+        // SUBJECT TEACHER DATA (EXTRACTED FROM PDF)
+        // =============================================
+        const SUBJECT_TEACHERS = {
+            '2.A': { 'Azərbaycan dili': 'Mədinə Nağıyeva', 'Riyaziyyat': 'Mədinə Nağıyeva', 'Həyat bilgisi': 'Mədinə Nağıyeva', 'İngilis dili': 'Sura Kərimova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Mədinə Nağıyeva', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '2.B': { 'Azərbaycan dili': 'Fəridə Sultanzadə', 'Riyaziyyat': 'Fəridə Sultanzadə', 'Həyat bilgisi': 'Fəridə Sultanzadə', 'İngilis dili': 'Türkan Qurbanova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Fəridə Sultanzadə', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '3.A': { 'Azərbaycan dili': 'Nərminə İbrahimli', 'Riyaziyyat': 'Nərminə İbrahimli', 'Həyat bilgisi': 'Nərminə İbrahimli', 'İngilis dili': 'Sura Kərimova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Nərminə İbrahimli', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '3.B': { 'Azərbaycan dili': 'Şəlalə Məcidova', 'Riyaziyyat': 'Şəlalə Məcidova', 'Həyat bilgisi': 'Şəlalə Məcidova', 'İngilis dili': 'Günel Hüseynova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Şəlalə Məcidova', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '4.A': { 'Azərbaycan dili': 'Gülnar İbrahimli', 'Riyaziyyat': 'Gülnar İbrahimli', 'Həyat bilgisi': 'Gülnar İbrahimli', 'İngilis dili': 'Günel Hətəmzadə', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Gülnar İbrahimli', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '4.B': { 'Azərbaycan dili': 'Sənubər Baxşəliyeva', 'Riyaziyyat': 'Sənubər Baxşəliyeva', 'Həyat bilgisi': 'Sənubər Baxşəliyeva', 'İngilis dili': 'İlahə Əkbərova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Sənubər Baxşəliyeva', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '5A': { 'Azərbaycan dili': 'Nənəxanım Qafarova', 'Ədəbiyyat': 'Nənəxanım Qafarova', 'Riyaziyyat': 'Mədinə Məmmədova', 'İngilis dili': 'Günel Hətəmzadə', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Təbiət': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '5B': { 'Azərbaycan dili': 'Könül Əhmədova', 'Ədəbiyyat': 'Könül Əhmədova', 'Riyaziyyat': 'Fəridə Alqayeva', 'İngilis dili': 'Aytac Musabəyli', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Təbiət': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '6A': { 'Azərbaycan dili': 'Aynurə Qurban', 'Ədəbiyyat': 'Aynurə Qurban', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Ümumi tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Təbiət': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '6B': { 'Azərbaycan dili': 'Mədinə Məmmədova', 'Ədəbiyyat': 'Mədinə Məmmədova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Ümumi tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Təbiət': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Emin Sultanzadə' },
+            '7A': { 'Azərbaycan dili': 'Könül Əhmədova', 'Ədəbiyyat': 'Könül Əhmədova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Ümumi tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Biologiya': 'Fərqanə Qənbərli', 'Fizika': 'Aytac Əhmədova', 'Kimya': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Xəyalə Qiyasova' },
+            '7B': { 'Azərbaycan dili': 'Aynurə Qurban', 'Ədəbiyyat': 'Aynurə Qurban', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Ümumi tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Biologiya': 'Fərqanə Qənbərli', 'Fizika': 'Aytac Əhmədova', 'Kimya': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '8A': { 'Azərbaycan dili': 'Könül Əhmədova', 'Ədəbiyyat': 'Könül Əhmədova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Ümumi tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Biologiya': 'Fərqanə Qənbərli', 'Fizika': 'Aytac Əhmədova', 'Kimya': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Xəyalə Qiyasova' },
+            '8B': { 'Azərbaycan dili': 'Könül Əhmədova', 'Ədəbiyyat': 'Könül Əhmədova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Ümumi tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Biologiya': 'Fərqanə Qənbərli', 'Fizika': 'Aytac Əhmədova', 'Kimya': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Xəyalə Qiyasova' },
+            '9A': { 'Azərbaycan dili': 'Aynurə Qurban', 'Riyaziyyat': 'Məhbubə Talıblı', 'İngilis dili': 'Aysu Mirzəyeva' },
+            '9B': { 'Azərbaycan dili': 'Nənəxanım Qafarova', 'Riyaziyyat': 'Şahnaz Sarıyeva', 'İngilis dili': 'Aynur Məmmədova' }
+        };
+
+        const SUBGROUP_TEACHERS = {
+            'Riyaziyyat': {
+                '6A': { 'Günel İzzətgil': ['Calalova Məryəm', 'Əhmədli Məryəm', 'Əlizadə Aylin', 'İmamzadə Fatimə', 'İsmayıllı Xalid', 'Məmmədli Hüseyn', 'Sərdarlı Xədicə', 'Sultanov Fateh', 'Təhməzli Mete'], 'Məhbubə Talıblı': ['Cəfərzadə Atilla', 'Kazımlı Ceyla', 'Qənbərli Turqut', 'Manaflı Murad', 'Məmmədli Fərhad', 'Muradova Selcan', 'Nağıyev Səyyad', 'Osmanova Məryəm', 'Vəliyeva Zəhra'] },
+                '6B': { 'Günel İzzətgil': ['Eyvazova Məryəm', 'Əhmədov Azər', 'Həşimli Zeynəb', 'İsmayılzadə Mikayıl', 'Məmmədli Ağa', 'Mustafa Muhammed', 'Namazlı Banu', 'Paşazadə Xədicə', 'Şahmərdanov Ramal'], 'Məhbubə Talıblı': ['Alqayeva Kamilə', 'Əlirzayev Həsən', 'Əsgərova Aylin', 'Hüseynli Mustafa', 'Hüseynli Zəhra', 'İsmayıl Ayxan', 'Mahmudlu Altay', 'Mahmudova Zümrüd', 'Məmmədova Ləman'] },
+                '7A': { 'Günel İzzətgil': ['Əliyev Yusif', 'İbrahimov Ömər', 'Quliyev Asim', 'Quliyev Ömər', 'Məmmədzadə Mustafa', 'Paşazadə Mədinə'], 'Məhbubə Talıblı': ['Ağayeva Əzizə', 'Göyüşlü Aişə', 'Hüseynli Əminə', 'Karahan Taha', 'Qədməliyev Murad', 'Qəhrəmanova Qəmər', 'Quluzadə Əhməd', 'Namazlı Zeynəb', 'Rəfiyeva Zəhra'] },
+                '7B': { 'Günel İzzətgil': ['Abdullayev İskəndər', 'Eyvazova Zəhra', 'Əsədullazadə Nur', 'Həşimli Şəms', 'Quluzadə İlkin', 'Novruzov Rövşən', 'Təhməzli Xəlil', 'Zalov Levent'], 'Məhbubə Talıblı': ['Cenikoğlu Kaan', 'Mehdizadə Ramin', 'Nəsibli Mehriban', 'Nəsibov Elcan', 'Vəlizadə Ayxan'] },
+                '8A': { 'Fəridə Alqayeva': ['Calalova Zeynəb', 'Hüseynli Fatimə', 'Kərimli Fərhad', 'Manaflı Mürsəl', 'Məmmədov Tuncay', 'Nəzirli Uğur', 'Novruzlu Elcan'], 'Məhbubə Talıblı': ['Quluzadə Nəzrin', 'Məmmədzadə Nuriyyə', 'Nəsibli Cavanşir'] },
+                '8B': { 'Fəridə Alqayeva': ['Əkbərli Ömər', 'Şərifova Şərqiyyə'], 'Məhbubə Talıblı': ['Cahangirov Gündüz', 'Əlizadə Cavad', 'Hacıyev Cavanşir', 'Həsənova Nurgül', 'Hüseynli Leyla', 'İsmayılzadə Sədi', 'Quluzadə Safiyyə', 'Məlikova Aylin', 'Musayeva Fidan', 'Sultanova Fatimə'] }
+            },
+            'İngilis dili': {
+                '6A': { 'Günel Hüseynova': ['Calalova Məryəm', 'Əlizadə Aylin', 'İmamzadə Fatimə', 'İsmayıllı Xalid', 'Məmmədli Fərhad', 'Məmmədli Hüseyn', 'Sərdarlı Xədicə', 'Sultanov Fateh', 'Təhməzli Mete', 'Vəliyeva Zəhra'], 'İlahə Əkbərova': ['Cəfərzadə Atilla', 'Əhmədli Məryəm', 'Kazımlı Ceyla', 'Qənbərli Turqut', 'Manaflı Murad', 'Muradova Selcan', 'Nağıyev Səyyad', 'Osmanova Məryəm'] },
+                '6B': { 'Günel Hüseynova': ['Eyvazova Məryəm', 'Əhmədov Azər', 'Əlirzayev Həsən', 'Həşimli Zeynəb', 'Məmmədli Ağa', 'Mustafa Muhammed', 'Paşazadə Xədicə', 'Şahmərdanov Ramal'], 'İlahə Əkbərova': ['Alqayeva Kamilə', 'Əsgərova Aylin', 'Hüseynli Mustafa', 'Hüseynli Zəhra', 'İsmayıl Ayxan', 'İsmayılzadə Mikayıl', 'Mahmudlu Altay', 'Mahmudova Zümrüd', 'Məmmədova Ləman', 'Namazlı Banu'] },
+                '7A': { 'Türkan Qurbanova': ['Ağayeva Əzizə', 'Əliyev Yusif', 'İbrahimov Ömər', 'Quliyev Asim', 'Quliyev Ömər', 'Məmmədzadə Mustafa', 'Namazlı Zeynəb', 'Paşazadə Mədinə'], 'İlahə Əkbərova': ['Göyüşlü Aişə', 'Hüseynli Əminə', 'Karahan Taha', 'Qədməliyev Murad', 'Qəhrəmanova Qəmər', 'Quluzadə Əhməd', 'Rəfiyeva Zəhra'] },
+                '7B': { 'Türkan Qurbanova': ['Abdullayev İskəndər', 'Eyvazova Zəhra', 'Əsədullazadə Nur', 'Həşimli Şəms', 'Quluzadə İlkin', 'Novruzov Rövşən', 'Təhməzli Xəlil'], 'İlahə Əkbərova': ['Cenikoğlu Kaan', 'Mehdizadə Ramin', 'Nəsibli Mehriban', 'Nəsibov Elcan', 'Vəlizadə Ayxan', 'Zalov Levent'] },
+                '8A': { 'Günel Hətəmzadə': ['Calalova Zeynəb', 'Hüseynli Fatimə', 'Kərimli Fərhad', 'Manaflı Mürsəl', 'Məmmədov Tuncay', 'Nəsibli Cavanşir', 'Novruzlu Elcan'], 'Sura Kərimova': ['Quluzadə Nəzrin', 'Məmmədzadə Nuriyyə', 'Nəzirli Uğur'] },
+                '8B': { 'Günel Hətəmzadə': ['Cahangirov Gündüz', 'Əkbərli Ömər', 'Hüseynli Leyla', 'Musayeva Fidan', 'Sultanova Fatimə'], 'Sura Kərimova': ['Əlizadə Cavad', 'Hacıyev Cavanşir', 'Həsənova Nurgül', 'İsmayılzadə Sədi', 'Quluzadə Safiyyə', 'Məlikova Aylin', 'Şərifova Şərqiyyə'] }
+            }
         };
 
         // =============================================
@@ -4829,6 +5026,30 @@
                         ${getStudentRecommendations(student)}
                     </p>
                 </div>
+
+                <div class="mt-4">
+                    <h6 class="mb-3 text-primary"><i class="fas fa-chalkboard-teacher me-2"></i>Fənn Müəllimləri</h6>
+                    <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
+                        <table class="table table-sm table-hover border small align-middle">
+                            <thead class="sticky-top bg-white border-bottom shadow-sm">
+                                <tr>
+                                    <th>Fənn</th>
+                                    <th>Müəllim</th>
+                                    <th class="text-center">Qiymət</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Object.keys(student.subjects).sort().map(subject => `
+                                    <tr>
+                                        <td class="fw-semibold">${subject}</td>
+                                        <td class="text-muted"><i class="fas fa-user-circle me-1"></i>${getTeacherForSubject(student, subject)}</td>
+                                        <td class="text-center"><span class="badge ${getGradeBadgeClass(student.subjects[subject])}">${student.subjects[subject]}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             `;
 
             document.getElementById('studentModalBody').innerHTML = detailsHTML;
@@ -5271,6 +5492,235 @@
                 `;
             }
         }
+
+        // =============================================
+        // TEACHER ANALYSIS LOGIC
+        // =============================================
+        let teacherCharts = {};
+
+        function getTeacherForSubject(student, subjectName) {
+            const normalizedClass = student.className;
+
+            // 1. Check Subgroups (6-8 Math/English)
+            if (SUBGROUP_TEACHERS[subjectName] && SUBGROUP_TEACHERS[subjectName][normalizedClass]) {
+                const subgroups = SUBGROUP_TEACHERS[subjectName][normalizedClass];
+                for (const tName in subgroups) {
+                    if (subgroups[tName].includes(student.name)) return tName;
+                }
+            }
+
+            // 2. Check General Subject Teachers
+            if (SUBJECT_TEACHERS[normalizedClass] && SUBJECT_TEACHERS[normalizedClass][subjectName]) {
+                return SUBJECT_TEACHERS[normalizedClass][subjectName];
+            }
+
+            return 'Təyin edilməyib';
+        }
+
+        function updateTeachersView() {
+            const grid = document.getElementById('teachers-grid');
+            const detailView = document.getElementById('teacher-detail-view');
+            const searchInput = document.getElementById('teacher-search');
+
+            grid.style.display = 'flex';
+            detailView.style.display = 'none';
+            grid.innerHTML = '';
+
+            // Calculate Teacher Stats
+            const teacherStats = {};
+            schoolData.students.forEach(student => {
+                for (const subject in student.subjects) {
+                    const teacherName = getTeacherForSubject(student, subject);
+                    if (teacherName === 'Təyin edilməyib') continue;
+
+                    if (!teacherStats[teacherName]) {
+                        teacherStats[teacherName] = {
+                            name: teacherName,
+                            subjects: new Set(),
+                            students: [],
+                            classes: new Set(),
+                            totalScore: 0,
+                            studentCount: 0
+                        };
+                    }
+
+                    teacherStats[teacherName].subjects.add(subject);
+                    teacherStats[teacherName].classes.add(student.className);
+                    teacherStats[teacherName].students.push({
+                        student: student,
+                        subject: subject,
+                        grade: student.subjects[subject]
+                    });
+                    teacherStats[teacherName].totalScore += student.subjects[subject];
+                    teacherStats[teacherName].studentCount++;
+                }
+            });
+
+            const query = searchInput.value.toLowerCase();
+
+            Object.values(teacherStats).sort((a, b) => b.studentCount - a.studentCount).forEach(teacher => {
+                if (query && !teacher.name.toLowerCase().includes(query)) return;
+
+                const avg = (teacher.totalScore / teacher.studentCount).toFixed(1);
+                const subjectsArr = Array.from(teacher.subjects);
+                const classesArr = Array.from(teacher.classes).sort();
+
+                const card = document.createElement('div');
+                card.className = 'col-md-4 col-lg-3 mb-4';
+                card.innerHTML = `
+                    <div class="card h-100 teacher-card animate-slide-up" onclick="showTeacherDetail('${teacher.name.replace(/'/g, "\\'")}')" style="cursor: pointer; transition: transform 0.2s;">
+                        <div class="card-body text-center">
+                            <div class="avatar-circle mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, #00adba, #007bff); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">
+                                ${teacher.name.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <h5 class="mb-1">${teacher.name}</h5>
+                            <p class="text-primary small mb-2">${subjectsArr.join(', ')}</p>
+                            <div class="d-flex justify-content-around mt-3">
+                                <div>
+                                    <div class="fw-bold">${teacher.studentCount}</div>
+                                    <small class="text-muted">Şagird</small>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">${avg}</div>
+                                    <small class="text-muted">Orta</small>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">${teacher.classes.size}</div>
+                                    <small class="text-muted">Sinif</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            if (!searchInput.oninput) {
+                searchInput.oninput = updateTeachersView;
+            }
+        }
+
+        function showTeachersGrid() {
+            document.getElementById('teachers-grid').style.display = 'flex';
+            document.getElementById('teacher-detail-view').style.display = 'none';
+        }
+
+        function showTeacherDetail(teacherName) {
+            const grid = document.getElementById('teachers-grid');
+            const detailView = document.getElementById('teacher-detail-view');
+            grid.style.display = 'none';
+            detailView.style.display = 'block';
+
+            // Collect Data
+            const teacherData = {
+                students: [],
+                classes: {},
+                subjects: new Set(),
+                totalScore: 0,
+                warningCount: 0
+            };
+
+            schoolData.students.forEach(student => {
+                for (const subject in student.subjects) {
+                    if (getTeacherForSubject(student, subject) === teacherName) {
+                        teacherData.subjects.add(subject);
+                        teacherData.students.push({
+                            id: student.id,
+                            name: student.name,
+                            className: student.className,
+                            grade: student.subjects[subject],
+                            status: student.subjects[subject] >= 85 ? 'Əla' : (student.subjects[subject] >= 50 ? 'Yaxşı' : 'Zəif')
+                        });
+                        teacherData.totalScore += student.subjects[subject];
+                        if (student.subjects[subject] < 50) teacherData.warningCount++;
+
+                        if (!teacherData.classes[student.className]) {
+                            teacherData.classes[student.className] = { total: 0, count: 0 };
+                        }
+                        teacherData.classes[student.className].total += student.subjects[subject];
+                        teacherData.classes[student.className].count++;
+                    }
+                }
+            });
+
+            // Update UI
+            document.getElementById('detail-teacher-name').textContent = teacherName;
+            document.getElementById('detail-teacher-subject').textContent = Array.from(teacherData.subjects).join(', ');
+            document.getElementById('teacher-student-count').textContent = teacherData.students.length;
+            document.getElementById('teacher-performance-avg').textContent = (teacherData.totalScore / teacherData.students.length).toFixed(1);
+            document.getElementById('teacher-class-count').textContent = Object.keys(teacherData.classes).length;
+            document.getElementById('teacher-warning-count').textContent = teacherData.warningCount;
+
+            // Populate Table
+            const tableBody = document.getElementById('teacher-students-table-body');
+            tableBody.innerHTML = '';
+            teacherData.students.sort((a, b) => b.grade - a.grade).forEach(s => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${s.name}</td>
+                    <td><span class="badge bg-primary">${s.className}</span></td>
+                    <td><span class="badge ${getGradeBadgeClass(s.grade)}">${s.grade}</span></td>
+                    <td>${s.status}</td>
+                    <td>${s.grade < 50 ? '<span class="text-danger"><i class="fas fa-arrow-down me-1"></i>Dəstək lazımdır</span>' : '<span class="text-success"><i class="fas fa-check me-1"></i>Stabil</span>'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+
+            // Update Charts
+            updateTeacherCharts(teacherData);
+        }
+
+        function updateTeacherCharts(data) {
+            const classCtx = document.getElementById('teacherClassChart').getContext('2d');
+            const distCtx = document.getElementById('teacherDistributionChart').getContext('2d');
+
+            if (teacherCharts.classChart) teacherCharts.classChart.destroy();
+            if (teacherCharts.distChart) teacherCharts.distChart.destroy();
+
+            const classLabels = Object.keys(data.classes).sort();
+            const classAverages = classLabels.map(c => (data.classes[c].total / data.classes[c].count).toFixed(1));
+
+            teacherCharts.classChart = new Chart(classCtx, {
+                type: 'bar',
+                data: {
+                    labels: classLabels,
+                    datasets: [{
+                        label: 'Sinif Ortalaması',
+                        data: classAverages,
+                        backgroundColor: '#00adba',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, max: 100 } }
+                }
+            });
+
+            const distData = [
+                data.students.filter(s => s.grade >= 90).length,
+                data.students.filter(s => s.grade >= 70 && s.grade < 90).length,
+                data.students.filter(s => s.grade >= 50 && s.grade < 70).length,
+                data.students.filter(s => s.grade < 50).length
+            ];
+
+            teacherCharts.distChart = new Chart(distCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['90-100 (Əla)', '70-89 (Yaxşı)', '50-69 (Kafi)', '<50 (Zəif)'],
+                    datasets: [{
+                        data: distData,
+                        backgroundColor: ['#28a745', '#007bff', '#ffc107', '#dc3545']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
         // HIZLI DÜZELTME - DÜĞMELERİ ÇALIŞTIR
         document.addEventListener('DOMContentLoaded', function () {
             // Modern grid butonları
@@ -5302,6 +5752,7 @@
                         if (sectionName === 'subjects') updateSubjectsView();
                         if (sectionName === 'classes') updateClassesView();
                         if (sectionName === 'comparison') updateComparisonView();
+                        if (sectionName === 'teachers') updateTeachersView();
                         if (sectionName === 'export') {
                             generateHeatmap();
                             updateImpactAnalysis();
