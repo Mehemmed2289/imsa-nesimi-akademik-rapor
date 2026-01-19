@@ -1958,7 +1958,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="card">
@@ -1986,100 +1985,120 @@
                                     </div>
                                 </div>
 
-                                <div class="card mt-4">
-                                    <div
-                                        class="card-header d-flex justify-content-between align-items-center flex-wrap gap-3">
-                                        <span><i class="fas fa-users me-2"></i>Şagird Siyahısı</span>
-                                        <div class="d-flex gap-2 align-items-center">
-                                            <select id="teacher-student-class-filter" class="form-select form-select-sm"
-                                                style="width: auto;" onchange="filterTeacherStudents()">
-                                                <option value="all">Bütün Siniflər</option>
-                                            </select>
-                                            <select id="teacher-student-sort" class="form-select form-select-sm"
-                                                style="width: auto;" onchange="filterTeacherStudents()">
-                                                <option value="desc">Çoxdan aza (Qiymət)</option>
-                                                <option value="asc">Azdan çoxa (Qiymət)</option>
-                                            </select>
-                                            <div class="btn-group btn-group-sm">
-                                                <button class="btn btn-light"
-                                                    onclick="exportTeacherStudents()">Excel</button>
-                                            </div>
-                                        </div>
+                            </div>
+                        </div>
+
+                        <!-- New Row for Subject Averages -->
+                        <div class="row mt-4 mb-4">
+                            <div class="col-12">
+                                <div class="card bg-light bg-opacity-50">
+                                    <div class="card-header bg-secondary bg-opacity-10 text-dark py-2">
+                                        <i class="fas fa-book-open me-2"></i>Fənlər üzrə Ortalama
                                     </div>
-                                    <div class="card-body p-0">
-                                        <div class="table-responsive">
-                                            <table class="table table-hover mb-0">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Şagird</th>
-                                                        <th>Sinif</th>
-                                                        <th>Qiymət</th>
-                                                        <th>Status</th>
-                                                        <th>Əks Təsir</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody id="teacher-students-table-body"></tbody>
-                                            </table>
+                                    <div class="card-body py-3">
+                                        <div id="teacher-subject-averages" class="row g-3">
+                                            <!-- Subject averages will be populated here -->
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </section>
 
-                <!-- AI Assistant UI -->
-                <div class="ai-chat-btn" id="ai-chat-toggle" title="IMSA Süni Zəka Assistenti">
-                    <i class="fas fa-robot"></i>
+                        <div class="card mt-4">
+                            <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+                                <span><i class="fas fa-users me-2"></i>Şagird Siyahısı</span>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <select id="teacher-student-class-filter" class="form-select form-select-sm"
+                                        style="width: auto;" onchange="filterTeacherStudents()">
+                                        <option value="all">Bütün Siniflər</option>
+                                    </select>
+                                    <select id="teacher-student-subject-filter" class="form-select form-select-sm"
+                                        style="width: auto;" onchange="filterTeacherStudents()">
+                                        <option value="all">Bütün Fənlər</option>
+                                    </select>
+                                    <select id="teacher-student-sort" class="form-select form-select-sm"
+                                        style="width: auto;" onchange="filterTeacherStudents()">
+                                        <option value="desc">Çoxdan aza (Qiymət)</option>
+                                        <option value="asc">Azdan çoxa (Qiymət)</option>
+                                    </select>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-light" onclick="exportTeacherStudents()">Excel</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="table-responsive">
+                                    <table class="table table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Şagird</th>
+                                                <th>Sinif</th>
+                                                <th>Fənn</th>
+                                                <th>Qiymət</th>
+                                                <th>Status</th>
+                                                <th>Əks Təsir</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="teacher-students-table-body"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        </section>
+
+        <!-- AI Assistant UI -->
+        <div class="ai-chat-btn" id="ai-chat-toggle" title="IMSA Süni Zəka Assistenti">
+            <i class="fas fa-robot"></i>
+        </div>
+
+        <div class="ai-chat-window" id="ai-chat-window">
+            <div class="ai-chat-header">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-robot me-2 fs-4"></i>
+                    <div>
+                        <div class="fw-bold">IMSA - Nəsimi kampusu</div>
+                        <div class="small opacity-75">Sizin məlumat analizçiniz</div>
+                    </div>
                 </div>
-
-                <div class="ai-chat-window" id="ai-chat-window">
-                    <div class="ai-chat-header">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-robot me-2 fs-4"></i>
-                            <div>
-                                <div class="fw-bold">IMSA - Nəsimi kampusu</div>
-                                <div class="small opacity-75">Sizin məlumat analizçiniz</div>
-                            </div>
+                <button class="btn btn-sm text-white" onclick="toggleAIChat()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="ai-chat-messages" id="ai-chat-messages">
+                <div class="ai-message assistant">
+                    Salam! Mən IMSA məktəb məlumatlarını analiz edən süni zəka asistentiyəm. Sizin üçün hansı
+                    şagirdi və ya sinfi analiz edim?
+                    <div class="ai-suggestion-chips">
+                        <div class="suggestion-chip" onclick="sendAlSuggestion('Ümumi məktəb vəziyyəti necədir?')">
+                            📊 Ümumi Vəziyyət
                         </div>
-                        <button class="btn btn-sm text-white" onclick="toggleAIChat()"><i
-                                class="fas fa-times"></i></button>
-                    </div>
-                    <div class="ai-chat-messages" id="ai-chat-messages">
-                        <div class="ai-message assistant">
-                            Salam! Mən IMSA məktəb məlumatlarını analiz edən süni zəka asistentiyəm. Sizin üçün hansı
-                            şagirdi və ya sinfi analiz edim?
-                            <div class="ai-suggestion-chips">
-                                <div class="suggestion-chip"
-                                    onclick="sendAlSuggestion('Ümumi məktəb vəziyyəti necədir?')">
-                                    📊 Ümumi Vəziyyət
-                                </div>
-                                <div class="suggestion-chip"
-                                    onclick="sendAlSuggestion('Bütün fənlər üzrə liderlər kimdir?')">📚 Fənn Liderləri
-                                </div>
-                                <div class="suggestion-chip"
-                                    onclick="sendAlSuggestion('Mükəmməl davamiyyəti (0 gün) olanlar')">🏆 Mükəmməl
-                                    Davamiyyət</div>
-                                <div class="suggestion-chip" onclick="sendAlSuggestion('Əlaçıların siyahısı')">🌟
-                                    Əlaçıların Siyahısı</div>
-                                <div class="suggestion-chip"
-                                    onclick="sendAlSuggestion('Hansı sinfin ortalaması ən yüksəkdir?')">🏫 Ən Yaxşı
-                                    Sinif</div>
-                                <div class="suggestion-chip"
-                                    onclick="sendAlSuggestion('Kritik davamsızlıqda ən çox olan uşaqlar')">🚩 Kritik
-                                    Davamsızlıq</div>
-                            </div>
+                        <div class="suggestion-chip" onclick="sendAlSuggestion('Bütün fənlər üzrə liderlər kimdir?')">📚
+                            Fənn Liderləri
                         </div>
-                    </div>
-                    <div class="ai-chat-input-area">
-                        <input type="text" class="ai-chat-input" id="ai-input" placeholder="Sualınızı yazın..."
-                            onkeypress="if(event.key === 'Enter') handleAISend()">
-                        <button class="btn text-white rounded-circle ms-2 me-2" style="background-color: #00adba;"
-                            onclick="handleAISend()"><i class="fas fa-arrow-right"></i></button>
+                        <div class="suggestion-chip" onclick="sendAlSuggestion('Mükəmməl davamiyyəti (0 gün) olanlar')">
+                            🏆 Mükəmməl
+                            Davamiyyət</div>
+                        <div class="suggestion-chip" onclick="sendAlSuggestion('Əlaçıların siyahısı')">🌟
+                            Əlaçıların Siyahısı</div>
+                        <div class="suggestion-chip"
+                            onclick="sendAlSuggestion('Hansı sinfin ortalaması ən yüksəkdir?')">🏫 Ən Yaxşı
+                            Sinif</div>
+                        <div class="suggestion-chip"
+                            onclick="sendAlSuggestion('Kritik davamsızlıqda ən çox olan uşaqlar')">🚩 Kritik
+                            Davamsızlıq</div>
                     </div>
                 </div>
             </div>
+            <div class="ai-chat-input-area">
+                <input type="text" class="ai-chat-input" id="ai-input" placeholder="Sualınızı yazın..."
+                    onkeypress="if(event.key === 'Enter') handleAISend()">
+                <button class="btn text-white rounded-circle ms-2 me-2" style="background-color: #00adba;"
+                    onclick="handleAISend()"><i class="fas fa-arrow-right"></i></button>
+            </div>
         </div>
+    </div>
+    </div>
     </div>
 
     <!-- Global Search Modal -->
@@ -5689,33 +5708,28 @@
                         teacherStats[teacherName] = {
                             name: teacherName,
                             subjects: new Set(),
-                            students: [],
+                            uniqueStudents: new Set(),
                             classes: new Set(),
                             totalScore: 0,
-                            studentCount: 0
+                            dataCount: 0
                         };
                     }
 
                     teacherStats[teacherName].subjects.add(subject);
                     teacherStats[teacherName].classes.add(student.className);
-                    teacherStats[teacherName].students.push({
-                        student: student,
-                        subject: subject,
-                        grade: student.subjects[subject]
-                    });
+                    teacherStats[teacherName].uniqueStudents.add(student.id);
                     teacherStats[teacherName].totalScore += student.subjects[subject];
-                    teacherStats[teacherName].studentCount++;
+                    teacherStats[teacherName].dataCount++;
                 }
             });
 
             const query = searchInput.value.toLowerCase();
 
-            Object.values(teacherStats).sort((a, b) => b.studentCount - a.studentCount).forEach(teacher => {
+            Object.values(teacherStats).sort((a, b) => a.name.localeCompare(b.name, 'az')).forEach(teacher => {
                 if (query && !teacher.name.toLowerCase().includes(query)) return;
 
-                const avg = (teacher.totalScore / teacher.studentCount).toFixed(1);
+                const avg = (teacher.totalScore / teacher.dataCount).toFixed(1);
                 const subjectsArr = Array.from(teacher.subjects);
-                const classesArr = Array.from(teacher.classes).sort();
 
                 const card = document.createElement('div');
                 card.className = 'col-md-4 col-lg-3 mb-4';
@@ -5729,7 +5743,7 @@
                             <p class="text-primary small mb-2">${subjectsArr.join(', ')}</p>
                             <div class="d-flex justify-content-around mt-3">
                                 <div>
-                                    <div class="fw-bold">${teacher.studentCount}</div>
+                                    <div class="fw-bold">${teacher.uniqueStudents.size}</div>
                                     <small class="text-muted">Şagird</small>
                                 </div>
                                 <div>
@@ -5765,25 +5779,36 @@
 
             // Collect Data
             const teacherData = {
-                students: [],
+                students: [], // all subject-student pairs
+                uniqueStudentIds: new Set(),
                 classes: {},
-                subjects: new Set(),
+                subjectStats: {}, // To store avg per subject
                 totalScore: 0,
-                warningCount: 0
+                warningCount: 0,
+                totalDataEntries: 0
             };
 
             schoolData.students.forEach(student => {
+                let isTeacherForThisStudent = false;
                 for (const subject in student.subjects) {
                     if (getTeacherForSubject(student, subject) === teacherName) {
-                        teacherData.subjects.add(subject);
+                        isTeacherForThisStudent = true;
+                        if (!teacherData.subjectStats[subject]) {
+                            teacherData.subjectStats[subject] = { total: 0, count: 0 };
+                        }
+                        teacherData.subjectStats[subject].total += student.subjects[subject];
+                        teacherData.subjectStats[subject].count++;
+
                         teacherData.students.push({
                             id: student.id,
                             name: student.name,
                             className: student.className,
+                            subject: subject,
                             grade: student.subjects[subject],
                             status: student.subjects[subject] >= 85 ? 'Əla' : (student.subjects[subject] >= 50 ? 'Yaxşı' : 'Zəif')
                         });
                         teacherData.totalScore += student.subjects[subject];
+                        teacherData.totalDataEntries++;
                         if (student.subjects[subject] < 50) teacherData.warningCount++;
 
                         if (!teacherData.classes[student.className]) {
@@ -5793,15 +5818,37 @@
                         teacherData.classes[student.className].count++;
                     }
                 }
+                if (isTeacherForThisStudent) {
+                    teacherData.uniqueStudentIds.add(student.id);
+                }
             });
 
             // Update UI
             document.getElementById('detail-teacher-name').textContent = teacherName;
-            document.getElementById('detail-teacher-subject').textContent = Array.from(teacherData.subjects).join(', ');
-            document.getElementById('teacher-student-count').textContent = teacherData.students.length;
-            document.getElementById('teacher-performance-avg').textContent = (teacherData.totalScore / teacherData.students.length).toFixed(1);
+            document.getElementById('detail-teacher-subject').textContent = Object.keys(teacherData.subjectStats).join(', ');
+            document.getElementById('teacher-student-count').textContent = teacherData.uniqueStudentIds.size;
+            document.getElementById('teacher-performance-avg').textContent = (teacherData.totalScore / teacherData.totalDataEntries).toFixed(1);
             document.getElementById('teacher-class-count').textContent = Object.keys(teacherData.classes).length;
             document.getElementById('teacher-warning-count').textContent = teacherData.warningCount;
+
+            // Populate Subject Averages
+            const subAvgContainer = document.getElementById('teacher-subject-averages');
+            if (subAvgContainer) {
+                subAvgContainer.innerHTML = '';
+                Object.keys(teacherData.subjectStats).sort().forEach(sub => {
+                    const stats = teacherData.subjectStats[sub];
+                    const avg = (stats.total / stats.count).toFixed(1);
+                    const col = document.createElement('div');
+                    col.className = 'col-md-4 col-sm-6';
+                    col.innerHTML = `
+                        <div class="d-flex justify-content-between align-items-center p-2 border rounded shadow-sm bg-white">
+                            <span class="small fw-bold text-truncate me-2" title="${sub}">${sub}</span>
+                            <span class="badge ${getGradeBadgeClass(parseFloat(avg))}">${avg}</span>
+                        </div>
+                    `;
+                    subAvgContainer.appendChild(col);
+                });
+            }
 
             // Global store for filtering
             currentTeacherStudents = teacherData.students;
@@ -5819,6 +5866,19 @@
                 });
             }
 
+            // Populate Subject Filter
+            const subjectFilter = document.getElementById('teacher-student-subject-filter');
+            if (subjectFilter) {
+                subjectFilter.innerHTML = '<option value="all">Bütün Fənlər</option>';
+                const uniqueSubjects = [...new Set(teacherData.students.map(s => s.subject))].sort();
+                uniqueSubjects.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s;
+                    opt.textContent = s;
+                    subjectFilter.appendChild(opt);
+                });
+            }
+
             // Reset Initial Filter UI
             const sortSelect = document.getElementById('teacher-student-sort');
             if (sortSelect) sortSelect.value = 'desc';
@@ -5827,19 +5887,27 @@
             filterTeacherStudents();
 
             // Update Charts
-            updateTeacherCharts(teacherData);
+            updateTeacherCharts({
+                classes: teacherData.classes,
+                students: teacherData.students
+            });
         }
 
         let currentTeacherStudents = [];
 
         function filterTeacherStudents() {
             const classFilter = document.getElementById('teacher-student-class-filter').value;
+            const subjectFilter = document.getElementById('teacher-student-subject-filter').value;
             const sortOrder = document.getElementById('teacher-student-sort').value;
 
             let filtered = [...currentTeacherStudents];
 
             if (classFilter !== 'all') {
                 filtered = filtered.filter(s => s.className === classFilter);
+            }
+
+            if (subjectFilter !== 'all') {
+                filtered = filtered.filter(s => s.subject === subjectFilter);
             }
 
             if (sortOrder === 'asc') {
@@ -5856,7 +5924,7 @@
             tableBody.innerHTML = '';
 
             if (students.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Məlumat tapılmadı</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Məlumat tapılmadı</td></tr>';
                 return;
             }
 
@@ -5865,6 +5933,7 @@
                 row.innerHTML = `
                     <td>${s.name}</td>
                     <td><span class="badge bg-primary">${s.className}</span></td>
+                    <td class="small text-muted">${s.subject}</td>
                     <td><span class="badge ${getGradeBadgeClass(s.grade)}">${s.grade}</span></td>
                     <td>${s.status}</td>
                     <td>${s.grade < 50 ? '<span class="text-danger"><i class="fas fa-arrow-down me-1"></i>Dəstək lazımdır</span>' : '<span class="text-success"><i class="fas fa-check me-1"></i>Stabil</span>'}</td>
