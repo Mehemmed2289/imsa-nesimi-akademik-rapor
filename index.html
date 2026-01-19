@@ -2226,6 +2226,20 @@
 
         let charts = {};
 
+        const CLASS_TEACHERS = {
+            '2A': 'Mədinə Nağıyeva', '2.A': 'Mədinə Nağıyeva',
+            '2B': 'Fəridə Sultanzadə', '2.B': 'Fəridə Sultanzadə',
+            '3A': 'Nərminə İbrahimli', '3.A': 'Nərminə İbrahimli',
+            '3B': 'Şəlalə Məcidova', '3.B': 'Şəlalə Məcidova',
+            '4A': 'Gülnar İbrahimli', '4.A': 'Gülnar İbrahimli',
+            '4B': 'Sənubər Baxşəliyeva', '4.B': 'Sənubər Baxşəliyeva',
+            '5A': 'Günel Hətəmzadə', '5B': 'Aytac Musabəyli',
+            '6A': 'Adil Çaxoyev', '6B': 'Pərvin Əşari',
+            '7A': 'Könül Əhmədova', '7B': 'İlahə Əkbərova',
+            '8A': 'Gülsəba Aktaş', '8B': 'Məhbubə Talıblı',
+            '9A': 'Günel Axundova', '9B': 'Günel Hüseynova'
+        };
+
         // =============================================
         // SAYFA YÜKLENDİĞİNDE ÇALIŞACAK KOD
         // =============================================
@@ -2523,6 +2537,7 @@
                     const cStudents = schoolData.students.filter(s => s.className === c);
                     let part = `<div class="ai-analysis-card border-success">
                         <h6 class="text-success mb-1"><b>${c} Sinfi Analizi</b></h6>
+                        <div class="small text-muted mb-1">👤 Sinif Rəhbəri: <b>${CLASS_TEACHERS[c.replace('.', '')] || 'Təyin edilməyib'}</b></div>
                         <div class="small mb-2">📈 Orta: <b>${d.average.toFixed(1)}</b> | Davamsızlıq: <b>${d.attendance.toFixed(1)} gün</b></div>`;
 
                     if (intents.attendance) {
@@ -2548,7 +2563,7 @@
                 let stRes = `👤 <b>Şagird Tapıldı (${matchedStudents.length}):</b><br>`;
                 matchedStudents.slice(0, 5).forEach(s => {
                     stRes += `<div class="ai-analysis-card">
-                        <b>${s.name}</b> <small class="text-muted">(${s.className})</small><br>
+                        <b>${s.name}</b> <small class="text-muted">(${s.className} - ${CLASS_TEACHERS[s.className.replace('.', '')] || ''})</small><br>
                         <div class="small">🎯 Bal: <b>${s.average.toFixed(1)}</b> | 🚶 Davamsızlıq: <b>${s.attendance} gün</b></div>
                     </div>`;
                 });
@@ -2684,14 +2699,16 @@
                 // Şagirdlərdə axtar
                 schoolData.students.forEach(s => {
                     if (s.name.toLowerCase().includes(query)) {
-                        results.push({ type: 'student', title: s.name, sub: s.className, id: s.id, icon: 'fa-user' });
+                        const teacher = CLASS_TEACHERS[s.className.replace('.', '')] || '';
+                        results.push({ type: 'student', title: s.name, sub: `${s.className}${teacher ? ` - ${teacher}` : ''}`, id: s.id, icon: 'fa-user' });
                     }
                 });
 
                 // Siniflərdə axtar
                 schoolData.classes.forEach(c => {
                     if (c.toLowerCase().includes(query)) {
-                        results.push({ type: 'class', title: c, sub: 'Sinif', id: c, icon: 'fa-chalkboard' });
+                        const teacher = CLASS_TEACHERS[c.replace('.', '')] || '';
+                        results.push({ type: 'class', title: c, sub: teacher ? `Rəhbər: ${teacher}` : 'Sinif', id: c, icon: 'fa-chalkboard' });
                     }
                 });
 
@@ -3118,11 +3135,15 @@
         // DERS ORTALAMALARI GRAFİĞİ
         // =============================================
         function updateSubjectAvgChart() {
-            const ctx = document.getElementById('subjectAvgChart').getContext('2d');
+            const canvas = document.getElementById('subjectAvgChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             const stats = schoolData.overallStats;
 
+            if (!stats || !schoolData.subjects) return;
+
             const subjects = schoolData.subjects;
-            const averages = subjects.map(subject => stats.subjectAverages[subject]);
+            const averages = subjects.map(subject => stats.subjectAverages[subject] || 0);
 
             const sortedIndices = averages.map((_, i) => i)
                 .sort((a, b) => averages[b] - averages[a])
@@ -3135,19 +3156,24 @@
                 charts.subjectAvgChart.destroy();
             }
 
+            // Create Gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(0, 173, 186, 0.8)');
+            gradient.addColorStop(1, 'rgba(0, 82, 93, 0.5)');
+
             charts.subjectAvgChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: sortedSubjects,
                     datasets: [{
-                        label: 'Ortalama',
+                        label: 'Ortalama Bal',
                         data: sortedAverages,
                         backgroundColor: sortedAverages.map(avg => {
-                            if (avg >= 91) return 'rgba(4, 120, 87, 0.8)'; // Tünd Yaşıl
-                            if (avg >= 81) return 'rgba(16, 185, 129, 0.8)'; // Yaşıl
-                            if (avg >= 61) return 'rgba(0, 173, 186, 0.8)'; // Mavi
-                            if (avg >= 31) return 'rgba(245, 158, 11, 0.8)'; // Sarı
-                            return 'rgba(239, 68, 68, 0.8)'; // Qırmızı
+                            if (avg >= 91) return 'rgba(4, 120, 87, 0.85)';
+                            if (avg >= 81) return 'rgba(16, 185, 129, 0.85)';
+                            if (avg >= 61) return 'rgba(0, 173, 186, 0.85)';
+                            if (avg >= 31) return 'rgba(245, 158, 11, 0.85)';
+                            return 'rgba(239, 68, 68, 0.85)';
                         }),
                         borderColor: sortedAverages.map(avg => {
                             if (avg >= 91) return 'rgb(4, 120, 87)';
@@ -3156,42 +3182,40 @@
                             if (avg >= 31) return 'rgb(245, 158, 11)';
                             return 'rgb(239, 68, 68)';
                         }),
-                        borderWidth: 1
+                        borderWidth: 1,
+                        borderRadius: 6,
+                        hoverBackgroundColor: 'rgba(0, 173, 186, 1)'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            display: false
-                        },
+                        legend: { display: false },
                         tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: { size: 14, family: "'Poppins', sans-serif" },
+                            bodyFont: { size: 13 },
                             callbacks: {
                                 label: function (context) {
-                                    return `Ortalama: ${context.raw.toFixed(1)}`;
+                                    return ` Ortalama: ${context.raw.toFixed(1)} bal`;
+                                },
+                                afterLabel: function (context) {
+                                    const subject = context.label;
+                                    const studentCount = schoolData.students.filter(s => s.subjects[subject] !== undefined).length;
+                                    return ` Şagird sayı: ${studentCount}`;
                                 }
                             }
-                        },
-                        colors: {
-                            forceOverride: true
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
                             max: 100,
-                            title: {
-                                display: true,
-                                text: 'Ortalama'
-                            }
+                            grid: { color: 'rgba(0,0,0,0.05)' }
                         },
-                        x: {
-                            title: {
-                                display: true,
-                                text: 'Fənlər'
-                            }
-                        }
+                        x: { grid: { display: false } }
                     }
                 }
             });
@@ -3294,7 +3318,7 @@
                         <span class="fs-5 me-2">${medal}</span>
                         <div>
                             <strong>${student.name}</strong><br>
-                            <small class="text-muted">${student.className} | Ortalama: ${student.average.toFixed(1)} | Davamsızlıq: ${student.attendance} gün</small>
+                            <small class="text-muted">${student.className} (${CLASS_TEACHERS[student.className.replace('.', '')] || 'Təyin edilməyib'}) | Ortalama: ${student.average.toFixed(1)} | Davamsızlıq: ${student.attendance} gün</small>
                         </div>
                     </div>
                     <span class="badge ${getStatusBadgeClass(student.status)}">${student.status}</span>
@@ -3335,7 +3359,7 @@
                 studentEl.innerHTML = `
                     <div>
                         <strong>${student.name}</strong><br>
-                        <small class="text-muted">${student.className} | ${reason}</small>
+                        <small class="text-muted">${student.className} (${CLASS_TEACHERS[student.className.replace('.', '')] || 'Təyin edilməyib'}) | ${reason}</small>
                     </div>
                     <div class="text-end">
                         <div class="badge ${student.average < 50 ? 'bg-danger' : 'bg-warning'}">
@@ -3449,7 +3473,7 @@
                             </div>
                         </div>
                     </td>
-                    <td><span class="badge bg-primary">${student.className}</span></td>
+                    <td><span class="badge bg-primary">${student.className}</span><div class="small text-muted" style="font-size: 0.7rem;">${CLASS_TEACHERS[student.className.replace('.', '')] || ''}</div></td>
                     <td>
                         <div class="d-flex align-items-center">
                             <strong>${student.average.toFixed(1)}</strong>
@@ -3526,7 +3550,7 @@
                             <strong>${student.name}</strong>
                         </div>
                     </td>
-                    <td><span class="badge bg-primary">${student.className}</span></td>
+                    <td><span class="badge bg-primary">${student.className}</span><div class="small text-muted" style="font-size: 0.7rem;">${CLASS_TEACHERS[student.className.replace('.', '')] || ''}</div></td>
                     <td>
                         <span class="attendance-badge ${getAttendanceClass(student.attendance)}">
                             <i class="fas fa-calendar-times me-1"></i>${student.attendance} gün
@@ -3583,7 +3607,9 @@
         // SINIF BAZLI DAVAMSIZLIK GRAFİĞİ
         // =============================================
         function updateClassAttendanceChart() {
-            const ctx = document.getElementById('classAttendanceChart').getContext('2d');
+            const canvas = document.getElementById('classAttendanceChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             const stats = schoolData.overallStats;
 
             const classNames = schoolData.classes;
@@ -3612,7 +3638,8 @@
                             if (avg <= 10) return 'rgb(245, 158, 11)';
                             return 'rgb(239, 68, 68)';
                         }),
-                        borderWidth: 1
+                        borderWidth: 1,
+                        borderRadius: 5
                     }]
                 },
                 options: {
@@ -3622,8 +3649,12 @@
                         legend: {
                             display: false
                         },
-                        colors: {
-                            forceOverride: true
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `Orta Davamsızlıq: ${context.parsed.y.toFixed(1)} gün`;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -3785,7 +3816,7 @@
                     else statusHtml = '<span class="text-danger fw-bold">Pis</span>';
 
                     row.innerHTML = `
-                        <td><strong>${d.className}</strong></td>
+                        <td><strong>${d.className}</strong><br><small class="text-muted" style="font-size: 0.7rem;">${CLASS_TEACHERS[d.className.replace('.', '')] || ''}</small></td>
                         <td>${d.count}</td>
                         <td><span class="badge ${getGradeBadgeClass(d.average)}">${d.average.toFixed(1)}</span></td>
                         <td>${statusHtml}</td>
@@ -3973,7 +4004,9 @@
         }
 
         function updateDetailedSubjectChart(subject, data) {
-            const ctx = document.getElementById('subjectComparisonChart').getContext('2d');
+            const canvas = document.getElementById('subjectComparisonChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             if (charts.subjectComparisonChart) charts.subjectComparisonChart.destroy();
 
             charts.subjectComparisonChart = new Chart(ctx, {
@@ -3985,12 +4018,22 @@
                         data: data.map(d => d.average),
                         backgroundColor: 'rgba(54, 162, 235, 0.6)',
                         borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        borderRadius: 5
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `Ortala: ${context.parsed.y.toFixed(1)}`;
+                                }
+                            }
+                        }
+                    },
                     scales: {
                         y: { beginAtZero: true, max: 100 }
                     }
@@ -4002,10 +4045,12 @@
         // FƏNN MÜQAYİSƏ GRAFİĞİ
         // =============================================
         function updateSubjectComparisonChart() {
-            const ctx = document.getElementById('subjectComparisonChart').getContext('2d');
+            const canvas = document.getElementById('subjectComparisonChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
             const stats = schoolData.overallStats;
 
-            const subjects = schoolData.subjects.slice(0, 10); // İlk 10 dersi göster
+            const subjects = schoolData.subjects.slice(0, 10); // İlk 10 fənni göstər
             const averages = subjects.map(subject => stats.subjectAverages[subject] || 0);
 
             if (charts.subjectComparisonChart) {
@@ -4033,7 +4078,8 @@
                             if (avg >= 31) return 'rgb(245, 158, 11)';
                             return 'rgb(239, 68, 68)';
                         }),
-                        borderWidth: 1
+                        borderWidth: 1,
+                        borderRadius: 5
                     }]
                 },
                 options: {
@@ -4043,8 +4089,12 @@
                         legend: {
                             display: false
                         },
-                        colors: {
-                            forceOverride: true
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `Ortalama: ${context.parsed.y.toFixed(1)}`;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -4188,7 +4238,12 @@
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td><strong>${cls.className}</strong></td>
+                    <td>
+                        <strong>${cls.className}</strong><br>
+                        <small class="text-muted" style="font-size: 0.75rem;">
+                            <i class="fas fa-user-tie me-1"></i>${CLASS_TEACHERS[cls.className.replace('.', '')] || (isMerged ? 'Müxtəlif' : 'Təyin edilməyib')}
+                        </small>
+                    </td>
                     <td>${cls.studentCount}</td>
                     <td>
                         <span class="badge ${getGradeBadgeClass(cls.average)}">
@@ -4226,7 +4281,9 @@
         // SINIF ORTALAMALARI GRAFİĞİ
         // =============================================
         function updateClassAvgChart(dataList) {
-            const ctx = document.getElementById('classAvgChart').getContext('2d');
+            const canvas = document.getElementById('classAvgChart');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
 
             // If called without data (initial load), create default data
             if (!dataList) {
@@ -4260,28 +4317,50 @@
                             backgroundColor: 'rgba(0, 82, 93, 0.7)',
                             borderColor: 'rgb(0, 82, 93)',
                             borderWidth: 1,
+                            borderRadius: 5,
                             yAxisID: 'y'
                         },
                         {
-                            label: 'Davamsızlıq (gün)',
+                            label: 'Orta Davamsızlıq (gün)',
                             data: attendances,
-                            backgroundColor: 'rgba(245, 158, 11, 0.7)',
-                            borderColor: 'rgb(245, 158, 11)',
-                            borderWidth: 1,
-                            yAxisID: 'y1',
-                            type: 'line'
+                            type: 'line',
+                            borderColor: 'rgba(239, 68, 68, 0.8)',
+                            backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                            yAxisID: 'y1'
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
                     plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        colors: {
-                            forceOverride: true
+                        legend: { position: 'top' },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#333',
+                            bodyColor: '#333',
+                            borderColor: '#ddd',
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toFixed(1);
+                                    }
+                                    return label;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -4291,32 +4370,22 @@
                             position: 'left',
                             beginAtZero: true,
                             max: 100,
-                            title: {
-                                display: true,
-                                text: 'Ortalama'
-                            }
+                            title: { display: true, text: 'Ortalama' }
                         },
                         y1: {
                             type: 'linear',
                             display: true,
                             position: 'right',
                             beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Davamsızlıq (gün)'
-                            },
-                            grid: {
-                                drawOnChartArea: false
-                            }
-                        }
+                            grid: { drawOnChartArea: false },
+                            title: { display: true, text: 'Davamsızlıq (gün)' }
+                        },
+                        x: { grid: { display: false } }
                     }
                 }
             });
         }
 
-        // =============================================
-        // MÜQAYİSƏ GÖRÜNÜMÜNÜ GÜNCELLE
-        // =============================================
         // =============================================
         // MÜQAYİSƏ GÖRÜNÜMÜNÜ GÜNCELLE
         // =============================================
@@ -4350,8 +4419,9 @@
             } else {
                 // UNMERGED: By Individual Class (2A, 2B...)
                 schoolData.classes.forEach(cls => {
-                    entities.push({ name: cls, id: cls, type: 'class' });
-                    headerHtml += `<th>${cls}</th>`;
+                    const teacher = CLASS_TEACHERS[cls.replace('.', '')] || '';
+                    entities.push({ name: cls, id: cls, type: 'class', teacher: teacher });
+                    headerHtml += `<th>${cls}${teacher ? `<br><small class='fw-normal' style='font-size: 0.7rem;'>${teacher}</small>` : ''}</th>`;
                 });
             }
             headerHtml += '<th>Qalib</th>';
@@ -4426,11 +4496,13 @@
 
                     // Add tooltip title for easier reading
                     let headerName = 'N/A';
+                    let teacherName = '';
                     if (entities[index]) {
                         headerName = entities[index].name;
+                        teacherName = entities[index].teacher || '';
                     }
 
-                    cells += `<td class="${cellClass}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="<div class='text-center'><strong>${headerName}</strong><br>${rowData.label}: ${value}</div>">${value}</td>`;
+                    cells += `<td class="${cellClass}" data-bs-toggle="tooltip" data-bs-html="true" data-bs-placement="top" title="<div class='text-center'><strong>${headerName}</strong>${teacherName ? `<br><small>${teacherName}</small>` : ''}<br>${rowData.label}: ${value}</div>">${value}</td>`;
                 });
 
                 // Kazanan sınıfı ekle
@@ -4678,7 +4750,13 @@
                                  onerror="this.onerror=null; this.src='https://placehold.co/100x100/00525d/ffffff?text=IMSA';">
                         </div>
                         <h4 class="mt-3">${student.name}</h4>
-                        <span class="badge bg-primary fs-6">${student.className}</span>
+                        <div class="mb-2">
+                            <span class="badge bg-primary fs-6">${student.className}</span>
+                        </div>
+                        <div class="text-muted small">
+                            <i class="fas fa-user-tie me-1"></i>Sinif Rəhbəri:<br>
+                            <strong>${CLASS_TEACHERS[student.className.replace('.', '')] || 'Təyin edilməyib'}</strong>
+                        </div>
                     </div>
                     
                     <div class="col-md-8">
