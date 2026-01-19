@@ -1583,6 +1583,55 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Student Ranking for Subject (Initially Hidden) -->
+                    <div id="subject-student-ranking-container" class="card mt-4" style="display: none;">
+                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <span><i class="fas fa-list-ol me-2"></i>Fənn üzrə Şagird Nəticələri</span>
+                            <div class="d-flex gap-2">
+                                <select id="subject-student-sort-filter" class="form-select form-select-sm"
+                                    style="min-width: 130px;">
+                                    <option value="desc">Çoxdan aza</option>
+                                    <option value="asc">Azdan çoxa</option>
+                                </select>
+
+                                <div class="dropdown">
+                                    <button
+                                        class="btn btn-sm btn-outline-secondary dropdown-toggle bg-white d-flex align-items-center justify-content-between"
+                                        type="button" id="classFilterDropdownButton" data-bs-toggle="dropdown"
+                                        data-bs-auto-close="outside" aria-expanded="false" style="min-width: 160px;">
+                                        <span>Bütün Siniflər</span>
+                                    </button>
+                                    <ul class="dropdown-menu p-2 shadow-sm" id="subject-student-class-dropdown"
+                                        style="max-height: 300px; overflow-y: auto; width: 250px;">
+                                        <!-- Content populated by JS -->
+                                    </ul>
+                                </div>
+
+                                <button class="btn btn-sm btn-primary px-3" onclick="updateSubjectStudentRankings()">
+                                    Göstər
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle" id="subject-student-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Şagird</th>
+                                            <th>Sinif</th>
+                                            <th>Qiymət</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="subject-student-table-body">
+                                        <!-- Content populated by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </section>
 
                 <!-- Classes Analysis Section -->
@@ -3668,6 +3717,7 @@
                 });
 
                 updateSubjectComparisonChart(); // Default chart
+                document.getElementById('subject-student-ranking-container').style.display = 'none';
 
             } else {
                 // VIEW 2: SINGLE SUBJECT BREAKDOWN BY CLASS
@@ -3746,6 +3796,52 @@
 
                 // Update Chart for Detailed View
                 updateDetailedSubjectChart(subjectName, classesData);
+
+                // Initialize Student Ranking Section
+                const rankingContainer = document.getElementById('subject-student-ranking-container');
+                rankingContainer.style.display = 'block';
+
+                const classDropdown = document.getElementById('subject-student-class-dropdown');
+                const dropdownButton = document.getElementById('classFilterDropdownButton');
+
+                // Get classes that have this subject
+                const relevantClasses = new Set();
+                schoolData.students.forEach(s => {
+                    if (s.subjects[subjectName] !== undefined && !isNaN(s.subjects[subjectName])) {
+                        relevantClasses.add(s.className);
+                    }
+                });
+
+                classDropdown.innerHTML = '';
+
+                // Add "All" option back
+                const liAll = document.createElement('li');
+                liAll.innerHTML = `
+                    <label class="dropdown-item d-flex align-items-center cursor-pointer py-1 px-2 mb-0 fw-bold border-bottom">
+                        <input class="form-check-input class-filter-checkbox me-2 mt-0" type="checkbox" value="all" id="class-filter-all" checked onchange="handleClassFilterChange(this)">
+                        <span>Bütün Siniflər</span>
+                    </label>
+                `;
+                classDropdown.appendChild(liAll);
+
+                const sortedClasses = Array.from(relevantClasses).sort();
+
+                sortedClasses.forEach((c, idx) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                         <label class="dropdown-item d-flex align-items-center cursor-pointer py-1 px-2 mb-0">
+                            <input class="form-check-input class-filter-checkbox me-2 mt-0" type="checkbox" value="${c}" checked onchange="handleClassFilterChange(this)">
+                            <span class="text-truncate">${c}</span>
+                        </label>
+                    `;
+                    classDropdown.appendChild(li);
+                });
+
+                // Reset button text
+                const span = dropdownButton.querySelector('span');
+                if (span) span.textContent = 'Bütün Siniflər';
+
+                updateSubjectStudentRankings();
             }
 
             // Stats card updates (generic)
@@ -3761,6 +3857,119 @@
                 if (bestSubEl) bestSubEl.textContent = subAvgs[0].name;
                 if (worstSubEl) worstSubEl.textContent = subAvgs[subAvgs.length - 1].name;
             }
+        }
+
+        function handleClassFilterChange(checkbox) {
+            const container = document.getElementById('subject-student-class-dropdown');
+            const checkboxes = container.querySelectorAll('.class-filter-checkbox');
+            const allCheckbox = document.getElementById('class-filter-all');
+            const dropdownButton = document.getElementById('classFilterDropdownButton');
+            const span = dropdownButton.querySelector('span');
+
+            if (checkbox.value === 'all') {
+                const isChecked = checkbox.checked;
+                checkboxes.forEach(cb => {
+                    cb.checked = isChecked;
+                });
+            } else {
+                const individualCheckboxes = Array.from(checkboxes).filter(cb => cb.value !== 'all');
+                const allChecked = individualCheckboxes.every(cb => cb.checked);
+                if (allCheckbox) allCheckbox.checked = allChecked;
+            }
+
+            const checkedClasses = Array.from(checkboxes).filter(cb => cb.checked && cb.value !== 'all');
+            const totalClasses = Array.from(checkboxes).filter(cb => cb.value !== 'all').length;
+
+            if (checkedClasses.length === 0) {
+                span.textContent = 'Heç biri seçilməyib';
+            } else if (checkedClasses.length === totalClasses) {
+                span.textContent = 'Bütün Siniflər';
+            } else if (checkedClasses.length === 1) {
+                span.textContent = checkedClasses[0].value;
+            } else {
+                span.textContent = `${checkedClasses.length} sinif seçildi`;
+            }
+        }
+
+        function updateSubjectStudentRankings() {
+            const subject = document.getElementById('subject-detailed-filter').value;
+            const sortOrder = document.getElementById('subject-student-sort-filter').value;
+
+            // Get selected classes from the specific dropdown
+            const container = document.getElementById('subject-student-class-dropdown');
+            const selectedClasses = Array.from(container.querySelectorAll('.class-filter-checkbox:checked'))
+                .map(cb => cb.value);
+
+            const tbody = document.getElementById('subject-student-table-body');
+
+            if (subject === 'all') return;
+
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center">Yüklənir...</td></tr>';
+
+            // Filter students
+            let students = schoolData.students.filter(s =>
+                s.subjects[subject] !== undefined &&
+                s.subjects[subject] !== null &&
+                !isNaN(s.subjects[subject])
+            );
+
+            // Filter by selected classes
+            if (selectedClasses.length === 0) {
+                students = [];
+            } else {
+                students = students.filter(s => selectedClasses.includes(s.className));
+            }
+
+            // Sort logic
+            students.sort((a, b) => {
+                const valA = a.subjects[subject];
+                const valB = b.subjects[subject];
+                if (sortOrder === 'asc') {
+                    return valA - valB;
+                } else {
+                    return valB - valA;
+                }
+            });
+
+            tbody.innerHTML = '';
+
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Məlumat tapılmadı</td></tr>';
+                return;
+            }
+
+            students.forEach((s, i) => {
+                const grade = s.subjects[subject];
+
+                // Determine badge color
+                let badgeClass = 'bg-danger';
+                if (grade >= 91) badgeClass = 'bg-dark-green';
+                else if (grade >= 81) badgeClass = 'bg-success';
+                else if (grade >= 61) badgeClass = 'bg-info text-dark';
+                else if (grade >= 31) badgeClass = 'bg-warning text-dark';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="student-photo me-2" style="width:30px;height:30px;">
+                                <img src="https://i.imgur.com/a3FuVV8.png" 
+                                     onerror="this.onerror=null; this.src='https://placehold.co/30x30/00525d/ffffff?text=IMSA';">
+                            </div>
+                            <strong>${s.name}</strong>
+                        </div>
+                    </td>
+                    <td><span class="badge bg-secondary">${s.className}</span></td>
+                    <td><span class="badge ${badgeClass}" style="font-size: 0.9rem;">${grade}</span></td>
+                    <td>
+                        ${grade >= 50
+                        ? '<span class="text-success"><i class="fas fa-check-circle me-1"></i>Keçdi</span>'
+                        : '<span class="text-danger"><i class="fas fa-times-circle me-1"></i>Kəsildi</span>'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
 
         function updateDetailedSubjectChart(subject, data) {
