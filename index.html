@@ -1337,11 +1337,11 @@
                         </div>
                     </div>
 
-                    <!-- Top Students & Alerts -->
+                    <!-- Dashboard Row 1: Top 5 & Warning -->
                     <div class="row">
                         <div class="col-lg-6 mb-3 mb-lg-0">
                             <div class="card h-100">
-                                <div class="card-header">
+                                <div class="card-header bg-primary text-white">
                                     <i class="fas fa-trophy me-2"></i>Ən Yüksək Nəticəli 5 Şagird
                                 </div>
                                 <div class="card-body">
@@ -1358,6 +1358,34 @@
                                 </div>
                                 <div class="card-body">
                                     <div id="warning-students-list">
+                                        <p class="text-muted">Yüklənir...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Row 2: Lowest Average & Highest Attendance -->
+                    <div class="row mt-4">
+                        <div class="col-lg-6 mb-3 mb-lg-0">
+                            <div class="card h-100">
+                                <div class="card-header bg-danger text-white">
+                                    <i class="fas fa-arrow-down me-2"></i>Ən Aşağı Nəticəli 5 Şagird
+                                </div>
+                                <div class="card-body">
+                                    <div id="lowest-students-list">
+                                        <p class="text-muted">Yüklənir...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card h-100">
+                                <div class="card-header bg-dark text-white">
+                                    <i class="fas fa-walking me-2"></i>Ən Çox Davamsızlıq Edən 5 Şagird
+                                </div>
+                                <div class="card-body">
+                                    <div id="highest-attendance-list">
                                         <p class="text-muted">Yüklənir...</p>
                                     </div>
                                 </div>
@@ -1826,7 +1854,8 @@
                                     <div class="form-check form-switch">
                                         <input class="form-check-input" type="checkbox" id="heatmap-merge-toggle">
                                         <label class="form-check-label text-white"
-                                            for="heatmap-merge-toggle">Paralelları Birləşdir</label>
+                                            for="heatmap-merge-toggle">Paralelları
+                                            Birləşdir</label>
                                     </div>
                                 </div>
                                 <div class="card-body">
@@ -1958,11 +1987,23 @@
                                 </div>
 
                                 <div class="card mt-4">
-                                    <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div
+                                        class="card-header d-flex justify-content-between align-items-center flex-wrap gap-3">
                                         <span><i class="fas fa-users me-2"></i>Şagird Siyahısı</span>
-                                        <div class="btn-group btn-group-sm">
-                                            <button class="btn btn-light"
-                                                onclick="exportTeacherStudents()">Excel</button>
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <select id="teacher-student-class-filter" class="form-select form-select-sm"
+                                                style="width: auto;" onchange="filterTeacherStudents()">
+                                                <option value="all">Bütün Siniflər</option>
+                                            </select>
+                                            <select id="teacher-student-sort" class="form-select form-select-sm"
+                                                style="width: auto;" onchange="filterTeacherStudents()">
+                                                <option value="desc">Çoxdan aza (Qiymət)</option>
+                                                <option value="asc">Azdan çoxa (Qiymət)</option>
+                                            </select>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-light"
+                                                    onclick="exportTeacherStudents()">Excel</button>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="card-body p-0">
@@ -2010,7 +2051,8 @@
                             şagirdi və ya sinfi analiz edim?
                             <div class="ai-suggestion-chips">
                                 <div class="suggestion-chip"
-                                    onclick="sendAlSuggestion('Ümumi məktəb vəziyyəti necədir?')">📊 Ümumi Vəziyyət
+                                    onclick="sendAlSuggestion('Ümumi məktəb vəziyyəti necədir?')">
+                                    📊 Ümumi Vəziyyət
                                 </div>
                                 <div class="suggestion-chip"
                                     onclick="sendAlSuggestion('Bütün fənlər üzrə liderlər kimdir?')">📚 Fənn Liderləri
@@ -2767,6 +2809,37 @@
                 responseParts.push(stRes);
             }
 
+            // T10: Müəllim Analizi (Direct Name or Keyword)
+            const teacherAnalysis = {};
+            schoolData.students.forEach(student => {
+                for (const subject in student.subjects) {
+                    const tName = getTeacherForSubject(student, subject);
+                    if (tName === 'Təyin edilməyib') continue;
+                    if (!teacherAnalysis[tName]) teacherAnalysis[tName] = { name: tName, subjects: new Set(), studentCount: 0, totalScore: 0 };
+                    teacherAnalysis[tName].subjects.add(subject);
+                    teacherAnalysis[tName].studentCount++;
+                    teacherAnalysis[tName].totalScore += student.subjects[subject];
+                }
+            });
+
+            const matchedTeacherName = Object.keys(teacherAnalysis).find(t => {
+                const tNameClean = heavyClean(t);
+                // Allow matching by full name or just lastname if long enough
+                return qClean.includes(tNameClean) || (tNameClean.length > 5 && qClean.includes(tNameClean.split(' ').pop()));
+            });
+
+            if (matchedTeacherName && (qClean.includes('muallim') || qClean.includes('oretnmen') || qClean.length > 5)) {
+                const t = teacherAnalysis[matchedTeacherName];
+                const avg = (t.totalScore / t.studentCount).toFixed(1);
+                return `👨‍🏫 <b>Müəllim Hesabatı: ${matchedTeacherName}</b><br><div class='small mt-2'>
+                • Tədris fənləri: <b>${Array.from(t.subjects).join(', ')}</b><br>
+                • Cəmi şagird: <b>${t.studentCount}</b><br>
+                • Orta performans: <span class="badge ${getGradeBadgeClass(parseFloat(avg))}">${avg} bal</span><br><br>
+                <button class="btn btn-sm btn-outline-primary w-100 mt-1" onclick="handleSearchResultClick('teacher', '${matchedTeacherName.replace(/'/g, "\\'")}'); toggleAIChat();">
+                    <i class="fas fa-external-link-alt me-1"></i>Tam Hesabata Bax
+                </button></div>`;
+            }
+
             if (responseParts.length > 0) return responseParts.join('<br>');
 
             return AI_VOICE.notfound(AI_VOICE.clue);
@@ -2916,6 +2989,26 @@
                     }
                 });
 
+                // Müəllimlərdə axtar
+                const uniqueTeachers = new Set();
+                Object.values(CLASS_TEACHERS).forEach(t => uniqueTeachers.add(t));
+                Object.values(SUBJECT_TEACHERS).forEach(classMap => {
+                    Object.values(classMap).forEach(t => uniqueTeachers.add(t));
+                });
+                if (typeof SUBGROUP_TEACHERS !== 'undefined') {
+                    Object.values(SUBGROUP_TEACHERS).forEach(subMap => {
+                        Object.values(subMap).forEach(teacherMap => {
+                            Object.keys(teacherMap).forEach(t => uniqueTeachers.add(t));
+                        });
+                    });
+                }
+
+                uniqueTeachers.forEach(t => {
+                    if (t.toLowerCase().includes(query)) {
+                        results.push({ type: 'teacher', title: t, sub: 'Müəllim', id: t, icon: 'fa-chalkboard-teacher' });
+                    }
+                });
+
                 renderSearchResults(results.slice(0, 10));
             });
         }
@@ -2966,6 +3059,11 @@
                         select.value = id;
                         updateSubjectsView();
                     }
+                }, 100);
+            } else if (type === 'teacher') {
+                showSection('teachers-section');
+                setTimeout(() => {
+                    showTeacherDetail(id);
                 }, 100);
             }
         }
@@ -3326,6 +3424,8 @@
             // Listeleri güncelle
             updateTopStudentsList();
             updateWarningStudentsList();
+            updateLowestStudentsList();
+            updateHighestAttendanceStudentsList();
         }
 
         // =============================================
@@ -3564,6 +3664,58 @@
                         </div>
                         <div><small>${student.average < 50 ? 'Ortalama' : 'Davamsızlıq'}</small></div>
                     </div>
+                `;
+                container.appendChild(studentEl);
+            });
+        }
+
+        // =============================================
+        // ƏN AŞAĞI NƏTİCƏLİ ŞAGİRDLƏR LİSTESİ
+        // =============================================
+        function updateLowestStudentsList() {
+            const lowestStudents = [...schoolData.students]
+                .sort((a, b) => a.average - b.average)
+                .slice(0, 5);
+
+            const container = document.getElementById('lowest-students-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            lowestStudents.forEach((student, index) => {
+                const studentEl = document.createElement('div');
+                studentEl.className = 'd-flex justify-content-between align-items-center mb-2 p-2 border rounded';
+                studentEl.innerHTML = `
+                    <div>
+                        <strong>${student.name}</strong><br>
+                        <small class="text-muted">${student.className} | Ortalama: <b>${student.average.toFixed(1)}</b></small>
+                    </div>
+                    <span class="badge bg-danger">${student.average.toFixed(1)}</span>
+                `;
+                container.appendChild(studentEl);
+            });
+        }
+
+        // =============================================
+        // ƏN ÇOX DAVAMSIZLIQ EDƏN ŞAGİRDLƏR LİSTESİ
+        // =============================================
+        function updateHighestAttendanceStudentsList() {
+            const highAttStudents = [...schoolData.students]
+                .sort((a, b) => b.attendance - a.attendance)
+                .slice(0, 5);
+
+            const container = document.getElementById('highest-attendance-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            highAttStudents.forEach((student, index) => {
+                const studentEl = document.createElement('div');
+                studentEl.className = 'd-flex justify-content-between align-items-center mb-2 p-2 border rounded';
+                studentEl.innerHTML = `
+                    <div>
+                        <strong>${student.name}</strong><br>
+                        <small class="text-muted">${student.className} | Davamsızlıq: <b>${student.attendance} gün</b></small>
+                    </div>
+                    <span class="badge bg-dark">${student.attendance} gün</span>
                 `;
                 container.appendChild(studentEl);
             });
@@ -5651,10 +5803,64 @@
             document.getElementById('teacher-class-count').textContent = Object.keys(teacherData.classes).length;
             document.getElementById('teacher-warning-count').textContent = teacherData.warningCount;
 
-            // Populate Table
+            // Global store for filtering
+            currentTeacherStudents = teacherData.students;
+
+            // Populate Class Filter
+            const classFilter = document.getElementById('teacher-student-class-filter');
+            if (classFilter) {
+                classFilter.innerHTML = '<option value="all">Bütün Siniflər</option>';
+                const uniqueClasses = [...new Set(teacherData.students.map(s => s.className))].sort();
+                uniqueClasses.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c;
+                    opt.textContent = c;
+                    classFilter.appendChild(opt);
+                });
+            }
+
+            // Reset Initial Filter UI
+            const sortSelect = document.getElementById('teacher-student-sort');
+            if (sortSelect) sortSelect.value = 'desc';
+
+            // Initial Table Render
+            filterTeacherStudents();
+
+            // Update Charts
+            updateTeacherCharts(teacherData);
+        }
+
+        let currentTeacherStudents = [];
+
+        function filterTeacherStudents() {
+            const classFilter = document.getElementById('teacher-student-class-filter').value;
+            const sortOrder = document.getElementById('teacher-student-sort').value;
+
+            let filtered = [...currentTeacherStudents];
+
+            if (classFilter !== 'all') {
+                filtered = filtered.filter(s => s.className === classFilter);
+            }
+
+            if (sortOrder === 'asc') {
+                filtered.sort((a, b) => a.grade - b.grade);
+            } else {
+                filtered.sort((a, b) => b.grade - a.grade);
+            }
+
+            renderTeacherStudentTable(filtered);
+        }
+
+        function renderTeacherStudentTable(students) {
             const tableBody = document.getElementById('teacher-students-table-body');
             tableBody.innerHTML = '';
-            teacherData.students.sort((a, b) => b.grade - a.grade).forEach(s => {
+
+            if (students.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Məlumat tapılmadı</td></tr>';
+                return;
+            }
+
+            students.forEach(s => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${s.name}</td>
@@ -5665,9 +5871,6 @@
                 `;
                 tableBody.appendChild(row);
             });
-
-            // Update Charts
-            updateTeacherCharts(teacherData);
         }
 
         function updateTeacherCharts(data) {
