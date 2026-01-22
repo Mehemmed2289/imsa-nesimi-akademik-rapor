@@ -77,43 +77,46 @@
             --light-blue: #0f3443;
             --dark-gray: #f1f5f9;
             --light-gray: #334155;
-            --primary-blue: #00adba;
-            --secondary-blue: #00adba;
-        }
-
-        [data-theme="dark"] * {
-            color: inherit;
-        }
-
-        [data-theme="dark"] body,
-        [data-theme="dark"] .card-body,
-        [data-theme="dark"] .table,
-        [data-theme="dark"] .form-label,
-        [data-theme="dark"] .navbar-text,
-        [data-theme="dark"] .sidebar-nav .nav-link,
-        [data-theme="dark"] .quick-stat-label,
-        [data-theme="dark"] .text-muted,
-        [data-theme="dark"] p,
-        [data-theme="dark"] span:not(.badge),
-        [data-theme="dark"] div:not(.badge):not(.card-header):not(.navbar-imsa):not(.navbar-brand-imsa) {
-            color: var(--text-color) !important;
+            --primary-blue: #38bdf8;
+            --secondary-blue: #0ea5e9;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         [data-theme="dark"] .text-muted {
             color: #94a3b8 !important;
-            opacity: 0.8;
         }
 
-        [data-theme="dark"] .card-header,
-        [data-theme="dark"] .navbar-imsa,
-        [data-theme="dark"] .navbar-brand-imsa,
-        [data-theme="dark"] .school-name-main,
-        [data-theme="dark"] .school-name-sub {
+        [data-theme="dark"] .bg-white,
+        [data-theme="dark"] .bg-light {
+            background-color: var(--card-bg) !important;
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .card-header .text-white,
+        [data-theme="dark"] .navbar-imsa .text-white {
             color: white !important;
         }
 
-        [data-theme="dark"] .badge {
-            color: white !important;
+        /* Prevent dark mode from stripping semantic colors */
+        [data-theme="dark"] .text-success {
+            color: #4ade80 !important;
+        }
+
+        [data-theme="dark"] .text-danger {
+            color: #f87171 !important;
+        }
+
+        [data-theme="dark"] .text-warning {
+            color: #fbbf24 !important;
+        }
+
+        [data-theme="dark"] .text-info {
+            color: #38bdf8 !important;
+        }
+
+        [data-theme="dark"] .text-primary {
+            color: #60a5fa !important;
         }
 
         /* Custom Background Colors for New Grading System */
@@ -200,10 +203,10 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            background: white;
+            background: var(--card-bg);
             padding: 2px;
             flex-shrink: 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
 
@@ -520,7 +523,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            background: white;
+            background: var(--card-bg);
             padding: 2px;
         }
 
@@ -3160,6 +3163,20 @@
                 icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
             }
 
+            // Update Chart.js Defaults
+            if (window.Chart) {
+                const textColor = theme === 'dark' ? '#f1f5f9' : '#374151';
+                const gridColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+
+                Chart.defaults.color = textColor;
+                // Add scale overrides
+                Chart.defaults.scales = Chart.defaults.scales || {};
+                if (Chart.defaults.scales.linear) {
+                    Chart.defaults.scales.linear.grid = Chart.defaults.scales.linear.grid || {};
+                    Chart.defaults.scales.linear.grid.color = gridColor;
+                }
+            }
+
             // Re-render all charts to apply new theme colors
             if (schoolData.overallStats.totalStudents > 0) {
                 updateDashboard();
@@ -3168,6 +3185,11 @@
                 updateSubjectsView();
                 updateClassesView();
                 updateComparisonView();
+
+                // Update teacher view if active
+                if (document.getElementById('teachers-section').style.display !== 'none') {
+                    updateTeachersView();
+                }
             }
         }
 
@@ -3283,8 +3305,20 @@
         function analyzeData() {
             // Benzersiz sınıfları çıkar
             const classSet = new Set();
+
+            // 2a-9b arasındakı bütün sinifləri əvvəlcədən əlavə edək
+            for (let grade = 2; grade <= 9; grade++) {
+                classSet.add(`${grade}.A`);
+                classSet.add(`${grade}.B`);
+            }
+
             schoolData.students.forEach(s => classSet.add(s.className));
-            schoolData.classes = Array.from(classSet).sort();
+            schoolData.classes = Array.from(classSet).sort((a, b) => {
+                const gradeA = parseInt(a);
+                const gradeB = parseInt(b);
+                if (gradeA !== gradeB) return gradeA - gradeB;
+                return a.localeCompare(b);
+            });
 
             // Tüm dersleri topla
             const allSubjects = new Set();
@@ -3633,7 +3667,7 @@
                     <div class="d-flex align-items-center">
                         <span class="fs-5 me-2">${medal}</span>
                         <div>
-                            <strong>${student.name}</strong><br>
+                            <strong style="cursor: pointer; color: var(--primary-blue);" onclick="viewStudentDetails(${student.id})">${student.name}</strong><br>
                             <small class="text-muted">${student.className} (${CLASS_TEACHERS[student.className.replace('.', '')] || 'Təyin edilməyib'}) | Ortalama: ${student.average.toFixed(1)} | Davamsızlıq: ${student.attendance} gün</small>
                         </div>
                     </div>
@@ -3674,7 +3708,7 @@
                 studentEl.className = 'd-flex justify-content-between align-items-center mb-2 p-2 border rounded';
                 studentEl.innerHTML = `
                     <div>
-                        <strong>${student.name}</strong><br>
+                        <strong style="cursor: pointer; color: var(--primary-blue);" onclick="viewStudentDetails(${student.id})">${student.name}</strong><br>
                         <small class="text-muted">${student.className} (${CLASS_TEACHERS[student.className.replace('.', '')] || 'Təyin edilməyib'}) | ${reason}</small>
                     </div>
                     <div class="text-end">
@@ -3705,7 +3739,7 @@
                 studentEl.className = 'd-flex justify-content-between align-items-center mb-2 p-2 border rounded';
                 studentEl.innerHTML = `
                     <div>
-                        <strong>${student.name}</strong><br>
+                        <strong style="cursor: pointer; color: var(--primary-blue);" onclick="viewStudentDetails(${student.id})">${student.name}</strong><br>
                         <small class="text-muted">${student.className} | Ortalama: <b>${student.average.toFixed(1)}</b></small>
                     </div>
                     <span class="badge bg-danger">${student.average.toFixed(1)}</span>
@@ -3731,7 +3765,7 @@
                 studentEl.className = 'd-flex justify-content-between align-items-center mb-2 p-2 border rounded';
                 studentEl.innerHTML = `
                     <div>
-                        <strong>${student.name}</strong><br>
+                        <strong style="cursor: pointer; color: var(--primary-blue);" onclick="viewStudentDetails(${student.id})">${student.name}</strong><br>
                         <small class="text-muted">${student.className} | Davamsızlıq: <b>${student.attendance} gün</b></small>
                     </div>
                     <span class="badge bg-dark">${student.attendance} gün</span>
@@ -3836,7 +3870,7 @@
                                      onerror="this.onerror=null; this.src='https://placehold.co/36x36/00525d/ffffff?text=IMSA';">
                             </div>
                             <div class="ms-2">
-                                <strong>${student.name}</strong><br>
+                                <strong style="cursor: pointer; color: var(--primary-blue);" onclick="viewStudentDetails(${student.id})">${student.name}</strong><br>
                                 <small class="text-muted">${student.bestSubject || '-'}: ${student.bestGrade || 0}</small>
                             </div>
                         </div>
@@ -4356,7 +4390,7 @@
                                 <img src="https://i.imgur.com/a3FuVV8.png" 
                                      onerror="this.onerror=null; this.src='https://placehold.co/30x30/00525d/ffffff?text=IMSA';">
                             </div>
-                            <strong>${s.name}</strong>
+                            <strong style="cursor: pointer; color: var(--primary-blue);" onclick="viewStudentDetails(${s.id})">${s.name}</strong>
                         </div>
                     </td>
                     <td><span class="badge bg-secondary">${s.className}</span></td>
@@ -5532,14 +5566,14 @@
                 <div class="heatmap-grid" style="grid-template-columns: 150px repeat(${subjects.length}, 1fr); display: grid;">`;
 
             // Headers
-            html += '<div class="heatmap-header sticky-col">Sinif / Fənn</div>';
+            html += `<div class="heatmap-header sticky-col" style="background: var(--light-gray); color: var(--text-color);">Sinif / Fənn</div>`;
             subjects.forEach(s => {
-                html += `<div class="heatmap-header text-center" title="${s} (${subjectCounts[s]} şagird)">${s}</div>`;
+                html += `<div class="heatmap-header text-center" style="background: var(--light-gray); color: var(--text-color);" title="${s} (${subjectCounts[s]} şagird)">${s}</div>`;
             });
 
             // Data Rows
             classes.forEach(c => {
-                html += `<div class="heatmap-header fw-bold sticky-col" style="background: white;">${c}</div>`;
+                html += `<div class="heatmap-header fw-bold sticky-col" style="background: var(--card-bg); color: var(--text-color);">${c}</div>`;
                 subjects.forEach(s => {
                     let avg = null;
 
@@ -5736,8 +5770,9 @@
                 card.innerHTML = `
                     <div class="card h-100 teacher-card animate-slide-up" onclick="showTeacherDetail('${teacher.name.replace(/'/g, "\\'")}')" style="cursor: pointer; transition: transform 0.2s;">
                         <div class="card-body text-center">
-                            <div class="avatar-circle mx-auto mb-3" style="width: 70px; height: 70px; background: linear-gradient(135deg, #00adba, #007bff); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;">
-                                ${teacher.name.split(' ').map(n => n[0]).join('')}
+                            <div class="avatar-circle mx-auto mb-3" style="width: 70px; height: 70px; background: var(--card-bg); border: 2px solid var(--primary-blue); border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 5px;">
+                                <img src="https://i.imgur.com/a3FuVV8.png" style="width: 100%; height: 100%; object-fit: contain;" 
+                                     onerror="this.onerror=null; this.src='https://placehold.co/70x70/00525d/ffffff?text=IMSA';">
                             </div>
                             <h5 class="mb-1">${teacher.name}</h5>
                             <p class="text-primary small mb-2">${subjectsArr.join(', ')}</p>
@@ -5841,7 +5876,7 @@
                     const col = document.createElement('div');
                     col.className = 'col-md-4 col-sm-6';
                     col.innerHTML = `
-                        <div class="d-flex justify-content-between align-items-center p-2 border rounded shadow-sm bg-white">
+                        <div class="d-flex justify-content-between align-items-center p-2 border rounded shadow-sm" style="background: var(--card-bg);">
                             <span class="small fw-bold text-truncate me-2" title="${sub}">${sub}</span>
                             <span class="badge ${getGradeBadgeClass(parseFloat(avg))}">${avg}</span>
                         </div>
@@ -5931,7 +5966,7 @@
             students.forEach(s => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${s.name}</td>
+                    <td style="cursor: pointer; color: var(--primary-blue);" onclick="viewStudentDetails(${s.id})"><strong>${s.name}</strong></td>
                     <td><span class="badge bg-primary">${s.className}</span></td>
                     <td class="small text-muted">${s.subject}</td>
                     <td><span class="badge ${getGradeBadgeClass(s.grade)}">${s.grade}</span></td>
@@ -6033,8 +6068,26 @@
                 });
             });
 
-            console.log('Navigasyon butonları aktif!');
+            // Toggle Event Listeners
+            const mergeClassesToggle = document.getElementById('merge-classes-toggle');
+            if (mergeClassesToggle) {
+                mergeClassesToggle.addEventListener('change', updateClassesView);
+            }
+            const comparisonMergeToggle = document.getElementById('comparison-merge-toggle');
+            if (comparisonMergeToggle) {
+                comparisonMergeToggle.addEventListener('change', updateComparisonView);
+            }
+            const heatmapMergeToggle = document.getElementById('heatmap-merge-toggle');
+            if (heatmapMergeToggle) {
+                heatmapMergeToggle.addEventListener('change', generateHeatmap);
+            }
+            const subjectMergeToggle = document.getElementById('subject-merge-toggle');
+            if (subjectMergeToggle) {
+                subjectMergeToggle.addEventListener('change', updateSubjectsView);
+            }
         });
+
+        console.log('Navigasyon butonları aktif!');
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
