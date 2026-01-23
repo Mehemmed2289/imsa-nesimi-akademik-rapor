@@ -1175,8 +1175,9 @@
                     data-bs-toggle="offcanvas" data-bs-target="#mobileSidebar">
                     <i class="fas fa-bars"></i>
                 </button>
-                <div class="navbar-text text-white d-none d-md-block ms-2">
-                    <span id="current-date" style="font-size: 0.8rem;"></span>
+                <div class="navbar-text text-white ms-2 text-end" style="min-width: 150px;">
+                    <div id="current-clock" class="fw-bold" style="font-size: 1rem; line-height: 1;"></div>
+                    <div id="current-date" style="font-size: 0.7rem; opacity: 0.9;"></div>
                 </div>
             </div>
         </div>
@@ -2464,20 +2465,20 @@
         // SUBJECT TEACHER DATA (EXTRACTED FROM PDF)
         // =============================================
         const SUBJECT_TEACHERS = {
-            '2.A': { 'Azərbaycan dili': 'Mədinə Nağıyeva', 'Riyaziyyat': 'Mədinə Nağıyeva', 'Həyat bilgisi': 'Mədinə Nağıyeva', 'İngilis dili': 'Sura Kərimova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Mədinə Nağıyeva', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
-            '2.B': { 'Azərbaycan dili': 'Fəridə Sultanzadə', 'Riyaziyyat': 'Fəridə Sultanzadə', 'Həyat bilgisi': 'Fəridə Sultanzadə', 'İngilis dili': 'Türkan Qurbanova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Fəridə Sultanzadə', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
-            '3.A': { 'Azərbaycan dili': 'Nərminə İbrahimli', 'Riyaziyyat': 'Nərminə İbrahimli', 'Həyat bilgisi': 'Nərminə İbrahimli', 'İngilis dili': 'Sura Kərimova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Nərminə İbrahimli', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
-            '3.B': { 'Azərbaycan dili': 'Şəlalə Məcidova', 'Riyaziyyat': 'Şəlalə Məcidova', 'Həyat bilgisi': 'Şəlalə Məcidova', 'İngilis dili': 'Günel Hüseynova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Şəlalə Məcidova', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
-            '4.A': { 'Azərbaycan dili': 'Gülnar İbrahimli', 'Riyaziyyat': 'Gülnar İbrahimli', 'Həyat bilgisi': 'Gülnar İbrahimli', 'İngilis dili': 'Günel Hətəmzadə', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Gülnar İbrahimli', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
-            '4.B': { 'Azərbaycan dili': 'Sənubər Baxşəliyeva', 'Riyaziyyat': 'Sənubər Baxşəliyeva', 'Həyat bilgisi': 'Sənubər Baxşəliyeva', 'İngilis dili': 'İlahə Əkbərova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Sənubər Baxşəliyeva', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '2A': { 'Azərbaycan dili': 'Mədinə Nağıyeva', 'Riyaziyyat': 'Mədinə Nağıyeva', 'Həyat bilgisi': 'Mədinə Nağıyeva', 'İngilis dili': 'Sura Kərimova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Mədinə Nağıyeva', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '2B': { 'Azərbaycan dili': 'Fəridə Sultanzadə', 'Riyaziyyat': 'Fəridə Sultanzadə', 'Həyat bilgisi': 'Fəridə Sultanzadə', 'İngilis dili': 'Türkan Qurbanova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Fəridə Sultanzadə', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '3A': { 'Azərbaycan dili': 'Nərminə İbrahimli', 'Riyaziyyat': 'Nərminə İbrahimli', 'Həyat bilgisi': 'Nərminə İbrahimli', 'İngilis dili': 'Sura Kərimova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Nərminə İbrahimli', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '3B': { 'Azərbaycan dili': 'Şəlalə Məcidova', 'Riyaziyyat': 'Şəlalə Məcidova', 'Həyat bilgisi': 'Şəlalə Məcidova', 'İngilis dili': 'Günel Hüseynova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Şəlalə Məcidova', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '4A': { 'Azərbaycan dili': 'Gülnar İbrahimli', 'Riyaziyyat': 'Gülnar İbrahimli', 'Həyat bilgisi': 'Gülnar İbrahimli', 'İngilis dili': 'Günel Hətəmzadə', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Gülnar İbrahimli', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '4B': { 'Azərbaycan dili': 'Sənubər Baxşəliyeva', 'Riyaziyyat': 'Sənubər Baxşəliyeva', 'Həyat bilgisi': 'Sənubər Baxşəliyeva', 'İngilis dili': 'İlahə Əkbərova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'İnformatika': 'Şəbnəm Zeynalova', 'Texnologiya': 'Sənubər Baxşəliyeva', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
             '5A': { 'Azərbaycan dili': 'Nənəxanım Qafarova', 'Ədəbiyyat': 'Mədinə Məmmədova', 'Riyaziyyat': 'Günel İzzətgil', 'İngilis dili': 'Günel Hətəmzadə', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Təbiət': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
             '5B': { 'Azərbaycan dili': 'Könül Əhmədova', 'Ədəbiyyat': 'Könül Əhmədova', 'Riyaziyyat': 'Fəridə Alqayeva', 'İngilis dili': 'Aytac Musabəyli', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Təbiət': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
-            '6A': { 'Azərbaycan dili': 'Aynurə Qurban', 'Ədəbiyyat': 'Mədinə Məmmədova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Ümumi tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Təbiət': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
-            '6B': { 'Azərbaycan dili': 'Mədinə Məmmədova', 'Ədəbiyyat': 'Mədinə Məmmədova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Ümumi tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Təbiət': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Emin Sultanzadə' },
-            '7A': { 'Azərbaycan dili': 'Könül Əhmədova', 'Ədəbiyyat': 'Könül Əhmədova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Ümumi tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Biologiya': 'Fərqanə Qənbərli', 'Fizika': 'Aytac Əhmədova', 'Kimya': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Xəyalə Qiyasova' },
-            '7B': { 'Azərbaycan dili': 'Aynurə Qurban', 'Ədəbiyyat': 'Aynurə Qurban', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Ümumi tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Biologiya': 'Fərqanə Qənbərli', 'Fizika': 'Aytac Əhmədova', 'Kimya': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
-            '8A': { 'Azərbaycan dili': 'Könül Əhmədova', 'Ədəbiyyat': 'Könül Əhmədova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Ümumi tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Biologiya': 'Fərqanə Qənbərli', 'Fizika': 'Aytac Əhmədova', 'Kimya': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Xəyalə Qiyasova' },
-            '8B': { 'Azərbaycan dili': 'Könül Əhmədova', 'Ədəbiyyat': 'Könül Əhmədova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Ümumi tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Biologiya': 'Fərqanə Qənbərli', 'Fizika': 'Aytac Əhmədova', 'Kimya': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Xəyalə Qiyasova' },
+            '6A': { 'Azərbaycan dili': 'Aynurə Qurban', 'Ədəbiyyat': 'Mədinə Məmmədova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Təbiət': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '6B': { 'Azərbaycan dili': 'Mədinə Məmmədova', 'Ədəbiyyat': 'Mədinə Məmmədova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Təbiət': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Emin Sultanzadə' },
+            '7A': { 'Azərbaycan dili': 'Könül Əhmədova', 'Ədəbiyyat': 'Könül Əhmədova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Biologiya': 'Fərqanə Qənbərli', 'Fizika': 'Aytac Əhmədova', 'Kimya': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Xəyalə Qiyasova' },
+            '7B': { 'Azərbaycan dili': 'Aynurə Qurban', 'Ədəbiyyat': 'Aynurə Qurban', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Biologiya': 'Fərqanə Qənbərli', 'Fizika': 'Aytac Əhmədova', 'Kimya': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Şamil Süleymanov' },
+            '8A': { 'Azərbaycan dili': 'Könül Əhmədova', 'Ədəbiyyat': 'Könül Əhmədova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Biologiya': 'Fərqanə Qənbərli', 'Fizika': 'Aytac Əhmədova', 'Kimya': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Xəyalə Qiyasova' },
+            '8B': { 'Azərbaycan dili': 'Könül Əhmədova', 'Ədəbiyyat': 'Könül Əhmədova', 'Türk dili': 'Saffet Yılmaz', 'Rus dili': 'Gülsəba Aktaş', 'Azərbaycan Tarixi': 'Xəyalə Əsgərli', 'Tarix': 'Xəyalə Əsgərli', 'Coğrafiya': 'Gülnar Səttarlı', 'Biologiya': 'Fərqanə Qənbərli', 'Fizika': 'Aytac Əhmədova', 'Kimya': 'Günel Axundova', 'İnformatika': 'Adil Çaxoyev', 'Texnologiya': 'Adil Çaxoyev', 'Təsviri İncəsənət': 'Fatma Valiyev', 'Musiqi': 'Pərvin Əşari', 'Fiziki tərbiyə': 'Xəyalə Qiyasova' },
             '9A': { 'Azərbaycan dili': 'Aynurə Qurban', 'Riyaziyyat': 'Məhbubə Talıblı', 'İngilis dili': 'Aysu Mirzəyeva' },
             '9B': { 'Azərbaycan dili': 'Nənəxanım Qafarova', 'Riyaziyyat': 'Şahnaz Sarıyeva', 'İngilis dili': 'Aynur Məmmədova' }
         };
@@ -2509,13 +2510,9 @@
             initTheme();
             document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
 
-            // Tarihi göster
-            document.getElementById('current-date').textContent = new Date().toLocaleDateString('az-AZ', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
+            // Canlı Saatı başlat
+            updateLiveClock();
+            setInterval(updateLiveClock, 1000);
 
             // Gömülü verileri yükle
             loadEmbeddedData();
@@ -2567,6 +2564,24 @@
             // AI Assistant initialization
             initAIAssistant();
         });
+
+        // =============================================
+        // CANLI SAAT VƏ TARİX LOGİKASI
+        // =============================================
+        function updateLiveClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('az-AZ', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+            const dateStr = now.toLocaleDateString('az-AZ', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            const clockEl = document.getElementById('current-clock');
+            const dateEl = document.getElementById('current-date');
+            if (clockEl) clockEl.textContent = timeStr;
+            if (dateEl) dateEl.textContent = dateStr;
+        }
 
         // =============================================
         // AI ASSISTANT LOGIC
@@ -3238,7 +3253,7 @@
                 const student = {
                     id: schoolData.students.length + 1,
                     name: row[0] || '',
-                    className: row[1] || '',
+                    className: (row[1] || '').replace('.', ''),
                     attendance: parseInt(row[2]) || 0,
                     gradeLevel: getGradeLevel(row[1]),
                     sheetName: sheetName,
@@ -3306,10 +3321,10 @@
             // Benzersiz sınıfları çıkar
             const classSet = new Set();
 
-            // 2a-9b arasındakı bütün sinifləri əvvəlcədən əlavə edək
+            // 2-9 siniflərin hamısını (A və B paralelləri) əvvəlcədən əlavə edək (Cəmi 16 sinif)
             for (let grade = 2; grade <= 9; grade++) {
-                classSet.add(`${grade}.A`);
-                classSet.add(`${grade}.B`);
+                classSet.add(`${grade}A`);
+                classSet.add(`${grade}B`);
             }
 
             schoolData.students.forEach(s => classSet.add(s.className));
