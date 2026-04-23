@@ -9,6 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <link
@@ -1923,9 +1925,14 @@
 
                     <!-- Teacher Detail View (Initially Hidden) -->
                     <div id="teacher-detail-view" style="display: none;">
-                        <button class="btn btn-outline-secondary mb-3" onclick="showTeachersGrid()">
-                            <i class="fas fa-arrow-left me-2"></i>Siyahıya Qayıt
-                        </button>
+                        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                            <button class="btn btn-outline-secondary" onclick="showTeachersGrid()">
+                                <i class="fas fa-arrow-left me-2"></i>Siyahıya Qayıt
+                            </button>
+                            <button class="btn btn-danger" onclick="exportTeacherPDF()" id="teacher-pdf-btn">
+                                <i class="fas fa-file-pdf me-2"></i>PDF Hesabat Yüklə
+                            </button>
+                        </div>
                         <div class="card">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h4 id="detail-teacher-name" class="mb-0">Müəllim Adı</h4>
@@ -6103,6 +6110,314 @@
         });
 
         console.log('Navigasyon butonları aktif!');
+
+        // ─── MÜƏLLIM PDF HESABATI ───────────────────────────────────────────────
+        async function exportTeacherPDF() {
+            const btn = document.getElementById('teacher-pdf-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Hazırlanır...';
+
+            const teacherName  = document.getElementById('detail-teacher-name').textContent.trim();
+            const teacherSubjs = document.getElementById('detail-teacher-subject').textContent.trim();
+            const studentCount = document.getElementById('teacher-student-count').textContent.trim();
+            const perfAvg      = document.getElementById('teacher-performance-avg').textContent.trim();
+            const classCount   = document.getElementById('teacher-class-count').textContent.trim();
+            const warnCount    = document.getElementById('teacher-warning-count').textContent.trim();
+
+            // Subject stats
+            const subStats = {};
+            currentTeacherStudents.forEach(s => {
+                if (!subStats[s.subject]) subStats[s.subject] = { total: 0, count: 0 };
+                subStats[s.subject].total += s.grade;
+                subStats[s.subject].count++;
+            });
+            // Class stats
+            const classStats = {};
+            currentTeacherStudents.forEach(s => {
+                if (!classStats[s.className]) classStats[s.className] = { total: 0, count: 0 };
+                classStats[s.className].total += s.grade;
+                classStats[s.className].count++;
+            });
+            const studentsSorted = [...currentTeacherStudents].sort((a, b) => b.grade - a.grade);
+
+            function gradeColor(g) {
+                if (g >= 85) return '#10b981';
+                if (g >= 70) return '#3b82f6';
+                if (g >= 50) return '#f59e0b';
+                return '#ef4444';
+            }
+            function statusLabel(g) {
+                if (g >= 85) return 'Əla';
+                if (g >= 70) return 'Yaxşı';
+                if (g >= 50) return 'Kafi';
+                return 'Zəif';
+            }
+            const today = new Date().toLocaleDateString('az-AZ', { day:'2-digit', month:'long', year:'numeric' });
+
+            // Build subject rows
+            const subRows = Object.keys(subStats).sort().map(sub => {
+                const avg = (subStats[sub].total / subStats[sub].count).toFixed(1);
+                const clr = gradeColor(parseFloat(avg));
+                return `<div style="display:inline-flex;align-items:center;gap:10px;background:#f8f9fa;border:1px solid #e9ecef;border-radius:8px;padding:8px 14px;margin:0;">
+                    <span style="font-size:12px;color:#374151;font-weight:600;">${sub}</span>
+                    <span style="background:${clr};color:#fff;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:700;">${avg}</span>
+                </div>`;
+            }).join('');
+
+            // Build class table rows
+            const classRows = Object.keys(classStats).sort().map((cls, i) => {
+                const avg = (classStats[cls].total / classStats[cls].count).toFixed(1);
+                const st = statusLabel(parseFloat(avg));
+                const clr = gradeColor(parseFloat(avg));
+                const bg = i % 2 === 0 ? '#fff' : '#f8fcfd';
+                return `<tr style="background:${bg};border-bottom:1px solid #f0f4f5;">
+                    <td style="padding:10px 20px;text-align:center;font-weight:700;font-size:13px;color:#00525d;">${cls}</td>
+                    <td style="padding:10px 20px;text-align:center;font-size:13px;color:#374151;">${classStats[cls].count}</td>
+                    <td style="padding:10px 20px;text-align:center;font-size:14px;font-weight:700;color:#374151;">${avg}</td>
+                    <td style="padding:10px 20px;text-align:center;">
+                        <span style="background:${clr};color:#fff;border-radius:20px;padding:3px 14px;font-size:11px;font-weight:700;display:inline-block;">${st}</span>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            // Build student table rows
+            const studentRows = studentsSorted.map((s, i) => {
+                const st = statusLabel(s.grade);
+                const clr = gradeColor(s.grade);
+                const bg = i % 2 === 0 ? '#fff' : '#f8fcfd';
+                return `<tr style="background:${bg};border-bottom:1px solid #f0f4f5;">
+                    <td style="padding:9px 12px;text-align:center;font-size:11px;color:#d1d5db;font-weight:600;">${i+1}</td>
+                    <td style="padding:9px 16px;font-size:12.5px;font-weight:600;color:#111827;">${s.name}</td>
+                    <td style="padding:9px 12px;text-align:center;">
+                        <span style="background:#e0f2fe;color:#0369a1;border-radius:6px;padding:3px 10px;font-size:11px;font-weight:700;display:inline-block;">${s.className}</span>
+                    </td>
+                    <td style="padding:9px 12px;font-size:11.5px;color:#6b7280;">${s.subject}</td>
+                    <td style="padding:9px 12px;text-align:center;">
+                        <span style="background:${clr};color:#fff;border-radius:8px;padding:4px 12px;font-size:13px;font-weight:700;display:inline-block;min-width:38px;">${s.grade}</span>
+                    </td>
+                    <td style="padding:9px 12px;text-align:center;">
+                        <span style="background:${clr}22;color:${clr};border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;display:inline-block;">${st}</span>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            // Create hidden render div
+            const wrapper = document.createElement('div');
+            wrapper.id = 'pdf-render-target';
+            wrapper.style.cssText = `
+                position:fixed; left:-9999px; top:0;
+                width:794px; background:#f4f6f9;
+                font-family: Arial, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                color:#374151; font-size:13px; line-height:1.5;
+                z-index:-1;
+                padding-bottom: 40px;
+            `;
+            wrapper.innerHTML = `
+            <div style="width:794px;background:#f4f6f9;padding:0;margin:0;font-family:Arial,'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+
+              <!-- HEADER -->
+              <div style="background:linear-gradient(120deg,#00525d 0%,#007a8a 50%,#00adba 100%);padding:0 36px;height:110px;position:relative;overflow:hidden;display:flex;align-items:center;">
+                <!-- decorative circles -->
+                <div style="position:absolute;right:-30px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,0.06);"></div>
+                <div style="position:absolute;right:60px;bottom:-60px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,0.04);"></div>
+                <div style="position:absolute;left:240px;top:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.05);"></div>
+                <!-- left accent bar -->
+                <div style="width:5px;height:60px;background:rgba(255,255,255,0.5);border-radius:3px;margin-right:20px;flex-shrink:0;"></div>
+                <!-- text block -->
+                <div>
+                  <div style="font-size:10px;color:rgba(255,255,255,0.7);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;">Azərbaycan Beynəlxalq Maarif Məktəbləri</div>
+                  <div style="font-size:26px;font-weight:700;color:#fff;letter-spacing:-0.5px;line-height:1;">Müəllim Hesabat</div>
+                  <div style="font-size:11px;color:rgba(255,255,255,0.75);margin-top:6px;">2025–2026 Tədris ili &nbsp;|&nbsp; I Yarımil &nbsp;|&nbsp; ${today}</div>
+                </div>
+                <!-- right badge -->
+                <div style="margin-left:auto;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);border-radius:10px;padding:10px 18px;text-align:center;flex-shrink:0;">
+                  <div style="font-size:10px;color:rgba(255,255,255,0.7);letter-spacing:1px;">MÜƏLLİM</div>
+                  <div style="font-size:13px;font-weight:700;color:#fff;margin-top:2px;">${teacherName.split(' ').pop()}</div>
+                </div>
+              </div>
+
+              <!-- TEACHER CARD -->
+              <div style="margin:24px 36px 0;background:#fff;border-radius:12px;padding:20px 24px;display:flex;align-items:center;gap:20px;box-shadow:0 2px 12px rgba(0,82,93,0.08);">
+                <div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#00525d,#00adba);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <span style="font-size:22px;color:#fff;font-weight:700;">${teacherName.charAt(0)}</span>
+                </div>
+                <div style="flex:1;">
+                  <div style="font-size:18px;font-weight:700;color:#00525d;line-height:1.2;">${teacherName}</div>
+                  <div style="font-size:12px;color:#6b7280;margin-top:4px;">${teacherSubjs}</div>
+                </div>
+                <div style="width:1px;height:44px;background:#e5e7eb;"></div>
+                <div style="text-align:center;padding:0 12px;">
+                  <div style="font-size:11px;color:#9ca3af;margin-bottom:2px;">Tədris ili</div>
+                  <div style="font-size:13px;font-weight:600;color:#374151;">2025–2026</div>
+                </div>
+                <div style="width:1px;height:44px;background:#e5e7eb;"></div>
+                <div style="text-align:center;padding:0 12px;">
+                  <div style="font-size:11px;color:#9ca3af;margin-bottom:2px;">Yarımil</div>
+                  <div style="font-size:13px;font-weight:600;color:#374151;">I Yarımil</div>
+                </div>
+              </div>
+
+              <!-- STAT BOXES -->
+              <div style="display:flex;gap:14px;margin:16px 36px;">
+                <div style="flex:1;background:#fff;border-radius:12px;padding:18px 14px;text-align:center;box-shadow:0 2px 10px rgba(0,82,93,0.07);border-top:4px solid #00adba;">
+                  <div style="font-size:30px;font-weight:700;color:#00adba;line-height:1;">${studentCount}</div>
+                  <div style="font-size:10px;color:#9ca3af;margin-top:6px;text-transform:uppercase;letter-spacing:0.5px;">Ümumi Şagird</div>
+                </div>
+                <div style="flex:1;background:#fff;border-radius:12px;padding:18px 14px;text-align:center;box-shadow:0 2px 10px rgba(0,82,93,0.07);border-top:4px solid #10b981;">
+                  <div style="font-size:30px;font-weight:700;color:#10b981;line-height:1;">${perfAvg}</div>
+                  <div style="font-size:10px;color:#9ca3af;margin-top:6px;text-transform:uppercase;letter-spacing:0.5px;">Perf. Ortalama</div>
+                </div>
+                <div style="flex:1;background:#fff;border-radius:12px;padding:18px 14px;text-align:center;box-shadow:0 2px 10px rgba(0,82,93,0.07);border-top:4px solid #f59e0b;">
+                  <div style="font-size:30px;font-weight:700;color:#f59e0b;line-height:1;">${classCount}</div>
+                  <div style="font-size:10px;color:#9ca3af;margin-top:6px;text-transform:uppercase;letter-spacing:0.5px;">Dərs Keçdiyi Sinif</div>
+                </div>
+                <div style="flex:1;background:#fff;border-radius:12px;padding:18px 14px;text-align:center;box-shadow:0 2px 10px rgba(0,82,93,0.07);border-top:4px solid #ef4444;">
+                  <div style="font-size:30px;font-weight:700;color:#ef4444;line-height:1;">${warnCount}</div>
+                  <div style="font-size:10px;color:#9ca3af;margin-top:6px;text-transform:uppercase;letter-spacing:0.5px;">Diqqət Yetirilməli</div>
+                </div>
+              </div>
+
+              <!-- SUBJECT AVERAGES -->
+              ${Object.keys(subStats).length > 0 ? `
+              <div style="margin:0 36px 16px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,82,93,0.07);">
+                <div style="background:#00525d;padding:11px 20px;display:flex;align-items:center;gap:10px;">
+                  <div style="width:3px;height:16px;background:#00adba;border-radius:2px;"></div>
+                  <span style="color:#fff;font-size:12px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;">Fənlər Üzrə Ortalama</span>
+                </div>
+                <div style="padding:16px 20px;display:flex;flex-wrap:wrap;gap:10px;">
+                  ${subRows}
+                </div>
+              </div>` : ''}
+
+              <!-- CLASS TABLE -->
+              ${classRows ? `
+              <div style="margin:0 36px 16px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,82,93,0.07);">
+                <div style="background:#00525d;padding:11px 20px;display:flex;align-items:center;gap:10px;">
+                  <div style="width:3px;height:16px;background:#00adba;border-radius:2px;"></div>
+                  <span style="color:#fff;font-size:12px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;">Siniflər Üzrə Ortalama</span>
+                </div>
+                <table style="width:100%;border-collapse:collapse;">
+                  <thead>
+                    <tr style="background:#f0f9fb;">
+                      <th style="padding:10px 20px;text-align:center;font-size:11px;color:#00525d;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e0f2f1;">Sinif</th>
+                      <th style="padding:10px 20px;text-align:center;font-size:11px;color:#00525d;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e0f2f1;">Şagird Sayı</th>
+                      <th style="padding:10px 20px;text-align:center;font-size:11px;color:#00525d;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e0f2f1;">Ortalama</th>
+                      <th style="padding:10px 20px;text-align:center;font-size:11px;color:#00525d;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e0f2f1;">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>${classRows}</tbody>
+                </table>
+              </div>` : ''}
+
+              <!-- STUDENT TABLE -->
+              <div style="margin:0 36px 28px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 10px rgba(0,82,93,0.07);">
+                <div style="background:#00525d;padding:11px 20px;display:flex;align-items:center;gap:10px;">
+                  <div style="width:3px;height:16px;background:#00adba;border-radius:2px;"></div>
+                  <span style="color:#fff;font-size:12px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;">Şagird Siyahısı</span>
+                  <span style="margin-left:auto;background:rgba(255,255,255,0.2);color:#fff;font-size:11px;padding:2px 10px;border-radius:10px;">${studentsSorted.length} şagird</span>
+                </div>
+                <table style="width:100%;border-collapse:collapse;">
+                  <thead>
+                    <tr style="background:#f0f9fb;">
+                      <th style="padding:10px 12px;text-align:center;font-size:11px;color:#00525d;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e0f2f1;width:40px;">#</th>
+                      <th style="padding:10px 16px;font-size:11px;color:#00525d;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e0f2f1;">Şagird</th>
+                      <th style="padding:10px 12px;text-align:center;font-size:11px;color:#00525d;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e0f2f1;width:65px;">Sinif</th>
+                      <th style="padding:10px 12px;font-size:11px;color:#00525d;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e0f2f1;">Fənn</th>
+                      <th style="padding:10px 12px;text-align:center;font-size:11px;color:#00525d;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e0f2f1;width:70px;">Qiymət</th>
+                      <th style="padding:10px 12px;text-align:center;font-size:11px;color:#00525d;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;border-bottom:2px solid #e0f2f1;width:75px;">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>${studentRows}</tbody>
+                </table>
+              </div>
+
+              <!-- FOOTER -->
+              <div style="background:#00525d;padding:14px 36px;display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;">
+                    <span style="color:#fff;font-size:14px;">&#128218;</span>
+                  </div>
+                  <span style="color:rgba(255,255,255,0.85);font-size:10.5px;">Azərbaycan Beynəlxalq Maarif Məktəbləri &nbsp;|&nbsp; Müəllim Hesabat Sistemi</span>
+                </div>
+                <span style="color:rgba(255,255,255,0.6);font-size:10px;">${today}</span>
+              </div>
+
+            </div>`;
+
+            document.body.appendChild(wrapper);
+
+            try {
+                await document.fonts.ready;
+                // DOM-un tam yerləşməsi üçün qısa gözləmə
+                await new Promise(r => setTimeout(r, 300));
+
+                const canvas = await html2canvas(wrapper, {
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    width: 794,
+                    windowWidth: 794
+                });
+
+                const { jsPDF } = window.jspdf;
+
+                const pdfW = 210;
+                const pdfH = 297;
+                const topMargin   = 14;  // mm – boş yer: yuxarı (2-ci+ səhifə)
+                const botMargin   = 10;  // mm – boş yer: aşağı (hər səhifə)
+
+                const imgW = pdfW;
+                const imgH = (canvas.height * pdfW) / canvas.width;
+
+                // 1-ci səhifə: yalnız alt boşluq; digər səhifələr: üst+alt
+                const firstPageSlot = pdfH - botMargin;
+                const otherPageSlot = pdfH - topMargin - botMargin;
+
+                const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+                let consumed = 0; // image-dən nə qədər mm istifadə olunub
+                let page = 0;
+
+                while (consumed < imgH - 0.5) {
+                    if (page > 0) doc.addPage();
+
+                    const slot    = page === 0 ? firstPageSlot : otherPageSlot;
+                    const yOffset = page === 0 ? 0 : topMargin;
+                    const sliceH  = Math.min(slot, imgH - consumed);
+
+                    // Canvas-dan lazımi hissəni kəs
+                    const scale  = canvas.height / imgH;
+                    const srcY   = Math.round(consumed * scale);
+                    const srcH   = Math.round(sliceH * scale);
+
+                    const sc = document.createElement('canvas');
+                    sc.width  = canvas.width;
+                    sc.height = srcH;
+                    const ctx = sc.getContext('2d');
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, sc.width, sc.height);
+                    ctx.drawImage(canvas, 0, srcY, canvas.width, srcH,
+                                         0, 0,    sc.width,     srcH);
+
+                    doc.addImage(sc.toDataURL('image/jpeg', 0.95),
+                                 'JPEG', 0, yOffset, imgW, sliceH);
+
+                    consumed += sliceH;
+                    page++;
+                }
+
+                const safeName = teacherName.replace(/[^a-zA-ZƏəŞşĞğÜüÖöÇçIı0-9 ]/g, '_');
+                doc.save(`Müəllim_Hesabat_${safeName}.pdf`);
+
+            } finally {
+                document.body.removeChild(wrapper);
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-file-pdf me-2"></i>PDF Hesabat Yüklə';
+            }
+        }
+        // ────────────────────────────────────────────────────────────────────────
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
