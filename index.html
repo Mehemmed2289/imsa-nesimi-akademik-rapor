@@ -32,10 +32,10 @@
             --card-bg: #ffffff;
             --border-color: #e5e7eb;
             --text-color: #374151;
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.5);
-            --shadow-soft: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
-            --shadow-medium: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow-soft: 0 10px 30px rgba(0, 82, 93, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+            --shadow-medium: 0 20px 40px rgba(0, 82, 93, 0.08), 0 1px 3px rgba(0, 0, 0, 0.02);
         }
 
         body {
@@ -59,16 +59,19 @@
         }
 
         .card {
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            background: var(--card-bg);
+            border: 1px solid var(--glass-border) !important;
+            background: var(--glass-bg);
             box-shadow: var(--shadow-soft);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            backdrop-filter: blur(10px);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease, background-color 0.4s ease;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
         }
 
         .card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-4px);
             box-shadow: var(--shadow-medium);
+            border-color: rgba(0, 173, 186, 0.3) !important;
         }
 
         [data-theme="dark"] {
@@ -81,8 +84,10 @@
             --light-gray: #334155;
             --primary-blue: #38bdf8;
             --secondary-blue: #0ea5e9;
-            --glass-bg: rgba(30, 41, 59, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(30, 41, 59, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.25);
+            --shadow-medium: 0 20px 40px rgba(0, 0, 0, 0.35);
         }
 
         [data-theme="dark"] .text-muted {
@@ -172,15 +177,22 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             padding-top: 60px !important;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.4s ease, color 0.4s ease;
         }
 
-        /* IMSA Stili Header */
+        /* IMSA Stili Header - Premium Glassmorphism */
         .navbar-imsa {
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
-            box-shadow: 0 4px 20px rgba(0, 82, 93, 0.15);
+            background: rgba(0, 82, 93, 0.75);
+            backdrop-filter: blur(12px) saturate(180%);
+            -webkit-backdrop-filter: blur(12px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03);
             padding: 0.5rem 0;
-            backdrop-filter: blur(10px);
+            transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+        [data-theme="dark"] .navbar-imsa {
+            background: rgba(15, 23, 42, 0.75);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .navbar-brand-imsa {
@@ -538,18 +550,34 @@
         /* Heatmap Styles */
         .heatmap-grid {
             display: grid;
-            gap: 2px;
+            gap: 4px;
             margin-top: 1rem;
+            min-width: max-content;
         }
 
         .heatmap-cell {
-            padding: 10px;
+            padding: 9px 8px;
             text-align: center;
-            font-size: 0.8rem;
-            font-weight: 500;
-            border-radius: 4px;
-            min-width: 60px;
-            transition: transform 0.2s ease;
+            font-size: 0.78rem;
+            font-weight: 800;
+            border-radius: 6px;
+            min-width: 66px;
+            min-height: 48px;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            line-height: 1.05;
+        }
+
+        .heatmap-cell small {
+            display: block;
+            font-size: 0.58rem;
+            font-weight: 700;
+            margin-top: 3px;
+            opacity: 0.9;
         }
 
         .sticky-col {
@@ -579,7 +607,8 @@
         .heatmap-cell:hover {
             transform: scale(1.05);
             z-index: 10;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            filter: saturate(1.12);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
         }
 
         .heatmap-header {
@@ -595,6 +624,34 @@
             word-break: break-word;
             line-height: 1.2;
             min-height: 50px;
+        }
+
+        .heatmap-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .heatmap-legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 9px;
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .heatmap-legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            flex: 0 0 auto;
         }
 
         /* Search Styles */
@@ -737,18 +794,23 @@
 
         /* Table row animation */
         .data-table tr {
-            transition: all 0.2s ease;
+            transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease;
         }
 
         .data-table tr:hover {
-            transform: scale(1.01);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px) scale(1.005);
+            box-shadow: 0 6px 15px rgba(0, 82, 93, 0.06);
+            background-color: var(--light-blue) !important;
             z-index: 2;
+        }
+        [data-theme="dark"] .data-table tr:hover {
+            background-color: #0f3443 !important;
         }
 
         /* AI Chat Button Pulse */
         .ai-chat-btn {
             animation: pulse 2s infinite ease-in-out;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
 
         .ai-chat-btn:hover {
@@ -765,6 +827,33 @@
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        /* Modal Glassmorphism */
+        .modal-content {
+            background: var(--glass-bg) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border) !important;
+            border-radius: 20px !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+            transition: background-color 0.4s ease, border-color 0.4s ease;
+        }
+        [data-theme="dark"] .modal-header, [data-theme="dark"] .modal-footer {
+            border-color: var(--border-color) !important;
+        }
+
+        /* Button micro-animations */
+        .btn, .mobile-nav-btn, .modern-nav-btn, .suggestion-chip {
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .btn:active, .mobile-nav-btn:active, .modern-nav-btn:active, .suggestion-chip:active {
+            transform: scale(0.95) !important;
+        }
+        
+        /* Smooth transition for theme toggle */
+        .nav-link, .badge, table, td, th, tr {
+            transition: all 0.4s ease;
         }
 
         /* Offcanvas Styling */
@@ -1115,6 +1204,69 @@
             margin-top: 5px;
         }
 
+        .ai-insight-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--secondary-blue);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 8px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .ai-insight-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .ai-metric-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin: 8px 0;
+        }
+
+        .ai-metric {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 6px;
+            background: var(--bg-color);
+            text-align: center;
+        }
+
+        .ai-metric b {
+            display: block;
+            font-size: 1rem;
+            color: var(--primary-blue);
+        }
+
+        .ai-metric span {
+            display: block;
+            margin-top: 2px;
+            font-size: 0.68rem;
+            color: var(--text-color);
+            opacity: 0.82;
+        }
+
+        .ai-priority-list {
+            margin: 8px 0 0;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .ai-priority-list li {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 6px 0;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.82rem;
+        }
+
         @media (max-width: 576px) {
             .ai-chat-window {
                 width: calc(100% - 40px);
@@ -1131,6 +1283,155 @@
 
         .border-light-custom {
             border-color: var(--border-color);
+        }
+
+        /* Dark mode contrast fixes */
+        [data-theme="dark"] {
+            --bs-body-color: var(--text-color);
+            --bs-body-bg: var(--bg-color);
+            --bs-secondary-color: #cbd5e1;
+            --bs-tertiary-color: #94a3b8;
+            --bs-border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .card,
+        [data-theme="dark"] .teacher-card,
+        [data-theme="dark"] .modal-content,
+        [data-theme="dark"] .dropdown-menu,
+        [data-theme="dark"] .list-group-item {
+            color: var(--text-color);
+        }
+
+        [data-theme="dark"] .card-header:not(.bg-primary):not(.bg-info):not(.bg-danger):not(.bg-dark):not(.bg-warning),
+        [data-theme="dark"] .modal-body,
+        [data-theme="dark"] .modal-title,
+        [data-theme="dark"] .dropdown-item,
+        [data-theme="dark"] .form-label,
+        [data-theme="dark"] .form-check-label,
+        [data-theme="dark"] .text-dark,
+        [data-theme="dark"] .text-secondary {
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .text-muted {
+            color: #cbd5e1 !important;
+        }
+
+        [data-theme="dark"] .table {
+            --bs-table-bg: transparent;
+            --bs-table-color: var(--text-color);
+            --bs-table-border-color: var(--border-color);
+            --bs-table-striped-color: var(--text-color);
+            --bs-table-hover-color: #ffffff;
+            --bs-table-hover-bg: rgba(56, 189, 248, 0.16);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .table-light,
+        [data-theme="dark"] .table > :not(caption) > * > * {
+            background-color: transparent;
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] thead,
+        [data-theme="dark"] .table-light th {
+            background-color: rgba(15, 52, 67, 0.75) !important;
+            color: #f8fafc !important;
+        }
+
+        [data-theme="dark"] .form-control,
+        [data-theme="dark"] .form-select,
+        [data-theme="dark"] .input-group-text,
+        [data-theme="dark"] .dropdown-menu,
+        [data-theme="dark"] .search-modal,
+        [data-theme="dark"] .search-results {
+            background-color: #111827 !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-color) !important;
+        }
+
+        [data-theme="dark"] .form-control::placeholder,
+        [data-theme="dark"] .ai-chat-input::placeholder {
+            color: #94a3b8;
+            opacity: 1;
+        }
+
+        [data-theme="dark"] .dropdown-item:hover,
+        [data-theme="dark"] .dropdown-item:focus,
+        [data-theme="dark"] .search-item:hover {
+            background-color: rgba(56, 189, 248, 0.16);
+            color: #ffffff !important;
+        }
+
+        [data-theme="dark"] .bg-secondary.bg-opacity-10,
+        [data-theme="dark"] .bg-light,
+        [data-theme="dark"] .bg-white,
+        [data-theme="dark"] .badge.bg-light {
+            background-color: rgba(51, 65, 85, 0.95) !important;
+            color: #f8fafc !important;
+        }
+
+        [data-theme="dark"] .badge.text-primary,
+        [data-theme="dark"] .bg-light.text-primary {
+            color: #7dd3fc !important;
+        }
+
+        [data-theme="dark"] .alert-info {
+            background-color: rgba(14, 165, 233, 0.16);
+            border-color: rgba(56, 189, 248, 0.35);
+            color: #dff6ff;
+        }
+
+        [data-theme="dark"] .alert-warning {
+            background-color: rgba(245, 158, 11, 0.16);
+            border-color: rgba(251, 191, 36, 0.4);
+            color: #fff7d6;
+        }
+
+        [data-theme="dark"] .btn-outline-secondary,
+        [data-theme="dark"] .btn-outline-primary,
+        [data-theme="dark"] .btn-outline-success,
+        [data-theme="dark"] .btn-outline-danger,
+        [data-theme="dark"] .btn-outline-warning {
+            color: var(--text-color);
+        }
+
+        [data-theme="dark"] .ai-message.assistant,
+        [data-theme="dark"] .ai-insight-card,
+        [data-theme="dark"] .ai-analysis-card,
+        [data-theme="dark"] .heatmap-legend-item {
+            background-color: rgba(15, 23, 42, 0.92);
+            color: #f8fafc;
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .ai-metric {
+            background-color: rgba(30, 41, 59, 0.95);
+            color: #f8fafc;
+        }
+
+        [data-theme="dark"] .ai-metric b {
+            color: #7dd3fc;
+        }
+
+        [data-theme="dark"] .heatmap-header,
+        [data-theme="dark"] .sticky-col,
+        [data-theme="dark"] .sticky-header {
+            background: #162033 !important;
+            color: #f8fafc !important;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .heatmap-cell.empty {
+            background: #1e293b !important;
+            color: #94a3b8 !important;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] canvas {
+            filter: saturate(1.04) contrast(1.04);
         }
     </style>
 </head>
@@ -2098,6 +2399,12 @@
                         <div class="suggestion-chip"
                             onclick="sendAlSuggestion('Kritik davamsızlıqda ən çox olan uşaqlar')">🚩 Kritik
                             Davamsızlıq</div>
+                        <div class="suggestion-chip" onclick="sendAlSuggestion('Riskli şagirdləri analiz et')">
+                            Risk analizi</div>
+                        <div class="suggestion-chip" onclick="sendAlSuggestion('Ən zəif fənlər hansılardır?')">
+                            Zəif fənlər</div>
+                        <div class="suggestion-chip" onclick="sendAlSuggestion('Direktor xülasəsi hazırla')">
+                            Direktor xülasəsi</div>
                     </div>
                 </div>
             </div>
@@ -2679,6 +2986,51 @@
             return 'bg-danger';
         }
 
+        function getAIRiskScore(student) {
+            let score = 0;
+            if (student.average < 50) score += 45;
+            else if (student.average < 60) score += 30;
+            else if (student.average < 70) score += 16;
+            if (student.attendance >= 15) score += 35;
+            else if (student.attendance >= 10) score += 24;
+            else if (student.attendance >= 5) score += 12;
+            const lowSubjects = Object.values(student.subjects || {}).filter(v => Number(v) < 50).length;
+            score += Math.min(lowSubjects * 8, 24);
+            return Math.min(score, 100);
+        }
+
+        function getAISeverity(score) {
+            if (score >= 70) return { label: 'Təcili', badge: 'bg-danger', tone: 'danger' };
+            if (score >= 45) return { label: 'Yüksək', badge: 'bg-warning text-dark', tone: 'warning' };
+            if (score >= 25) return { label: 'İzlənməli', badge: 'bg-info text-dark', tone: 'info' };
+            return { label: 'Sabit', badge: 'bg-success', tone: 'success' };
+        }
+
+        function getAISubjectStats() {
+            return schoolData.subjects.map(subject => {
+                const grades = schoolData.students
+                    .map(s => s.subjects[subject])
+                    .filter(v => Number.isFinite(Number(v)))
+                    .map(Number);
+                const avg = grades.length ? grades.reduce((a, b) => a + b, 0) / grades.length : 0;
+                const weakCount = grades.filter(v => v < 50).length;
+                const successRate = grades.length ? ((grades.length - weakCount) / grades.length) * 100 : 0;
+                return { subject, avg, weakCount, successRate, count: grades.length };
+            }).filter(s => s.count > 0);
+        }
+
+        function aiMetric(label, value) {
+            return `<div class="ai-metric"><b>${value}</b><span>${label}</span></div>`;
+        }
+
+        function aiCard(title, icon, body, action = '') {
+            return `<div class="ai-insight-card">
+                <div class="ai-insight-title"><i class="fas ${icon}"></i><span>${title}</span></div>
+                ${body}
+                ${action}
+            </div>`;
+        }
+
         // Güclü Normalizasiya: Bütün simvolları (., -, boşluq) təmizləyir
         const cleanForMatch = (text) => {
             if (!text) return "";
@@ -2718,6 +3070,63 @@
             if (['necesen', 'veziyyetnece'].some(t => qClean.includes(t))) return "Sizə xidmət edəndə özümü əla hiss edirəm! 📊 Buyurun, hansı məlumatı analiz edək?";
             if (['sagol', 'tesekkur', 'minnetdar', 'ok', 'oldu'].some(t => qClean.includes(t))) return AI_VOICE.thanks;
 
+            const wantsRisk = qClean.includes('risk') || qClean.includes('tehluke') || qClean.includes('problemli') || qClean.includes('nezaret');
+            const wantsDirector = qClean.includes('direktor') || qClean.includes('xulase') || qClean.includes('hesabat') || qClean.includes('icmal');
+            const wantsWeakSubjects = (qClean.includes('zeif') || qClean.includes('asagi') || qClean.includes('pis')) && (qClean.includes('fenn') || qClean.includes('ders'));
+
+            if (wantsDirector) {
+                const risky = schoolData.students.map(s => ({ ...s, risk: getAIRiskScore(s) })).sort((a, b) => b.risk - a.risk);
+                const urgentCount = risky.filter(s => s.risk >= 70).length;
+                const weakSubjects = getAISubjectStats().sort((a, b) => a.avg - b.avg).slice(0, 3);
+                const bestClass = [...schoolData.classes].sort((a, b) => (stats.classAverages[b]?.average || 0) - (stats.classAverages[a]?.average || 0))[0];
+                const attendanceHotspot = [...schoolData.classes].sort((a, b) => (stats.classAverages[b]?.attendance || 0) - (stats.classAverages[a]?.attendance || 0))[0];
+                const body = `
+                    <div class="ai-metric-row">
+                        ${aiMetric('Ümumi orta', stats.overallAverage.toFixed(1))}
+                        ${aiMetric('Təcili risk', urgentCount)}
+                        ${aiMetric('Orta davam.', stats.averageAttendance.toFixed(1))}
+                    </div>
+                    <ul class="ai-priority-list">
+                        <li><span>Akademik lider sinif</span><b>${bestClass || '-'}</b></li>
+                        <li><span>Davamsızlıq fokus sinfi</span><b>${attendanceHotspot || '-'}</b></li>
+                        <li><span>Ən zəif fənlər</span><b>${weakSubjects.map(s => s.subject).join(', ')}</b></li>
+                    </ul>
+                    <div class="small text-muted mt-2">Tövsiyə: əvvəlcə yüksək riskli şagirdlər, sonra zəif fənlər üzrə sinif-müəllim kəsişməsi izlənməlidir.</div>`;
+                return aiCard('Direktor üçün qısa icmal', 'fa-clipboard-check', body,
+                    `<button class="btn btn-sm btn-outline-primary w-100 mt-2" onclick="showSection('dashboard-section'); toggleAIChat();">Panelə keç</button>`);
+            }
+
+            if (wantsRisk) {
+                const risky = schoolData.students
+                    .map(s => ({ ...s, risk: getAIRiskScore(s), severity: getAISeverity(getAIRiskScore(s)) }))
+                    .filter(s => s.risk >= 25)
+                    .sort((a, b) => b.risk - a.risk);
+                const topRisk = risky.slice(0, 8);
+                const body = `
+                    <div class="ai-metric-row">
+                        ${aiMetric('Təcili', risky.filter(s => s.risk >= 70).length)}
+                        ${aiMetric('Yüksək', risky.filter(s => s.risk >= 45 && s.risk < 70).length)}
+                        ${aiMetric('İzlənməli', risky.filter(s => s.risk >= 25 && s.risk < 45).length)}
+                    </div>
+                    <ul class="ai-priority-list">
+                        ${topRisk.map(s => `<li><span>${s.name} <small class="text-muted">(${s.className})</small></span><b><span class="badge ${s.severity.badge}">${s.risk}</span></b></li>`).join('')}
+                    </ul>
+                    <div class="small text-muted mt-2">Risk balı: orta nəticə, davamsızlıq və 50-dən aşağı fənlərin kombinasiyasıdır.</div>`;
+                return aiCard('Riskli şagird analizi', 'fa-triangle-exclamation', body,
+                    `<button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="showSection('students-section'); toggleAIChat();">Şagirdlər bölməsinə keç</button>`);
+            }
+
+            if (wantsWeakSubjects) {
+                const weakSubjects = getAISubjectStats().sort((a, b) => a.avg - b.avg).slice(0, 8);
+                const body = `
+                    <ul class="ai-priority-list">
+                        ${weakSubjects.map(s => `<li><span>${s.subject}<br><small class="text-muted">${s.count} qiymət, ${s.weakCount} zəif nəticə</small></span><b>${s.avg.toFixed(1)}</b></li>`).join('')}
+                    </ul>
+                    <div class="small text-muted mt-2">Tövsiyə: ən aşağı orta bal olan fənlər üçün siniflər üzrə ayrıca müqayisə aparın.</div>`;
+                return aiCard('Ən zəif fənlər', 'fa-book-open-reader', body,
+                    `<button class="btn btn-sm btn-outline-primary w-100 mt-2" onclick="showSection('subjects-section'); toggleAIChat();">Fənn analizinə keç</button>`);
+            }
+
             // --- TEMPLATE SEARCH (ROBUST KEYWORDS) ---
 
             // T1 & T9: Ümumi Statistika (umumivaziyyat)
@@ -2726,7 +3135,10 @@
                 • Toplam Şagird Sayı: <b>${stats.totalStudents}</b><br>
                 • Orta Akademik Bal: <b>${stats.overallAverage.toFixed(1)}</b><br>
                 • Orta Davamsızlıq: <b>${stats.averageAttendance.toFixed(1)} gün</b><br>
-                • Sistemdəki Sinif Sayı: <b>${schoolData.classes.length}</b></div>`;
+                • Sistemdəki Sinif Sayı: <b>${schoolData.classes.length}</b></div><br>
+                <button class="btn btn-sm btn-outline-primary w-100 mt-2" onclick="showSection('dashboard-section'); toggleAIChat();">
+                    <i class="fas fa-tachometer-alt me-1"></i>Panelə Keç
+                </button>`;
             }
 
             // T2: Top 5 Şagird (top5)
@@ -2734,7 +3146,10 @@
                 const top = [...schoolData.students].sort((a, b) => b.average - a.average).slice(0, 5);
                 let res = "🏆 <b>Məktəbin Lider Şagirdləri (Top 5):</b><br><ul class='ps-3 mb-0 small'>";
                 top.forEach(s => res += `<li>${s.name} (${s.className}) - <b>${s.average.toFixed(1)}</b></li>`);
-                return res + "</ul>";
+                res += `</ul><br><button class="btn btn-sm btn-outline-primary w-100 mt-1" onclick="showSection('students-section'); toggleAIChat();">
+                    <i class="fas fa-user-graduate me-1"></i>Bütün Şagirdləri Göstər
+                </button>`;
+                return res;
             }
 
             // T3: Ən yaxşı sinif (hansisinfin...)
@@ -2748,6 +3163,9 @@
                     const totalAtt = cStudents.reduce((sum, s) => sum + s.attendance, 0);
                     res += `• ${c}: <b>${totalAtt} gün</b><br>`;
                 });
+                res += `<br><button class="btn btn-sm btn-outline-success w-100 mt-1" onclick="showSection('classes-section'); toggleAIChat();">
+                    <i class="fas fa-chalkboard me-1"></i>Sinif Analizi Bölməsinə Keç
+                </button>`;
                 return res;
             }
 
@@ -2759,12 +3177,90 @@
                     if (s.attendance > 0) res += `${idx + 1}. ${s.name} (${s.className}): <b>${s.attendance} gün</b><br>`;
                 });
                 else res += "Sistemdə davamsızlığı olan şagird tapılmadı.";
+                res += `<br><button class="btn btn-sm btn-outline-danger w-100 mt-2" onclick="showSection('attendance-section'); toggleAIChat();">
+                    <i class="fas fa-calendar-times me-1"></i>Davamiyyət Bölməsinə Keç
+                </button>`;
                 return res;
             }
 
             // T6: Fənn Liderləri (fan + lidar və ya konkret fənn)
             const isLidarQuery = qClean.includes('lidar') || qClean.includes('birinci') || qClean.includes('anyaxsi') || qClean.includes('alaci');
             const mentionedSubject = schoolData.subjects.find(sub => qClean.includes(heavyClean(sub)));
+
+            // Dynamic Lowest/Highest Subject Class Average Calculation
+            const isLowest = qClean.includes('anasagi') || qClean.includes('enpis') || qClean.includes('enaz') || qClean.includes('zeif') || qClean.includes('low') || qClean.includes('limit');
+            const isHighest = qClean.includes('anyuksek') || qClean.includes('enyaxsi') || qClean.includes('lider') || qClean.includes('enbol') || qClean.includes('high') || qClean.includes('max');
+            const isClassQuery = qClean.includes('sinif');
+
+            if (mentionedSubject && isClassQuery && (isLowest || isHighest)) {
+                const classScores = {};
+                schoolData.students.forEach(s => {
+                    if (s.subjects[mentionedSubject] !== undefined) {
+                        if (!classScores[s.className]) {
+                            classScores[s.className] = { total: 0, count: 0 };
+                        }
+                        classScores[s.className].total += s.subjects[mentionedSubject];
+                        classScores[s.className].count += 1;
+                    }
+                });
+
+                const classAvgs = [];
+                for (const c in classScores) {
+                    classAvgs.push({
+                        className: c,
+                        average: classScores[c].total / classScores[c].count
+                    });
+                }
+
+                if (classAvgs.length > 0) {
+                    if (isLowest) {
+                        classAvgs.sort((a, b) => a.average - b.average);
+                        const worstClass = classAvgs[0];
+                        return `📉 <b>${mentionedSubject} ortalaması ən aşağı olan sinif:</b><br>
+                        🏫 <b>${worstClass.className}</b> (Ortalama bal: <b>${worstClass.average.toFixed(1)}</b>)<br><br>
+                        <button class="btn btn-sm btn-outline-danger w-100 mt-1" onclick="showSection('comparison-section'); toggleAIChat();">
+                            <i class="fas fa-chart-bar me-1"></i>Sinif Müqayisəsinə Bax
+                        </button>`;
+                    } else {
+                        classAvgs.sort((a, b) => b.average - a.average);
+                        const bestClass = classAvgs[0];
+                        return `📈 <b>${mentionedSubject} ortalaması ən yüksək olan sinif:</b><br>
+                        🏫 <b>${bestClass.className}</b> (Ortalama bal: <b>${bestClass.average.toFixed(1)}</b>)<br><br>
+                        <button class="btn btn-sm btn-outline-success w-100 mt-1" onclick="showSection('comparison-section'); toggleAIChat();">
+                            <i class="fas fa-chart-bar me-1"></i>Sinif Müqayisəsinə Bax
+                        </button>`;
+                    }
+                }
+            }
+
+            // Dynamic Failure Percentage (average < 50)
+            const isFailQuery = qClean.includes('kesilen') || qClean.includes('kesr') || (qClean.includes('bal') && qClean.includes('50') && (qClean.includes('asagi') || qClean.includes('az')));
+            const isPercentQuery = qClean.includes('faiz') || qClean.includes('nisbet') || qClean.includes('percent') || qClean.includes('faizinedir');
+
+            if (isFailQuery) {
+                const totalStudents = schoolData.students.length;
+                const failedStudents = schoolData.students.filter(s => s.average < 50);
+                const failCount = failedStudents.length;
+                const percentage = ((failCount / totalStudents) * 100).toFixed(1);
+
+                if (isPercentQuery || qClean.includes('faiz')) {
+                    return `📉 <b>Kəsilən şagirdlərin (balı < 50) faizi:</b><br>
+                    📊 <b>${percentage}%</b> (Məktəb üzrə <b>${totalStudents}</b> şagird arasından <b>${failCount}</b> nəfər).<br><br>
+                    <button class="btn btn-sm btn-outline-danger w-100 mt-1" onclick="showSection('students-section'); setTimeout(() => { document.getElementById('student-sort').value = 'average_asc'; updateStudentsView(); }, 200); toggleAIChat();">
+                        <i class="fas fa-exclamation-triangle me-1"></i>Zəif Nəticəli Şagirdləri Göstər
+                    </button>`;
+                } else {
+                    let res = `🚩 <b>Məktəb üzrə kəsilən şagirdlər (balı < 50):</b> <b>${failCount} nəfər</b> (${percentage}%)<br><ul class='ps-3 mb-0 small mt-2'>`;
+                    failedStudents.sort((a, b) => a.average - b.average).slice(0, 10).forEach(s => {
+                        res += `<li>${s.name} (${s.className}) - <b>${s.average.toFixed(1)} bal</b></li>`;
+                    });
+                    if (failCount > 10) res += `<li>...və daha ${failCount - 10} şagird.</li>`;
+                    res += `</ul><br><button class="btn btn-sm btn-outline-danger w-100 mt-1" onclick="showSection('students-section'); setTimeout(() => { document.getElementById('student-sort').value = 'average_asc'; updateStudentsView(); }, 200); toggleAIChat();">
+                        <i class="fas fa-exclamation-triangle me-1"></i>Şagirdlər Bölməsinə Keç (Zəifdən başlayaraq)
+                    </button>`;
+                    return res;
+                }
+            }
 
             if (isLidarQuery && (qClean.includes('fan') || mentionedSubject)) {
                 if (mentionedSubject && !qClean.includes('butun')) {
@@ -2778,7 +3274,10 @@
                         }
                     });
                     if (topS) {
-                        return `📚 <b>${mentionedSubject}</b> üzrə məktəb lideri: <br>👤 <b>${topS.name}</b> (${topS.className}) - <span class="badge bg-success">${maxVal} bal</span>`;
+                        return `📚 <b>${mentionedSubject}</b> üzrə məktəb lideri: <br>👤 <b>${topS.name}</b> (${topS.className}) - <span class="badge bg-success">${maxVal} bal</span><br><br>
+                        <button class="btn btn-sm btn-outline-primary w-100" onclick="viewStudentDetails(${topS.id}); toggleAIChat();">
+                            <i class="fas fa-user-graduate me-1"></i>Şagird Detallarına Bax
+                        </button>`;
                     }
                 } else {
                     // All subjects leaders
@@ -2796,6 +3295,9 @@
                             res += `• ${sub}: <b>${topS.name}</b> (${topS.className}) - <span class="badge bg-success">${maxVal} bal</span><br>`;
                         }
                     });
+                    res += `<br><button class="btn btn-sm btn-outline-primary w-100 mt-2" onclick="showSection('subjects-section'); toggleAIChat();">
+                        <i class="fas fa-book me-1"></i>Fənn Analizi Bölməsinə Keç
+                    </button>`;
                     return res;
                 }
             }
@@ -2810,6 +3312,9 @@
                         res += `• ${c}: <b>${top.name}</b> - <b>${top.average.toFixed(1)} bal</b><br>`;
                     }
                 });
+                res += `<br><button class="btn btn-sm btn-outline-warning text-dark w-100 mt-2" onclick="showSection('students-section'); setTimeout(() => { document.getElementById('student-sort').value = 'average_desc'; updateStudentsView(); }, 200); toggleAIChat();">
+                    <i class="fas fa-star me-1"></i>Şagirdləri Ortalamaya görə sırala
+                </button>`;
                 return res;
             }
 
@@ -2823,6 +3328,9 @@
                     });
                     if (perfect.length > 20) res += `<small>...və daha ${perfect.length - 20} nəfər.</small>`;
                 } else res += "Təəssüf ki, tam qayıbsız şagird tapılmadı.";
+                res += `<br><button class="btn btn-sm btn-outline-success w-100 mt-2" onclick="showSection('attendance-section'); toggleAIChat();">
+                    <i class="fas fa-calendar-check me-1"></i>Davamiyyət Bölməsinə Keç
+                </button>`;
                 return res;
             }
 
@@ -2863,7 +3371,9 @@
                         });
                         part += `</div>`;
                     }
-                    part += `</div>`;
+                    part += `<button class="btn btn-sm btn-outline-success w-100 mt-2 py-1" style="font-size: 0.75rem;" onclick="showSection('classes-section'); toggleAIChat();">
+                        <i class="fas fa-chalkboard me-1"></i>Sinif Analizi Bölməsinə Keç
+                    </button></div>`;
                     responseParts.push(part);
                 });
             }
@@ -2874,7 +3384,10 @@
                 matchedStudents.slice(0, 5).forEach(s => {
                     stRes += `<div class="ai-analysis-card">
                         <b>${s.name}</b> <small class="text-muted">(${s.className} - ${CLASS_TEACHERS[s.className.replace('.', '')] || ''})</small><br>
-                        <div class="small">🎯 Bal: <b>${s.average.toFixed(1)}</b> | 🚶 Davamsızlıq: <b>${s.attendance} gün</b></div>
+                        <div class="small mb-1">🎯 Bal: <b>${s.average.toFixed(1)}</b> | 🚶 Davamsızlıq: <b>${s.attendance} gün</b></div>
+                        <button class="btn btn-sm btn-outline-primary w-100 mt-2 py-1" style="font-size: 0.75rem;" onclick="viewStudentDetails(${s.id}); toggleAIChat();">
+                            <i class="fas fa-user-graduate me-1"></i>Detallara bax
+                        </button>
                     </div>`;
                 });
                 responseParts.push(stRes);
@@ -3204,6 +3717,19 @@
             }
         }
 
+        function getChartColors() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            return {
+                text: isDark ? '#f1f5f9' : '#374151',
+                mutedText: isDark ? '#cbd5e1' : '#4b5563',
+                grid: isDark ? 'rgba(203, 213, 225, 0.18)' : 'rgba(0, 0, 0, 0.06)',
+                tooltipBg: isDark ? 'rgba(15, 23, 42, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                tooltipBorder: isDark ? 'rgba(125, 211, 252, 0.45)' : 'rgba(0, 0, 0, 0.12)',
+                tooltipText: isDark ? '#f8fafc' : '#374151',
+                legendBoxBorder: isDark ? '#94a3b8' : '#ffffff'
+            };
+        }
+
         function setTheme(theme) {
             document.documentElement.setAttribute('data-theme', theme);
             localStorage.setItem('theme', theme);
@@ -3214,16 +3740,60 @@
 
             // Update Chart.js Defaults
             if (window.Chart) {
-                const textColor = theme === 'dark' ? '#f1f5f9' : '#374151';
-                const gridColor = theme === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
-
-                Chart.defaults.color = textColor;
-                // Add scale overrides
+                const colors = getChartColors();
+                Chart.defaults.color = colors.text;
+                
                 Chart.defaults.scales = Chart.defaults.scales || {};
-                if (Chart.defaults.scales.linear) {
-                    Chart.defaults.scales.linear.grid = Chart.defaults.scales.linear.grid || {};
-                    Chart.defaults.scales.linear.grid.color = gridColor;
-                }
+                
+                // Linear scale
+                Chart.defaults.scales.linear = Chart.defaults.scales.linear || {};
+                Chart.defaults.scales.linear.grid = Chart.defaults.scales.linear.grid || {};
+                Chart.defaults.scales.linear.grid.color = colors.grid;
+                Chart.defaults.scales.linear.ticks = Chart.defaults.scales.linear.ticks || {};
+                Chart.defaults.scales.linear.ticks.color = colors.text;
+                
+                // Category scale (X axis on bar charts)
+                Chart.defaults.scales.category = Chart.defaults.scales.category || {};
+                Chart.defaults.scales.category.grid = Chart.defaults.scales.category.grid || {};
+                Chart.defaults.scales.category.grid.color = colors.grid;
+                Chart.defaults.scales.category.ticks = Chart.defaults.scales.category.ticks || {};
+                Chart.defaults.scales.category.ticks.color = colors.text;
+
+                // Radial linear scale (radar charts)
+                Chart.defaults.scales.radialLinear = Chart.defaults.scales.radialLinear || {};
+                Chart.defaults.scales.radialLinear.grid = Chart.defaults.scales.radialLinear.grid || {};
+                Chart.defaults.scales.radialLinear.grid.color = colors.grid;
+                Chart.defaults.scales.radialLinear.angleLines = Chart.defaults.scales.radialLinear.angleLines || {};
+                Chart.defaults.scales.radialLinear.angleLines.color = colors.grid;
+                Chart.defaults.scales.radialLinear.pointLabels = Chart.defaults.scales.radialLinear.pointLabels || {};
+                Chart.defaults.scales.radialLinear.pointLabels.color = colors.text;
+                Chart.defaults.scales.radialLinear.ticks = Chart.defaults.scales.radialLinear.ticks || {};
+                Chart.defaults.scales.radialLinear.ticks.color = colors.text;
+                Chart.defaults.scales.radialLinear.ticks.backdropColor = 'transparent';
+
+                // Global tooltip configuration
+                Chart.defaults.plugins = Chart.defaults.plugins || {};
+                Chart.defaults.plugins.tooltip = Chart.defaults.plugins.tooltip || {};
+                Chart.defaults.plugins.tooltip.backgroundColor = colors.tooltipBg;
+                Chart.defaults.plugins.tooltip.titleColor = colors.tooltipText;
+                Chart.defaults.plugins.tooltip.bodyColor = colors.tooltipText;
+                Chart.defaults.plugins.tooltip.borderColor = colors.tooltipBorder;
+                Chart.defaults.plugins.tooltip.borderWidth = 1;
+                Chart.defaults.plugins.tooltip.padding = 12;
+                Chart.defaults.plugins.tooltip.cornerRadius = 8;
+
+                Chart.defaults.plugins.legend = Chart.defaults.plugins.legend || {};
+                Chart.defaults.plugins.legend.labels = Chart.defaults.plugins.legend.labels || {};
+                Chart.defaults.plugins.legend.labels.color = colors.text;
+                Chart.defaults.plugins.legend.labels.boxWidth = 14;
+                Chart.defaults.plugins.legend.labels.boxHeight = 14;
+                Chart.defaults.plugins.legend.labels.padding = 16;
+                Chart.defaults.plugins.legend.labels.usePointStyle = true;
+                Chart.defaults.plugins.legend.labels.font = {
+                    family: "'Inter', sans-serif",
+                    size: 12,
+                    weight: '600'
+                };
             }
 
             // Re-render all charts to apply new theme colors
@@ -3611,8 +4181,7 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            max: 100,
-                            grid: { color: 'rgba(0,0,0,0.05)' }
+                            max: 100
                         },
                         x: { grid: { display: false } }
                     }
@@ -4796,11 +5365,6 @@
                     plugins: {
                         legend: { position: 'top' },
                         tooltip: {
-                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                            titleColor: '#333',
-                            bodyColor: '#333',
-                            borderColor: '#ddd',
-                            borderWidth: 1,
                             padding: 10,
                             callbacks: {
                                 label: function (context) {
@@ -5610,9 +6174,29 @@
                 classes = [...new Set(schoolData.students.map(s => s.className))].sort();
             }
 
+            const getHeatmapTone = (avg) => {
+                if (avg === null || Number.isNaN(avg)) {
+                    return { bg: 'var(--light-gray)', text: 'var(--text-color)', label: 'Yoxdur', empty: true };
+                }
+                if (avg >= 91) return { bg: 'var(--dark-green)', text: '#ffffff', label: 'Əla' };
+                if (avg >= 81) return { bg: 'var(--success-green)', text: '#ffffff', label: 'Yaxşı' };
+                if (avg >= 61) return { bg: 'var(--primary-blue)', text: '#ffffff', label: 'Orta+' };
+                if (avg >= 31) return { bg: 'var(--warning-orange)', text: '#111827', label: 'Risk' };
+                return { bg: 'var(--danger-red)', text: '#ffffff', label: 'Kritik' };
+            };
+
+            const legend = [
+                ['Kritik <31', 'var(--danger-red)'],
+                ['Risk 31-60', 'var(--warning-orange)'],
+                ['Orta+ 61-80', 'var(--primary-blue)'],
+                ['Yaxşı 81-90', 'var(--success-green)'],
+                ['Əla >90', 'var(--dark-green)']
+            ].map(([label, color]) => `<span class="heatmap-legend-item"><span class="heatmap-legend-dot" style="background:${color}"></span>${label}</span>`).join('');
+
             // Structure
-            let html = `<div class="table-responsive">
-                <div class="heatmap-grid" style="grid-template-columns: 150px repeat(${subjects.length}, 1fr); display: grid;">`;
+            let html = `<div class="heatmap-legend">${legend}</div>
+                <div class="table-responsive">
+                <div class="heatmap-grid" style="grid-template-columns: minmax(150px, 180px) repeat(${subjects.length}, minmax(76px, 1fr)); display: grid;">`;
 
             // Headers
             html += `<div class="heatmap-header sticky-col" style="background: var(--light-gray); color: var(--text-color);">Sinif / Fənn</div>`;
@@ -5641,20 +6225,12 @@
                         }
                     }
 
-                    let bgColor = 'var(--light-gray)';
-                    let textColor = 'var(--text-color)';
+                    const tone = getHeatmapTone(avg);
+                    const displayValue = avg !== null ? avg.toFixed(0) : '-';
+                    const titleValue = avg !== null ? avg.toFixed(1) : 'N/A';
 
-                    if (avg !== null) {
-                        if (avg >= 91) bgColor = 'var(--dark-green)';
-                        else if (avg >= 81) bgColor = 'var(--success-green)';
-                        else if (avg >= 61) bgColor = 'var(--primary-blue)';
-                        else if (avg >= 31) bgColor = 'var(--warning-orange)';
-                        else bgColor = 'var(--danger-red)';
-                        textColor = 'white';
-                    }
-
-                    html += `<div class="heatmap-cell" style="background: ${bgColor}; color: ${textColor}" title="${c} - ${s}: ${avg ? avg.toFixed(1) : 'N/A'}">
-                        ${avg ? avg.toFixed(0) : '-'}
+                    html += `<div class="heatmap-cell ${tone.empty ? 'empty' : ''}" style="background: ${tone.bg}; color: ${tone.text}" title="${c} - ${s}: ${titleValue}">
+                        <span>${displayValue}</span><small>${tone.label}</small>
                     </div>`;
                 });
             });
