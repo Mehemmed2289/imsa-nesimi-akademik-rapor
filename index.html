@@ -3680,7 +3680,9 @@
                 if (sectionId === 'classes-section') updateClassesView();
                 if (sectionId === 'export-section') generateHeatmap();
                 if (sectionId === 'dashboard-section') updateDashboard();
-                if (sectionId === 'attendance-section') updateAttendanceView();
+                if (sectionId === 'attendance-section') {
+                    requestAnimationFrame(updateAttendanceView);
+                }
                 if (sectionId === 'students-section') updateStudentsView();
             }
 
@@ -4629,11 +4631,45 @@
         function updateClassAttendanceChart() {
             const canvas = document.getElementById('classAttendanceChart');
             if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const stats = schoolData.overallStats;
+            if (typeof Chart === 'undefined') {
+                const container = canvas.closest('.chart-container');
+                if (container && !container.querySelector('.chart-error')) {
+                    const note = document.createElement('div');
+                    note.className = 'chart-error text-center text-muted p-4';
+                    note.textContent = 'Qrafik kitabxanası yüklənmədiyi üçün bu qrafik göstərilə bilmir.';
+                    container.appendChild(note);
+                }
+                return;
+            }
 
-            const classNames = schoolData.classes;
-            const attendanceAverages = classNames.map(className => stats.classAverages[className]?.attendance || 0);
+            const section = document.getElementById('attendance-section');
+            if (section && section.style.display === 'none') return;
+
+            const ctx = canvas.getContext('2d');
+            const classFilter = document.getElementById('attendance-class-filter')?.value || 'all';
+            const selectedStudents = classFilter === 'all'
+                ? schoolData.students
+                : schoolData.students.filter(s => s.className === classFilter);
+
+            const groupedAttendance = {};
+            selectedStudents.forEach(student => {
+                if (!groupedAttendance[student.className]) {
+                    groupedAttendance[student.className] = { total: 0, count: 0 };
+                }
+                groupedAttendance[student.className].total += Number(student.attendance) || 0;
+                groupedAttendance[student.className].count += 1;
+            });
+
+            const classNames = Object.keys(groupedAttendance).sort((a, b) => {
+                const gradeA = parseInt(a);
+                const gradeB = parseInt(b);
+                if (gradeA !== gradeB) return gradeA - gradeB;
+                return a.localeCompare(b);
+            });
+            const attendanceAverages = classNames.map(className => {
+                const group = groupedAttendance[className];
+                return group.count ? group.total / group.count : 0;
+            });
 
             if (charts.classAttendanceChart) {
                 charts.classAttendanceChart.destroy();
