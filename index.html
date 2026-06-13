@@ -928,7 +928,7 @@
         /* Modern Grid Navigation */
         .modern-nav-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            grid-template-columns: repeat(9, 1fr);
             gap: 8px;
             margin-bottom: 20px;
         }
@@ -980,7 +980,7 @@
 
         @media (max-width: 768px) {
             .modern-nav-grid {
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(5, 1fr);
                 gap: 5px;
             }
 
@@ -1433,6 +1433,99 @@
         [data-theme="dark"] canvas {
             filter: saturate(1.04) contrast(1.04);
         }
+
+        /* ─── LIQUID GLASS EFFECT ─── */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(18px) saturate(180%);
+            -webkit-backdrop-filter: blur(18px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            box-shadow: 0 8px 32px rgba(0, 82, 93, 0.10), inset 0 1px 0 rgba(255,255,255,0.6);
+        }
+
+        [data-theme="dark"] .glass-card {
+            background: rgba(15, 30, 50, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+
+        /* Navbar glass */
+        .navbar {
+            background: rgba(0, 82, 93, 0.82) !important;
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 24px rgba(0, 82, 93, 0.20);
+        }
+
+        /* Stat cards glass */
+        .stat-card {
+            backdrop-filter: blur(12px) saturate(150%);
+            -webkit-backdrop-filter: blur(12px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            box-shadow: 0 6px 24px rgba(0, 82, 93, 0.12), inset 0 1px 0 rgba(255,255,255,0.4);
+        }
+
+        /* Card glass */
+        .card {
+            backdrop-filter: blur(10px) saturate(140%);
+            -webkit-backdrop-filter: blur(10px) saturate(140%);
+            border: 1px solid rgba(255, 255, 255, 0.22) !important;
+            box-shadow: 0 4px 20px rgba(0, 82, 93, 0.08), inset 0 1px 0 rgba(255,255,255,0.35);
+        }
+
+        [data-theme="dark"] .card {
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        /* Nav buttons glass */
+        .modern-nav-btn {
+            backdrop-filter: blur(10px) saturate(150%);
+            -webkit-backdrop-filter: blur(10px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.30) !important;
+            background: rgba(255, 255, 255, 0.55) !important;
+            box-shadow: 0 2px 8px rgba(0, 82, 93, 0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+            transition: all 0.2s ease;
+        }
+
+        .modern-nav-btn:hover {
+            background: rgba(0, 173, 186, 0.15) !important;
+            border-color: rgba(0, 173, 186, 0.45) !important;
+            box-shadow: 0 4px 16px rgba(0, 173, 186, 0.20), inset 0 1px 0 rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+
+        .modern-nav-btn.active {
+            background: var(--primary-blue) !important;
+            backdrop-filter: blur(12px) saturate(160%);
+            -webkit-backdrop-filter: blur(12px) saturate(160%);
+            border-color: rgba(255,255,255,0.25) !important;
+            box-shadow: 0 4px 16px rgba(0, 82, 93, 0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+
+        [data-theme="dark"] .modern-nav-btn {
+            background: rgba(255, 255, 255, 0.07) !important;
+            border: 1px solid rgba(255, 255, 255, 0.10) !important;
+        }
+
+        [data-theme="dark"] .modern-nav-btn:hover {
+            background: rgba(0, 173, 186, 0.18) !important;
+        }
+
+        /* Modal glass */
+        .modal-content {
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            background: rgba(255, 255, 255, 0.88) !important;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            box-shadow: 0 16px 48px rgba(0, 82, 93, 0.18);
+        }
+
+        [data-theme="dark"] .modal-content {
+            background: rgba(22, 32, 51, 0.90) !important;
+            border: 1px solid rgba(255, 255, 255, 0.10);
+        }
     </style>
 </head>
 
@@ -1525,6 +1618,11 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="#" data-section="substitution" data-bs-dismiss="offcanvas">
+                        <i class="fas fa-exchange-alt me-2"></i> Dərs Əvəzləmələri
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="#" data-section="export" data-bs-dismiss="offcanvas">
                         <i class="fas fa-file-invoice me-2"></i> Hesabat
                     </a>
@@ -1570,6 +1668,10 @@
                     <div class="modern-nav-btn" data-section="teachers">
                         <i class="fas fa-chalkboard-teacher"></i>
                         <span>Müəllimlər</span>
+                    </div>
+                    <div class="modern-nav-btn" data-section="substitution">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>Dərs əvəzləmələri</span>
                     </div>
                     <div class="modern-nav-btn" data-section="export">
                         <i class="fas fa-file-invoice"></i>
@@ -2240,6 +2342,45 @@
                                 <span class="badge bg-light text-primary" id="detail-teacher-subject">-</span>
                             </div>
                             <div class="card-body">
+                                <!-- Substitution Info Card — shown at top -->
+                                <div class="mb-4 p-3 rounded-3 border" id="teacher-substitution-card" style="background: var(--card-bg);">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="fas fa-exchange-alt me-2 text-primary"></i>
+                                        <strong>Dərs Əvəzləmə Vəziyyəti</strong>
+                                    </div>
+                                    <div class="row g-3" id="teacher-sub-stats">
+                                        <div class="col-md-4">
+                                            <div class="d-flex align-items-center gap-3 p-3 border rounded" style="background: var(--card-bg);">
+                                                <div class="text-primary fs-2"><i class="fas fa-hand-holding"></i></div>
+                                                <div>
+                                                    <div class="fw-bold fs-4" id="ts-covering">—</div>
+                                                    <div class="text-muted small">Neçə dərs əvəz etdi</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="d-flex align-items-center gap-3 p-3 border rounded" style="background: var(--card-bg);">
+                                                <div class="text-warning fs-2"><i class="fas fa-user-slash"></i></div>
+                                                <div>
+                                                    <div class="fw-bold fs-4" id="ts-covered">—</div>
+                                                    <div class="text-muted small">Neçə dəfə əvəz edildi</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="d-flex align-items-center gap-3 p-3 border rounded" style="background: var(--card-bg);">
+                                                <div class="fs-2" id="ts-balance-icon"><i class="fas fa-balance-scale text-secondary"></i></div>
+                                                <div>
+                                                    <div class="fw-bold fs-4" id="ts-balance">—</div>
+                                                    <div class="text-muted small">Yekun nəticə</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 text-muted small" id="ts-no-data" style="display:none;">
+                                        <i class="fas fa-info-circle me-1"></i>Bu müəllim üçün əvəzləmə məlumatı tapılmadı.
+                                    </div>
+                                </div>
                                 <div class="row mb-4">
                                     <div class="col-md-3">
                                         <div class="stat-card blue">
@@ -2356,9 +2497,86 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
             </div>
         </div>
+        </section>
+
+        <!-- Substitution Section -->
+        <section id="substitution-section" class="content-section" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Dərs Əvəzləmələri</h2>
+                <div class="d-flex gap-2">
+                    <input type="text" id="substitution-search" class="form-control" placeholder="Müəllim axtar..." style="width: 220px;">
+                </div>
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="row mb-4" id="substitution-summary-stats">
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card blue">
+                        <i class="fas fa-users"></i>
+                        <h3 id="sub-total-teachers">0</h3>
+                        <p>Cəmi Müəllim</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card green">
+                        <i class="fas fa-check-circle"></i>
+                        <h3 id="sub-total-covered">0</h3>
+                        <p>Ümumi Əvəz Edilən</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="stat-card orange">
+                        <i class="fas fa-hand-holding"></i>
+                        <h3 id="sub-total-covering">0</h3>
+                        <p>Ümumi Əvəz Edən</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="card">
+                <div class="card-header bg-secondary bg-opacity-10 text-dark d-flex justify-content-between align-items-center flex-wrap gap-2">
+                    <span><i class="fas fa-table me-2"></i>Müəllimlər üzrə Dərs Əvəzləmələri Statistikası</span>
+                    <div class="d-flex gap-2 align-items-center flex-wrap">
+                        <select id="sub-sort-select" class="form-select form-select-sm" style="width: auto;" onchange="renderSubstitutionTable()">
+                            <option value="name_asc">Ad (A→Z)</option>
+                            <option value="covering_desc">Əvəz etdi (çox→az)</option>
+                            <option value="covering_asc">Əvəz etdi (az→çox)</option>
+                            <option value="covered_desc">Əvəz edildi (çox→az)</option>
+                            <option value="covered_asc">Əvəz edildi (az→çox)</option>
+                            <option value="balance_desc">Nəticə (yüksək→aşağı)</option>
+                            <option value="balance_asc">Nəticə (aşağı→yüksək)</option>
+                        </select>
+                        <select id="sub-result-filter" class="form-select form-select-sm" style="width: auto;" onchange="renderSubstitutionTable()">
+                            <option value="all">Bütün nəticələr</option>
+                            <option value="positive">Müsbət nəticə (+)</option>
+                            <option value="zero">Sıfır nəticə (0)</option>
+                            <option value="negative">Mənfi nəticə (-)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0" id="substitution-table">
+                            <thead>
+                                <tr>
+                                    <th>Müəllim</th>
+                                    <th>İxtisası</th>
+                                    <th class="text-center">Əvəz Etdiyi (dərs)</th>
+                                    <th class="text-center">Əvəz Edildiyi (dərs)</th>
+                                    <th class="text-center">Yekun Nəticə</th>
+                                </tr>
+                            </thead>
+                            <tbody id="substitution-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- AI Assistant UI -->
@@ -2492,6 +2710,10 @@
             <button class="mobile-nav-btn" data-section="comparison">
                 <i class="fas fa-chart-bar"></i>
                 <span>Müqayisə</span>
+            </button>
+            <button class="mobile-nav-btn" data-section="substitution">
+                <i class="fas fa-exchange-alt"></i>
+                <span>Əvəzləmə</span>
             </button>
             <button class="mobile-nav-btn" data-section="export">
                 <i class="fas fa-file"></i>
@@ -2750,6 +2972,126 @@
         };
 
         let charts = {};
+
+        // =============================================
+        // ƏVƏZLƏMƏ MƏLUMATLARİ
+        // =============================================
+        const SUBSTITUTION_DATA = [
+            { name: "Adil Çaxoyev", subject: "İnformatika, Texnologiya", covered: 21, covering: 20 },
+            { name: "Afaq Qurbanova", subject: "Psixoloq", covered: 0, covering: 2 },
+            { name: "Aygün Mansurova", subject: "İbtidai sinif müəllimi", covered: 6, covering: 21 },
+            { name: "Aynur Məmmədova", subject: "İngilis dili", covered: 2, covering: 0 },
+            { name: "Aynurə Qurban", subject: "Azərbaycan dili, Ədəbiyyat", covered: 3, covering: 4 },
+            { name: "Aysu Mirzəyeva", subject: "İngilis dili", covered: 6, covering: 1 },
+            { name: "Aytac Əhmədova", subject: "Fizika", covered: 43, covering: 2 },
+            { name: "Aytac Musabəyli", subject: "İngilis dili", covered: 27, covering: 23 },
+            { name: "Elvira Əlifxanova", subject: "Azərbaycan dili, Ədəbiyyat", covered: 0, covering: 4 },
+            { name: "Emin Sultanzadə", subject: "İdman", covered: 0, covering: 0 },
+            { name: "Fatma Valiyev", subject: "Təsviri sənət", covered: 20, covering: 12 },
+            { name: "Fəridə Alqayeva", subject: "Riyaziyyat", covered: 0, covering: 1 },
+            { name: "Fəridə Sultanzadə", subject: "Sinif rəhbəri", covered: 3, covering: 19 },
+            { name: "Fərqanə Qənbərli", subject: "Biologiya", covered: 6, covering: 6 },
+            { name: "Fidan Abdulkərimova", subject: "Sinif rəhbəri", covered: 6, covering: 11 },
+            { name: "Gülnar İbrahimova", subject: "Sinif rəhbəri", covered: 31, covering: 5 },
+            { name: "Gülnar Səttarlı", subject: "Coğrafiya", covered: 5, covering: 2 },
+            { name: "Gülsəba Aktaş", subject: "Rus dili", covered: 13, covering: 13 },
+            { name: "Gültəkin Qululu", subject: "Psixoloq", covered: 1, covering: 2 },
+            { name: "Günel Axundova", subject: "Təbiət, Kimya", covered: 3, covering: 4 },
+            { name: "Günel Hətəmzadə", subject: "İngilis dili", covered: 7, covering: 11 },
+            { name: "Günel Hüseynova", subject: "İngilis dili", covered: 7, covering: 10 },
+            { name: "Günel İzzətova", subject: "Riyaziyyat", covered: 5, covering: 20 },
+            { name: "İlahə Əkbərova", subject: "İngilis dili", covered: 13, covering: 13 },
+            { name: "Könül Əhmədova", subject: "Azərbaycan dili, Ədəbiyyat", covered: 27, covering: 12 },
+            { name: "Leyla Şəfaqətova", subject: "Sinif rəhbəri", covered: 0, covering: 18 },
+            { name: "Mədinə Məmmədova", subject: "Azərbaycan dili, Ədəbiyyat", covered: 0, covering: 2 },
+            { name: "Mədinə Nağıyeva", subject: "Sinif rəhbəri", covered: 4, covering: 16 },
+            { name: "Məhbubə Talıblı", subject: "Riyaziyyat", covered: 3, covering: 9 },
+            { name: "Nənəxanım Qafarova", subject: "Azərbaycan dili", covered: 0, covering: 1 },
+            { name: "Nərminə İbrahimli", subject: "Sinif rəhbəri", covered: 7, covering: 16 },
+            { name: "Nəzrin Həsənova", subject: "Sinif rəhbəri", covered: 0, covering: 3 },
+            { name: "Nuranə Orucova", subject: "Məktəbəqədər müəllim", covered: 1, covering: 28 },
+            { name: "Pərvin Əşari", subject: "Musiqi", covered: 10, covering: 15 },
+            { name: "Saffet Yılmaz", subject: "Türk dili", covered: 29, covering: 14 },
+            { name: "Sənubər Baxşəliyeva", subject: "Sinif rəhbəri", covered: 13, covering: 13 },
+            { name: "Sevil Babaşova", subject: "İngilis dili (speak.)", covered: 20, covering: 0 },
+            { name: "Sura Kərimova", subject: "İngilis dili", covered: 12, covering: 14 },
+            { name: "Şahnaz Sarıyeva", subject: "Riyaziyyat", covered: 6, covering: 1 },
+            { name: "Şamil Süleymanov", subject: "İdman", covered: 23, covering: 31 },
+            { name: "Şəbnəm Zeynalova", subject: "İnformatika", covered: 0, covering: 13 },
+            { name: "Şəlalə Məcidova", subject: "Sinif rəhbəri", covered: 21, covering: 13 },
+            { name: "Türkan Qurbanova", subject: "İngilis dili", covered: 9, covering: 7 },
+            { name: "Xəyalə Əsgərli", subject: "Azərbaycan tarixi, Tarix", covered: 12, covering: 0 },
+            { name: "Xəyalə Qiyasova", subject: "İdman", covered: 2, covering: 3 }
+        ].map(t => ({ ...t, balance: t.covering - t.covered }));
+
+        function getSubstitutionData(teacherName) {
+            return SUBSTITUTION_DATA.find(t => t.name === teacherName) || null;
+        }
+
+        function renderSubstitutionBadge(balance) {
+            if (balance > 0) return `<span class="badge bg-success">+${balance} <i class="fas fa-arrow-up"></i></span>`;
+            if (balance < 0) return `<span class="badge bg-danger">${balance} <i class="fas fa-arrow-down"></i></span>`;
+            return `<span class="badge bg-secondary">0 <i class="fas fa-equals"></i></span>`;
+        }
+
+        function updateSubstitutionView() {
+            // Summary stats
+            const totalCovered = SUBSTITUTION_DATA.reduce((s, t) => s + t.covered, 0);
+            const totalCovering = SUBSTITUTION_DATA.reduce((s, t) => s + t.covering, 0);
+
+            document.getElementById('sub-total-teachers').textContent = SUBSTITUTION_DATA.length;
+            document.getElementById('sub-total-covered').textContent = totalCovered;
+            document.getElementById('sub-total-covering').textContent = totalCovering;
+
+            renderSubstitutionTable();
+
+            const searchInput = document.getElementById('substitution-search');
+            if (!searchInput.oninput) searchInput.oninput = renderSubstitutionTable;
+        }
+
+        function renderSubstitutionTable() {
+            const query = (document.getElementById('substitution-search').value || '').toLowerCase();
+            const sortBy = (document.getElementById('sub-sort-select') || {}).value || 'name_asc';
+            const resultFilter = (document.getElementById('sub-result-filter') || {}).value || 'all';
+
+            let filtered = SUBSTITUTION_DATA.filter(t => t.name.toLowerCase().includes(query));
+
+            // Apply result filter
+            if (resultFilter === 'positive') filtered = filtered.filter(t => t.balance > 0);
+            else if (resultFilter === 'zero') filtered = filtered.filter(t => t.balance === 0);
+            else if (resultFilter === 'negative') filtered = filtered.filter(t => t.balance < 0);
+
+            // Apply sort
+            filtered.sort((a, b) => {
+                switch (sortBy) {
+                    case 'covering_desc': return b.covering - a.covering;
+                    case 'covering_asc': return a.covering - b.covering;
+                    case 'covered_desc': return b.covered - a.covered;
+                    case 'covered_asc': return a.covered - b.covered;
+                    case 'balance_desc': return b.balance - a.balance;
+                    case 'balance_asc': return a.balance - b.balance;
+                    default: return a.name.localeCompare(b.name, 'az');
+                }
+            });
+
+            const tbody = document.getElementById('substitution-table-body');
+            tbody.innerHTML = '';
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">Məlumat tapılmadı</td></tr>';
+                return;
+            }
+            filtered.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="fw-semibold">${t.name}</td>
+                    <td class="text-muted small">${t.subject}</td>
+                    <td class="text-center"><span class="badge bg-primary bg-opacity-10 text-primary fw-bold" style="font-size:0.95em;">${t.covering}</span></td>
+                    <td class="text-center"><span class="badge bg-warning bg-opacity-10 text-warning fw-bold" style="font-size:0.95em;">${t.covered}</span></td>
+                    <td class="text-center">${renderSubstitutionBadge(t.balance)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
         const CLASS_TEACHERS = {
             '2A': 'Mədinə Nağıyeva', '2.A': 'Mədinə Nağıyeva',
@@ -3684,6 +4026,7 @@
                     requestAnimationFrame(updateAttendanceView);
                 }
                 if (sectionId === 'students-section') updateStudentsView();
+                if (sectionId === 'substitution-section') updateSubstitutionView();
             }
 
             // Aktif linkleri güncelle (nav barlar için)
@@ -6428,6 +6771,17 @@
 
                 const card = document.createElement('div');
                 card.className = 'col-md-4 col-lg-3 mb-4';
+                const subInfo = getSubstitutionData(teacher.name);
+                let subBadgeHtml = '';
+                if (subInfo) {
+                    const bal = subInfo.balance;
+                    const balHtml = bal > 0 ? `<div class="fw-bold text-success">+${bal}</div>` : bal < 0 ? `<div class="fw-bold text-danger">${bal}</div>` : `<div class="fw-bold text-secondary">0</div>`;
+                    subBadgeHtml = `<div class="mt-2 border-top pt-2 d-flex justify-content-around">
+                        <div><div class="fw-bold text-primary">${subInfo.covering}</div><small class="text-muted">Əvəz etdi</small></div>
+                        <div><div class="fw-bold text-warning">${subInfo.covered}</div><small class="text-muted">Əvəz edildi</small></div>
+                        <div>${balHtml}<small class="text-muted">Nəticə</small></div>
+                       </div>`;
+                }
                 card.innerHTML = `
                     <div class="card h-100 teacher-card animate-slide-up" onclick="showTeacherDetail('${teacher.name.replace(/'/g, "\\'")}')" style="cursor: pointer; transition: transform 0.2s;">
                         <div class="card-body text-center">
@@ -6451,6 +6805,7 @@
                                     <small class="text-muted">Sinif</small>
                                 </div>
                             </div>
+                            ${subBadgeHtml}
                         </div>
                     </div>
                 `;
@@ -6587,6 +6942,33 @@
                 classes: teacherData.classes,
                 students: teacherData.students
             });
+
+            // Show substitution stats
+            const subData = getSubstitutionData(teacherName);
+            const noDataEl = document.getElementById('ts-no-data');
+            const statsEl = document.getElementById('teacher-sub-stats');
+            if (subData) {
+                noDataEl.style.display = 'none';
+                statsEl.style.display = 'flex';
+                document.getElementById('ts-covering').textContent = subData.covering;
+                document.getElementById('ts-covered').textContent = subData.covered;
+                const bal = subData.balance;
+                const balEl = document.getElementById('ts-balance');
+                const iconEl = document.getElementById('ts-balance-icon');
+                if (bal > 0) {
+                    balEl.innerHTML = `<span class="text-success">+${bal}</span>`;
+                    iconEl.innerHTML = '<i class="fas fa-arrow-up text-success"></i>';
+                } else if (bal < 0) {
+                    balEl.innerHTML = `<span class="text-danger">${bal}</span>`;
+                    iconEl.innerHTML = '<i class="fas fa-arrow-down text-danger"></i>';
+                } else {
+                    balEl.innerHTML = `<span class="text-secondary">0</span>`;
+                    iconEl.innerHTML = '<i class="fas fa-equals text-secondary"></i>';
+                }
+            } else {
+                noDataEl.style.display = 'block';
+                statsEl.style.display = 'none';
+            }
         }
 
         let currentTeacherStudents = [];
